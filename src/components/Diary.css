@@ -1,0 +1,178 @@
+.diary-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 3000;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  perspective: 2000px;
+}
+
+.diary-container {
+  position: relative;
+  width: 900px;
+  height: 600px;
+  transform-style: preserve-3d;
+}
+
+/* Capa do Diário */
+.diary-cover-img {
+  position: absolute;
+  left: -160px;
+  top: 0;
+  width: 160px;
+  height: 100%;
+  border-radius: 4px 0 0 4px;
+  overflow: hidden;
+  box-shadow: -8px 0 30px rgba(0,0,0,0.7);
+  z-index: 10;
+}
+
+.diary-cover-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Páginas Internas */
+.diary-pages {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  background: #c5b8a0;
+  background-image: 
+    radial-gradient(circle at 50% 50%, rgba(255,255,255,0.1) 0%, transparent 100%),
+    url('https://www.transparenttextures.com/patterns/paper-fibers.png');
+  box-shadow: 0 0 60px rgba(0,0,0,0.9), inset 0 0 100px rgba(0,0,0,0.1);
+  border: 1px solid #8b7d6b;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.diary-pages::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: url('https://www.transparenttextures.com/patterns/pinstriped-suit.png');
+  opacity: 0.05;
+  pointer-events: none;
+}
+
+.diary-page {
+  flex: 1;
+  padding: 40px;
+  color: #2c241e;
+  font-family: 'Georgia', serif;
+  position: relative;
+  overflow-y: auto;
+}
+
+.diary-page-left {
+  border-right: 1px solid rgba(0,0,0,0.1);
+  background: linear-gradient(to right, rgba(0,0,0,0.05), transparent 10%);
+}
+
+.diary-page-right {
+  background: linear-gradient(to left, rgba(0,0,0,0.05), transparent 10%);
+}
+
+/* Conteúdo do Diário */
+.diary-title {
+  font-size: 28px;
+  border-bottom: 2px solid #8b0000;
+  margin-bottom: 24px;
+  padding-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: #5a0000;
+}
+
+.diary-menu-item {
+  padding: 12px 0;
+  cursor: pointer;
+  font-size: 18px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border-bottom: 1px solid rgba(0,0,0,0.05);
+}
+
+.diary-menu-item:hover {
+  color: #8b0000;
+  padding-left: 8px;
+}
+
+.diary-menu-item.active {
+  color: #8b0000;
+  font-weight: bold;
+}
+
+.diary-content-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.diary-card {
+  background: rgba(0,0,0,0.05);
+  border: 1px solid rgba(0,0,0,0.1);
+  padding: 16px;
+  border-radius: 2px;
+  margin-bottom: 20px;
+  position: relative;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.05);
+}
+
+.diary-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: url('https://www.transparenttextures.com/patterns/handmade-paper.png');
+  opacity: 0.1;
+  pointer-events: none;
+}
+
+.diary-card-title {
+  font-weight: bold;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.diary-card-meta {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+  margin-bottom: 8px;
+}
+
+.diary-card-text {
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+/* Efeito de Sangue/Manchas */
+.blood-stain {
+  position: absolute;
+  pointer-events: none;
+  opacity: 0.15;
+  z-index: 1;
+}
+
+/* Scrollbar Custom */
+.diary-page::-webkit-scrollbar {
+  width: 6px;
+}
+
+.diary-page::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.diary-page::-webkit-scrollbar-thumb {
+  background: rgba(0,0,0,0.1);
+  border-radius: 3px;
+}

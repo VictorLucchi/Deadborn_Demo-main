@@ -1,0 +1,16 @@
+:root {
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: #0a0410;
+}
+
+#root {
+  min-height: 100svh;
+}
