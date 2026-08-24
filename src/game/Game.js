@@ -6,7 +6,7 @@ import { AudioManager }  from './audio/AudioManager.js';
 import { createWorld }   from './world/World.js';
 
 export class Game {
-    constructor(canvas) {
+    constructor(canvas, onCombatTrigger) {
         this.canvas  = canvas;
         this.ctx     = canvas.getContext('2d');
         this.rafId   = null;
@@ -16,6 +16,8 @@ export class Game {
         this.em      = new EntityManager();
         this.ui      = new UIBridge();
         this.audio   = new AudioManager();
+
+        this.em.onCombatTrigger = onCombatTrigger || null;
 
         this.map      = null;
         this.camera   = null;

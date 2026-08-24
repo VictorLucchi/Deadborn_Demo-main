@@ -4,11 +4,19 @@ export class EntityManager {
     constructor() {
         this.enemies = [];
         this.player = null;
+        this.onCombatTrigger = null;
     }
 
     init(player, initialEnemies = []) {
         this.player = player;
         this.enemies = initialEnemies;
+        this._bindCombatTrigger();
+    }
+
+    _bindCombatTrigger() {
+        this.enemies.forEach(e => {
+            if (e.onCombatTrigger !== undefined) e.onCombatTrigger = this.onCombatTrigger;
+        });
     }
 
     spawnHunter(sprites, offsetX = 100) {
@@ -22,6 +30,7 @@ export class EntityManager {
             this.player.x + offsetX,
             this.player.y
         );
+        hunter.onCombatTrigger = this.onCombatTrigger;
         this.enemies.push(hunter);
     }
 
@@ -33,6 +42,10 @@ export class EntityManager {
             const dy = enemy.y - this.player.y;
             return Math.sqrt(dx * dx + dy * dy) > range;
         });
+    }
+
+    removeEnemy(enemy) {
+        this.enemies = this.enemies.filter(e => e !== enemy);
     }
 
     update(delta, checkCollision) {

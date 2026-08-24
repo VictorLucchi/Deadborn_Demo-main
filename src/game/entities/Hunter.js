@@ -3,6 +3,7 @@ import { SpriteAnimator } from './SpriteAnimator.js';
 const DETECTION_RADIUS = 350;
 const ORBIT_RADIUS     = 120;
 const MIN_DIST_PLAYER  = 60;
+const COMBAT_TRIGGER_DIST = 32;
 const FRAME_W_RUN      = 4856 / 8; // 607
 const FRAME_H_RUN      = 504;
 // frames 6 e 7 (índice) = no ar; frame 7 = aterrissagem
@@ -15,6 +16,8 @@ export class Hunter {
         this.y = y;
         this.currentAnim = 'idle';
         this.marked = false;
+        this.combatTriggered = false;
+        this.onCombatTrigger = null;
 
         // estado do salto
         this.jumping      = false;
@@ -221,6 +224,12 @@ export class Hunter {
 
     update(delta, player, checkCollision) {
         const dist = this._distTo(player);
+
+        if (!this.combatTriggered && dist <= COMBAT_TRIGGER_DIST && this.onCombatTrigger) {
+            this.combatTriggered = true;
+            this.onCombatTrigger(this);
+            return;
+        }
 
         if (this.jumping) {
             this._updateJump(delta, player, checkCollision);

@@ -2,12 +2,15 @@ import { useState, useEffect } from 'react';
 import { useGameCanvas } from '../game/useGameCanvas.js';
 import { DevConsole } from './DevConsole.jsx';
 
-export function GameCanvas({ isPaused, onReady }) {
+export function GameCanvas({ isPaused, onReady, onCombatTrigger }) {
     const [isConsoleOpen, setIsConsoleOpen] = useState(false);
-    const { canvasRef, executeCommand, playMusic } = useGameCanvas(isPaused || isConsoleOpen);
+    const { canvasRef, executeCommand, playMusic, removeEnemy } = useGameCanvas(
+        isPaused || isConsoleOpen,
+        onCombatTrigger
+    );
 
     useEffect(() => {
-        onReady?.({ playMusic });
+        onReady?.({ playMusic, removeEnemy });
     }, []);
 
     return (

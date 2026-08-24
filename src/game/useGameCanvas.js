@@ -1,16 +1,18 @@
 import { useEffect, useRef } from 'react';
 import { Game } from './Game.js';
 
-export function useGameCanvas(isPaused) {
+export function useGameCanvas(isPaused, onCombatTrigger) {
     const canvasRef = useRef(null);
     const gameRef   = useRef(null);
+    const onCombatRef = useRef(onCombatTrigger);
+    onCombatRef.current = onCombatTrigger;
 
     useEffect(() => {
         if (gameRef.current) gameRef.current.pause(isPaused);
     }, [isPaused]);
 
     useEffect(() => {
-        const game = new Game(canvasRef.current);
+        const game = new Game(canvasRef.current, (enemy) => onCombatRef.current?.(enemy));
         gameRef.current = game;
         game.start();
 
@@ -19,6 +21,7 @@ export function useGameCanvas(isPaused) {
 
     const executeCommand = (cmd) => gameRef.current?.executeCommand(cmd);
     const playMusic      = ()    => gameRef.current?.playMusic();
+    const removeEnemy    = (e)   => gameRef.current?.em.removeEnemy(e);
 
-    return { canvasRef, executeCommand, playMusic };
+    return { canvasRef, executeCommand, playMusic, removeEnemy };
 }

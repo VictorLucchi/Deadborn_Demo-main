@@ -4,29 +4,41 @@ import { GameCanvas } from './components/GameCanvas.jsx'
 import { GameMenu } from './components/GameMenu.jsx'
 import { Diary } from './components/Diary.jsx'
 import { MainMenu } from './components/MainMenu.jsx'
+import { CombatScreen } from './components/CombatScreen.jsx'
+import { criarPersonagem } from './engine/GameEngine.js'
 import './App.css'
 
 function App() {
   const [page, setPage] = useState('home')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDiaryOpen, setIsDiaryOpen] = useState(false)
+  const [combatEnemy, setCombatEnemy] = useState(null) // enemy canvas obj que trigou
   const gameApiRef = useRef(null)
+  const jogadorRef = useRef(null)
 
   const startGame = async () => {
+    // Cria um jogador padrão ao iniciar o jogo
+    jogadorRef.current = criarPersonagem('Hades', '3', 'male')
     setPage('game')
 
     setTimeout(async () => {
         const game = document.getElementById('game')
-
         if (game && !document.fullscreenElement) {
-            try {
-                await game.requestFullscreen()
-            } catch (error) {
-                console.error('Não foi possível entrar em tela cheia:', error)
-            }
+            try { await game.requestFullscreen() } catch (error) { console.error(error) }
         }
     }, 0)
-}
+  }
+
+  const handleCombatTrigger = (enemy) => {
+    // Pausa o canvas e abre o combate
+    setCombatEnemy(enemy)
+  }
+
+  const handleCombatClose = () => {
+    // Remove o hunter do mapa e retoma o jogo
+    if (combatEnemy) gameApiRef.current?.removeEnemy(combatEnemy)
+    setCombatEnemy(null)
+  }
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -76,7 +88,11 @@ function App() {
           >
             <div id="game">
               <div className="noise" />
-              <GameCanvas isPaused={isMenuOpen || isDiaryOpen} onReady={(api) => { gameApiRef.current = api; }} />
+              <GameCanvas
+                isPaused={isMenuOpen || isDiaryOpen || !!combatEnemy}
+                onReady={(api) => { gameApiRef.current = api; }}
+                onCombatTrigger={handleCombatTrigger}
+              />
               <AnimatePresence>
                 {isMenuOpen && (
                   <GameMenu 
@@ -101,6 +117,14 @@ function App() {
                   />
                 )}
               </AnimatePresence>
+
+              {combatEnemy && (
+                <CombatScreen
+                  jogador={jogadorRef.current}
+                  enemyType="hunter"
+                  onClose={handleCombatClose}
+                />
+              )}
             </div>
           </motion.div>
         )}
