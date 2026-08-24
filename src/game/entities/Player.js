@@ -43,10 +43,15 @@ export class Player {
         const running = keys['Shift'];
         const speed = running ? RUN_SPEED : WALK_SPEED;
 
-        if (keys['w']) { dy = -speed; this.direction = 'up'; }
-        if (keys['s']) { dy =  speed; this.direction = 'down'; }
+        if (keys['w']) dy = -speed;
+        if (keys['s']) dy =  speed;
         if (keys['a']) { dx = -speed; this.direction = 'left'; }
         if (keys['d']) { dx =  speed; this.direction = 'right'; }
+        if (keys['w'] && !keys['s'] && dx === 0) this.direction = 'up';
+        if (keys['s'] && !keys['w'] && dx === 0) this.direction = 'down';
+        // teclas opostas se cancelam
+        if (keys['a'] && keys['d']) dx = 0;
+        if (keys['w'] && keys['s']) dy = 0;
 
         this.moving  = dx !== 0 || dy !== 0;
         this.running = running && this.moving;

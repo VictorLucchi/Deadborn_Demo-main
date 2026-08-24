@@ -13,10 +13,12 @@ export class InputManager {
             : () => cameraRef.current;
 
         this._handlers.keydown = (e) => {
-            if (e.key !== "'") this.keys[e.key] = true;
+            const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+            if (key !== "'") this.keys[key] = true;
         };
         this._handlers.keyup = (e) => {
-            this.keys[e.key] = false;
+            const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+            this.keys[key] = false;
         };
         this._handlers.mousemove = (e) => {
             const rect = canvas.getBoundingClientRect();

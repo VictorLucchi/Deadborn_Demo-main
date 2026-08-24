@@ -1,0 +1,321 @@
+/* =========================================================
+   CINÉREA — GAME MENU
+   ========================================================= */
+
+.cinerea-menu-overlay {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    z-index: 2000;
+
+    background: rgba(0, 0, 0, 0.75);
+
+    backdrop-filter: blur(4px);
+}
+
+
+/* =========================================================
+   CAIXA
+   ========================================================= */
+
+.cinerea-menu-box {
+    width: 420px;
+
+    box-sizing: border-box;
+
+    background: #0a0a0a;
+
+    border: 2px solid #2a2a2a;
+
+    border-radius: 8px;
+
+    padding: 40px 20px;
+
+    box-shadow:
+        0 0 50px rgba(0, 0, 0, 0.8),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+
+    text-align: center;
+
+    font-family: Georgia, serif;
+}
+
+
+/* =========================================================
+   HEADER
+   ========================================================= */
+
+.cinerea-menu-header {
+    margin-bottom: 26px;
+}
+
+
+/* =========================================================
+   LOGO PRINCIPAL
+   ========================================================= */
+
+.cinerea-menu-icon {
+    width: 64px;
+    height: 64px;
+
+    display: block;
+
+    margin: 0 auto 4px;
+
+    object-fit: contain;
+
+    opacity: 0.95;
+}
+
+
+/* =========================================================
+   TÍTULO
+   ========================================================= */
+
+.cinerea-menu-title {
+    margin: 0;
+
+    color: #a0a0a0;
+
+    font-size: 48px;
+
+    font-weight: 300;
+
+    letter-spacing: 0.2em;
+
+    line-height: 1.1;
+
+    text-transform: uppercase;
+}
+
+
+/* =========================================================
+   HABITANTES
+   ========================================================= */
+
+.cinerea-menu-inhabitants {
+    margin-top: 10px;
+
+    color: #555;
+
+    font-size: 12px;
+
+    letter-spacing: 0.1em;
+
+    line-height: 1.5;
+
+    text-transform: uppercase;
+}
+
+
+.cinerea-menu-inhabitants span {
+    color: #888;
+
+    font-size: 18px;
+}
+
+
+/* =========================================================
+   DIVISOR
+   ========================================================= */
+
+.cinerea-menu-divider {
+    width: 100px;
+    height: 1px;
+
+    margin: 20px auto;
+
+    background: #333;
+}
+
+
+/* =========================================================
+   LISTA
+   ========================================================= */
+
+.cinerea-menu-items {
+    width: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+/* =========================================================
+   BOTÃO
+   ========================================================= */
+
+.cinerea-menu-button {
+    position: relative;
+
+    box-sizing: border-box;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    width: 100%;
+
+    min-height: 42px;
+
+    padding: 12px;
+
+    margin: 0;
+
+    background: transparent;
+
+    border: none;
+
+    color: #555;
+
+    font-family: Georgia, serif;
+
+    font-size: 16px;
+
+    font-weight: 400;
+
+    letter-spacing: 0.15em;
+
+    line-height: 1.2;
+
+    text-transform: uppercase;
+
+    cursor: pointer;
+
+    appearance: none;
+
+    transition:
+        color 0.25s ease,
+        opacity 0.25s ease;
+}
+
+
+/* =========================================================
+   TEXTO
+   ========================================================= */
+
+.cinerea-menu-label {
+    display: inline-block;
+
+    white-space: nowrap;
+
+    transition:
+        transform 0.25s ease,
+        letter-spacing 0.25s ease;
+}
+
+
+/* =========================================================
+   SEU SÍMBOLO
+   ========================================================= */
+
+.cinerea-menu-symbol {
+    width: 25px;
+    height: 25px;
+
+    flex-shrink: 0;
+
+    display: block;
+
+    object-fit: contain;
+
+    margin: 0 12px;
+
+    opacity: 1;
+    filter: brightness(3.0);
+
+    transition:
+        opacity 0.25s ease,
+        transform 0.25s ease;
+}
+
+
+/* =========================================================
+   SELECIONADO
+   ========================================================= */
+
+.cinerea-menu-button.selected {
+    color: #ccc;
+}
+
+
+.cinerea-menu-button.selected
+.cinerea-menu-label {
+    transform: translateY(-1px);
+
+    letter-spacing: 0.17em;
+}
+
+
+.cinerea-menu-button.selected
+.cinerea-menu-symbol {
+    opacity: 1;
+
+    transform: scale(1.15);
+}
+
+
+/* =========================================================
+   DESABILITADO
+   ========================================================= */
+
+.cinerea-menu-button.disabled {
+    color: #3c3c3c;
+
+    cursor: default;
+}
+
+
+.cinerea-menu-button.disabled
+.cinerea-menu-symbol {
+    opacity: 0.08;
+}
+
+
+/* =========================================================
+   LINHA
+   ========================================================= */
+
+.cinerea-menu-line {
+    position: absolute;
+
+    left: 10%;
+    right: 10%;
+    bottom: 0;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            #222,
+            transparent
+        );
+
+    opacity: 0.8;
+}
+
+
+/* =========================================================
+   VERSÃO
+   ========================================================= */
+
+.cinerea-menu-version {
+    margin-top: 40px;
+
+    color: #333;
+
+    font-size: 10px;
+
+    letter-spacing: 0.2em;
+}
