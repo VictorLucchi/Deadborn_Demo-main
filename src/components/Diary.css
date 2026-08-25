@@ -12,11 +12,17 @@
 
     z-index: 3000;
 
+    padding: 30px;
+
+    box-sizing: border-box;
+
     background: rgba(0, 0, 0, 0.88);
 
     backdrop-filter: blur(8px);
 
     perspective: 2000px;
+
+    overflow: hidden;
 }
 
 
@@ -27,8 +33,8 @@
 .diary-container {
     position: relative;
 
-    width: 900px;
-    height: 600px;
+    width: min(900px, 100%);
+    height: min(600px, 82vh);
 
     transform-style: preserve-3d;
 
@@ -62,7 +68,6 @@
         inset -8px 0 15px rgba(0, 0, 0, 0.35);
 }
 
-
 .diary-cover-img img {
     width: 100%;
     height: 100%;
@@ -76,7 +81,14 @@
         brightness(0.75);
 
     transition:
-        filter 0.4s ease;
+        filter 0.4s ease,
+        transform 0.5s ease;
+}
+
+.diary-container:hover .diary-cover-img img {
+    filter:
+        contrast(1.08)
+        brightness(0.82);
 }
 
 
@@ -86,6 +98,8 @@
 
 .diary-pages {
     position: absolute;
+
+    inset: 0;
 
     width: 100%;
     height: 100%;
@@ -97,11 +111,6 @@
     overflow: hidden;
 
     background-color: #c8bda8;
-
-    /*
-       Textura criada somente com CSS.
-       Evita depender de site externo.
-    */
 
     background-image:
         radial-gradient(
@@ -220,7 +229,12 @@
    ========================================================= */
 
 .diary-page-left {
-    border-right: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+
+    flex-direction: column;
+
+    border-right:
+        1px solid rgba(0, 0, 0, 0.08);
 
     background:
         linear-gradient(
@@ -228,6 +242,10 @@
             rgba(0,0,0,0.07),
             transparent 12%
         );
+}
+
+.diary-left-content {
+    flex: 1;
 }
 
 
@@ -242,6 +260,10 @@
             rgba(0,0,0,0.07),
             transparent 12%
         );
+}
+
+.diary-section-content {
+    width: 100%;
 }
 
 
@@ -274,6 +296,19 @@
 
 
 /* =========================================================
+   MENU
+   ========================================================= */
+
+.diary-menu {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 2px;
+}
+
+
+/* =========================================================
    ITENS DO ÍNDICE
    ========================================================= */
 
@@ -284,18 +319,28 @@
 
     align-items: center;
 
+    width: 100%;
+
     gap: 12px;
 
     box-sizing: border-box;
 
-    padding: 12px 4px;
+    padding: 12px 6px;
+
+    border: 0;
 
     border-bottom:
         1px solid rgba(0,0,0,0.06);
 
+    background: transparent;
+
     color: #332a22;
 
+    font-family: Georgia, serif;
+
     font-size: 18px;
+
+    text-align: left;
 
     cursor: pointer;
 
@@ -305,53 +350,66 @@
         background 0.2s ease;
 }
 
-
 .diary-menu-item:hover {
-    padding-left: 10px;
+    padding-left: 12px;
 
     color: #7d0a0a;
 
     background:
         linear-gradient(
             to right,
-            rgba(125,10,10,0.04),
+            rgba(125,10,10,0.06),
             transparent
         );
 }
-
 
 .diary-menu-item.active {
     color: #7d0a0a;
 
     font-weight: bold;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(125,10,10,0.08),
+            transparent
+        );
 }
 
 
 /* =========================================================
-   SÍMBOLO DO ÍNDICE
+   ÍCONE DO ÍNDICE
    ========================================================= */
 
-.diary-menu-item img {
-    width: 18px;
-    height: 18px;
+.diary-menu-icon {
+    width: 24px;
+    min-width: 24px;
 
-    object-fit: contain;
+    display: inline-flex;
 
-    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
 
-    opacity: 0.75;
+    font-size: 18px;
+
+    opacity: 0.72;
+
+    filter: grayscale(0.25);
 
     transition:
         opacity 0.2s ease,
         transform 0.2s ease;
 }
 
-
-.diary-menu-item:hover img,
-.diary-menu-item.active img {
+.diary-menu-item:hover .diary-menu-icon,
+.diary-menu-item.active .diary-menu-icon {
     opacity: 1;
 
     transform: scale(1.08);
+}
+
+.diary-menu-label {
+    position: relative;
 }
 
 
@@ -359,12 +417,10 @@
    FRASE DO ÍNDICE
    ========================================================= */
 
-.diary-page-left::after {
-    content: '"A verdade sempre se esconde nas entrelinhas."';
+.diary-quote {
+    margin-top: 25px;
 
-    display: block;
-
-    margin-top: 10px;
+    padding-top: 12px;
 
     color: #655c50;
 
@@ -375,6 +431,9 @@
     line-height: 1.5;
 
     opacity: 0.85;
+
+    border-top:
+        1px solid rgba(0,0,0,0.08);
 }
 
 
@@ -400,9 +459,11 @@
 
     box-sizing: border-box;
 
-    margin-bottom: 20px;
+    margin-bottom: 4px;
 
     padding: 16px;
+
+    overflow: hidden;
 
     background:
         rgba(100, 85, 65, 0.055);
@@ -420,7 +481,6 @@
         transform 0.25s ease,
         box-shadow 0.25s ease;
 }
-
 
 .diary-card:hover {
     background:
@@ -535,19 +595,258 @@
     width: 5px;
 }
 
-
 .diary-page::-webkit-scrollbar-track {
     background: transparent;
 }
 
-
 .diary-page::-webkit-scrollbar-thumb {
-    background: rgba(60, 40, 25, 0.18);
+    background:
+        rgba(60, 40, 25, 0.18);
 
     border-radius: 3px;
 }
 
-
 .diary-page::-webkit-scrollbar-thumb:hover {
-    background: rgba(60, 40, 25, 0.3);
+    background:
+        rgba(60, 40, 25, 0.3);
+}
+
+
+/* =========================================================
+   RESPONSIVIDADE
+   ========================================================= */
+
+@media (max-width: 1050px) {
+
+    .diary-overlay {
+        padding: 20px;
+    }
+
+    .diary-container {
+        width: min(760px, 100%);
+        height: min(540px, 82vh);
+    }
+
+    .diary-cover-img {
+        left: -120px;
+        width: 120px;
+    }
+
+    .diary-page {
+        padding: 30px;
+    }
+
+    .diary-title {
+        font-size: 24px;
+    }
+
+    .diary-menu-item {
+        font-size: 16px;
+    }
+}
+
+
+/* =========================================================
+   TABLET / CELULAR
+   ========================================================= */
+
+@media (max-width: 760px) {
+
+    .diary-overlay {
+        align-items: center;
+
+        padding: 15px;
+    }
+
+    .diary-container {
+        width: 100%;
+
+        height: min(650px, 88vh);
+
+        max-width: 500px;
+    }
+
+    /*
+     * A capa deixa de ficar ao lado
+     * quando a tela é pequena.
+     */
+    .diary-cover-img {
+        display: none;
+    }
+
+    .diary-pages {
+        display: flex;
+
+        flex-direction: column;
+
+        overflow: hidden;
+    }
+
+    .diary-pages::after {
+        display: none;
+    }
+
+    .diary-page {
+        flex: none;
+
+        width: 100%;
+
+        min-height: 0;
+
+        padding: 24px;
+    }
+
+    .diary-page-left {
+        flex: 0 0 auto;
+
+        max-height: 42%;
+
+        overflow-y: auto;
+
+        border-right: 0;
+
+        border-bottom:
+            1px solid rgba(0,0,0,0.12);
+
+        background:
+            linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.05),
+                transparent 15%
+            );
+    }
+
+    .diary-left-content {
+        flex: none;
+    }
+
+    .diary-page-right {
+        flex: 1;
+
+        overflow-y: auto;
+
+        background:
+            linear-gradient(
+                to bottom,
+                rgba(0,0,0,0.05),
+                transparent 15%
+            );
+    }
+
+    .diary-title {
+        margin-bottom: 14px;
+
+        font-size: 21px;
+
+        letter-spacing: 0.08em;
+    }
+
+    .diary-menu {
+        display: grid;
+
+        grid-template-columns:
+            repeat(2, minmax(0, 1fr));
+
+        gap: 4px;
+    }
+
+    .diary-menu-item {
+        padding: 9px 6px;
+
+        font-size: 14px;
+
+        border-bottom:
+            1px solid rgba(0,0,0,0.06);
+    }
+
+    .diary-menu-item:hover {
+        padding-left: 8px;
+    }
+
+    .diary-menu-icon {
+        width: 20px;
+        min-width: 20px;
+
+        font-size: 15px;
+    }
+
+    .diary-quote {
+        margin-top: 12px;
+
+        padding-top: 8px;
+
+        font-size: 11px;
+    }
+
+    .diary-content-list {
+        gap: 12px;
+    }
+
+    .diary-card {
+        padding: 13px;
+    }
+
+    .diary-card-title {
+        font-size: 15px;
+    }
+
+    .diary-card-text {
+        font-size: 13px;
+
+        line-height: 1.55;
+    }
+}
+
+
+/* =========================================================
+   CELULARES PEQUENOS
+   ========================================================= */
+
+@media (max-width: 420px) {
+
+    .diary-overlay {
+        padding: 8px;
+    }
+
+    .diary-container {
+        height: 94vh;
+    }
+
+    .diary-page {
+        padding: 18px;
+    }
+
+    .diary-page-left {
+        max-height: 44%;
+    }
+
+    .diary-menu {
+        grid-template-columns: 1fr;
+    }
+
+    .diary-menu-item {
+        padding: 8px 5px;
+
+        font-size: 14px;
+    }
+
+    .diary-title {
+        font-size: 19px;
+    }
+}
+
+
+/* =========================================================
+   REDUÇÃO DE MOVIMENTO
+   ========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    .diary-container,
+    .diary-card,
+    .diary-menu-item,
+    .diary-menu-icon,
+    .diary-cover-img img {
+        transition: none !important;
+    }
 }
