@@ -2,6 +2,11 @@
    CINÉREA — DIÁRIO
    ========================================================= */
 
+
+/* =========================================================
+   OVERLAY
+   ========================================================= */
+
 .diary-overlay {
     position: fixed;
     inset: 0;
@@ -16,13 +21,42 @@
 
     box-sizing: border-box;
 
-    background: rgba(0, 0, 0, 0.88);
+    background:
+        rgba(0, 0, 0, 0.88);
 
-    backdrop-filter: blur(8px);
+    backdrop-filter:
+        blur(8px);
 
-    perspective: 2000px;
+    perspective:
+        2000px;
 
     overflow: hidden;
+}
+
+
+/* =========================================================
+   CONTAINER DO LIVRO
+   ========================================================= */
+
+.diary-container {
+    position: relative;
+
+    width:
+        min(1100px, 92vw);
+
+    aspect-ratio:
+        2 / 1;
+
+    max-height:
+        82vh;
+
+    transform-style:
+        preserve-3d;
+
+    filter:
+        drop-shadow(
+            0 25px 45px rgba(0, 0, 0, 0.8)
+        );
 }
 
 
@@ -30,410 +64,244 @@
    LIVRO
    ========================================================= */
 
-.diary-container {
+.diary-book {
     position: relative;
 
-    width: min(900px, 100%);
-    height: min(600px, 82vh);
+    width: 100%;
+    height: 100%;
 
-    transform-style: preserve-3d;
-
-    filter: drop-shadow(
-        0 25px 45px rgba(0, 0, 0, 0.8)
-    );
+    transform-style:
+        preserve-3d;
 }
 
 
 /* =========================================================
-   CAPA
+   IMAGEM DAS DUAS PÁGINAS
    ========================================================= */
 
-.diary-cover-img {
+.diary-page-background {
     position: absolute;
 
-    left: -160px;
-    top: 0;
+    inset: 0;
 
-    width: 160px;
-    height: 100%;
-
-    overflow: hidden;
-
-    border-radius: 5px 0 0 5px;
-
-    z-index: 10;
-
-    box-shadow:
-        -10px 0 30px rgba(0, 0, 0, 0.75),
-        inset -8px 0 15px rgba(0, 0, 0, 0.35);
-}
-
-.diary-cover-img img {
     width: 100%;
     height: 100%;
 
     display: block;
 
-    object-fit: cover;
+    object-fit: fill;
+
+    pointer-events: none;
+    user-select: none;
+
+    z-index: 1;
 
     filter:
-        contrast(1.05)
-        brightness(0.75);
+        contrast(1.02)
+        saturate(0.92)
+        brightness(0.94);
 
-    transition:
-        filter 0.4s ease,
-        transform 0.5s ease;
-}
-
-.diary-container:hover .diary-cover-img img {
     filter:
-        contrast(1.08)
-        brightness(0.82);
+        drop-shadow(
+            0 18px 25px rgba(0, 0, 0, 0.55)
+        );
 }
 
 
 /* =========================================================
-   PÁGINAS
+   SOMBREAMENTO DO LIVRO
    ========================================================= */
 
-.diary-pages {
+.diary-book::after {
+    content: '';
+
     position: absolute;
 
     inset: 0;
 
-    width: 100%;
-    height: 100%;
+    pointer-events: none;
 
-    display: flex;
+    z-index: 2;
 
-    box-sizing: border-box;
-
-    overflow: hidden;
-
-    background-color: #c8bda8;
-
-    background-image:
+    background:
         radial-gradient(
             ellipse at center,
-            rgba(255,255,255,0.18) 0%,
-            rgba(255,255,255,0.04) 45%,
-            rgba(0,0,0,0.08) 100%
-        ),
-
-        repeating-linear-gradient(
-            0deg,
-            rgba(80,60,40,0.025) 0px,
-            rgba(80,60,40,0.025) 1px,
-            transparent 1px,
-            transparent 4px
+            transparent 42%,
+            rgba(0, 0, 0, 0.08) 100%
         );
 
-    border: 1px solid #817562;
-
-    border-radius: 4px;
-
-    box-shadow:
-        0 0 60px rgba(0, 0, 0, 0.9),
-        inset 0 0 80px rgba(70, 50, 30, 0.12);
+    mix-blend-mode:
+        multiply;
 }
 
 
 /* =========================================================
-   TEXTURA DAS PÁGINAS
+   CONTEÚDO ESQUERDO
    ========================================================= */
 
-.diary-pages::before {
-    content: '';
-
+.diary-left-content {
     position: absolute;
 
-    inset: 0;
+    left:
+        9%;
 
-    pointer-events: none;
+    top:
+        8%;
 
-    background:
-        repeating-linear-gradient(
-            90deg,
-            transparent 0px,
-            rgba(80,60,40,0.025) 1px,
-            transparent 3px
-        );
+    width:
+        39%;
 
-    opacity: 0.5;
-
-    z-index: 5;
-}
-
-
-/* =========================================================
-   SOMBRA DA ENCADERNAÇÃO
-   ========================================================= */
-
-.diary-pages::after {
-    content: '';
-
-    position: absolute;
-
-    top: 0;
-    bottom: 0;
-
-    left: 50%;
-
-    width: 55px;
-
-    transform: translateX(-50%);
-
-    pointer-events: none;
-
-    background:
-        linear-gradient(
-            to right,
-            transparent,
-            rgba(0,0,0,0.05) 20%,
-            rgba(0,0,0,0.14) 50%,
-            rgba(0,0,0,0.05) 80%,
-            transparent
-        );
-
-    z-index: 6;
-}
-
-
-/* =========================================================
-   PÁGINAS INDIVIDUAIS
-   ========================================================= */
-
-.diary-page {
-    position: relative;
-
-    flex: 1;
-
-    min-width: 0;
+    height:
+        84%;
 
     box-sizing: border-box;
 
-    padding: 40px;
+    padding:
+        5% 5.5%;
 
-    color: #2c241e;
+    z-index: 5;
 
-    font-family: Georgia, serif;
+    color:
+        #2c241e;
 
-    overflow-y: auto;
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
 
-    z-index: 7;
+    overflow-y:
+        auto;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        rgba(60, 40, 25, 0.22)
+        transparent;
 }
 
 
 /* =========================================================
-   PÁGINA ESQUERDA
+   CONTEÚDO DIREITO
    ========================================================= */
 
-.diary-page-left {
-    display: flex;
+.diary-right-content {
+    position: absolute;
 
-    flex-direction: column;
+    left:
+        53.5%;
 
-    border-right:
-        1px solid rgba(0, 0, 0, 0.08);
+    top:
+        8%;
 
-    background:
-        linear-gradient(
-            to right,
-            rgba(0,0,0,0.07),
-            transparent 12%
-        );
-}
+    width:
+        38.5%;
 
-.diary-left-content {
-    flex: 1;
+    height:
+        84%;
+
+    box-sizing: border-box;
+
+    padding:
+        5% 5.5%;
+
+    z-index: 5;
+
+    color:
+        #2c241e;
+
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
+    overflow-y:
+        auto;
+
+    scrollbar-width:
+        thin;
+
+    scrollbar-color:
+        rgba(60, 40, 25, 0.22)
+        transparent;
 }
 
 
 /* =========================================================
-   PÁGINA DIREITA
+   SCROLLBAR
    ========================================================= */
 
-.diary-page-right {
-    background:
-        linear-gradient(
-            to left,
-            rgba(0,0,0,0.07),
-            transparent 12%
-        );
+.diary-left-content::-webkit-scrollbar,
+.diary-right-content::-webkit-scrollbar {
+    width:
+        4px;
 }
 
-.diary-section-content {
-    width: 100%;
+.diary-left-content::-webkit-scrollbar-track,
+.diary-right-content::-webkit-scrollbar-track {
+    background:
+        transparent;
+}
+
+.diary-left-content::-webkit-scrollbar-thumb,
+.diary-right-content::-webkit-scrollbar-thumb {
+    background:
+        rgba(60, 40, 25, 0.22);
+
+    border-radius:
+        3px;
 }
 
 
 /* =========================================================
-   TÍTULOS
+   TÍTULOS DAS SEÇÕES
    ========================================================= */
 
 .diary-title {
-    margin: 0 0 24px;
+    margin:
+        0 0 18px;
 
-    padding-bottom: 8px;
+    padding-bottom:
+        7px;
 
-    color: #650707;
+    color:
+        #650707;
 
-    font-family: Georgia, serif;
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
 
-    font-size: 28px;
+    font-size:
+        clamp(18px, 2.1vw, 28px);
 
-    font-weight: bold;
+    font-weight:
+        bold;
 
-    letter-spacing: 0.1em;
+    letter-spacing:
+        0.08em;
 
-    line-height: 1.2;
+    line-height:
+        1.2;
 
-    text-transform: uppercase;
+    text-transform:
+        uppercase;
 
     border-bottom:
         2px solid #7d0a0a;
+
+    text-shadow:
+        0 1px 0 rgba(255, 255, 255, 0.25);
 }
 
 
 /* =========================================================
-   MENU
+   CONTEÚDO DA SEÇÃO
    ========================================================= */
 
-.diary-menu {
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 2px;
-}
-
-
-/* =========================================================
-   ITENS DO ÍNDICE
-   ========================================================= */
-
-.diary-menu-item {
-    position: relative;
-
-    display: flex;
-
-    align-items: center;
-
-    width: 100%;
-
-    gap: 12px;
-
-    box-sizing: border-box;
-
-    padding: 12px 6px;
-
-    border: 0;
-
-    border-bottom:
-        1px solid rgba(0,0,0,0.06);
-
-    background: transparent;
-
-    color: #332a22;
-
-    font-family: Georgia, serif;
-
-    font-size: 18px;
-
-    text-align: left;
-
-    cursor: pointer;
-
-    transition:
-        color 0.2s ease,
-        padding-left 0.2s ease,
-        background 0.2s ease;
-}
-
-.diary-menu-item:hover {
-    padding-left: 12px;
-
-    color: #7d0a0a;
-
-    background:
-        linear-gradient(
-            to right,
-            rgba(125,10,10,0.06),
-            transparent
-        );
-}
-
-.diary-menu-item.active {
-    color: #7d0a0a;
-
-    font-weight: bold;
-
-    background:
-        linear-gradient(
-            to right,
-            rgba(125,10,10,0.08),
-            transparent
-        );
-}
-
-
-/* =========================================================
-   ÍCONE DO ÍNDICE
-   ========================================================= */
-
-.diary-menu-icon {
-    width: 24px;
-    min-width: 24px;
-
-    display: inline-flex;
-
-    align-items: center;
-    justify-content: center;
-
-    font-size: 18px;
-
-    opacity: 0.72;
-
-    filter: grayscale(0.25);
-
-    transition:
-        opacity 0.2s ease,
-        transform 0.2s ease;
-}
-
-.diary-menu-item:hover .diary-menu-icon,
-.diary-menu-item.active .diary-menu-icon {
-    opacity: 1;
-
-    transform: scale(1.08);
-}
-
-.diary-menu-label {
-    position: relative;
-}
-
-
-/* =========================================================
-   FRASE DO ÍNDICE
-   ========================================================= */
-
-.diary-quote {
-    margin-top: 25px;
-
-    padding-top: 12px;
-
-    color: #655c50;
-
-    font-size: 12px;
-
-    font-style: italic;
-
-    line-height: 1.5;
-
-    opacity: 0.85;
-
-    border-top:
-        1px solid rgba(0,0,0,0.08);
+.diary-section-content {
+    width:
+        100%;
 }
 
 
@@ -442,39 +310,51 @@
    ========================================================= */
 
 .diary-content-list {
-    display: flex;
+    display:
+        flex;
 
-    flex-direction: column;
+    flex-direction:
+        column;
 
-    gap: 16px;
+    gap:
+        12px;
 }
 
 
 /* =========================================================
-   DOCUMENTOS
+   CARDS / DOCUMENTOS
    ========================================================= */
 
 .diary-card {
-    position: relative;
+    position:
+        relative;
 
-    box-sizing: border-box;
+    box-sizing:
+        border-box;
 
-    margin-bottom: 4px;
+    width:
+        100%;
 
-    padding: 16px;
+    margin:
+        0;
 
-    overflow: hidden;
+    padding:
+        clamp(10px, 1.2vw, 16px);
+
+    overflow:
+        hidden;
 
     background:
-        rgba(100, 85, 65, 0.055);
+        rgba(100, 85, 65, 0.07);
 
     border:
         1px solid rgba(60, 45, 30, 0.16);
 
-    border-radius: 1px;
+    border-radius:
+        1px;
 
     box-shadow:
-        2px 3px 6px rgba(0,0,0,0.07);
+        2px 3px 6px rgba(0, 0, 0, 0.07);
 
     transition:
         background 0.25s ease,
@@ -484,57 +364,73 @@
 
 .diary-card:hover {
     background:
-        rgba(100, 85, 65, 0.09);
+        rgba(100, 85, 65, 0.11);
 
     transform:
         translateY(-1px);
 
     box-shadow:
-        3px 5px 10px rgba(0,0,0,0.09);
+        3px 5px 10px rgba(0, 0, 0, 0.10);
 }
 
 
 /* =========================================================
-   TEXTURA DO DOCUMENTO
+   TEXTURA DOS CARDS
    ========================================================= */
 
 .diary-card::before {
-    content: '';
+    content:
+        '';
 
-    position: absolute;
+    position:
+        absolute;
 
-    inset: 0;
+    inset:
+        0;
 
-    pointer-events: none;
+    pointer-events:
+        none;
 
     background:
         repeating-linear-gradient(
             0deg,
             transparent,
             transparent 3px,
-            rgba(80,60,40,0.025) 4px
+            rgba(80, 60, 40, 0.025) 4px
         );
 
-    opacity: 0.5;
+    opacity:
+        0.5;
 }
 
 
 /* =========================================================
-   TÍTULO DO DOCUMENTO
+   TÍTULO DO CARD
    ========================================================= */
 
 .diary-card-title {
-    position: relative;
+    position:
+        relative;
 
-    margin-bottom: 4px;
+    margin-bottom:
+        4px;
 
-    color: #322920;
+    color:
+        #322920;
 
-    font-family: Georgia, serif;
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
 
-    font-size: 16px;
+    font-size:
+        clamp(13px, 1.25vw, 16px);
 
-    font-weight: bold;
+    font-weight:
+        bold;
+
+    line-height:
+        1.3;
 }
 
 
@@ -543,30 +439,602 @@
    ========================================================= */
 
 .diary-card-meta {
-    position: relative;
+    position:
+        relative;
 
-    margin-bottom: 8px;
+    margin-bottom:
+        7px;
 
-    color: #70685d;
+    color:
+        #70685d;
 
-    font-size: 12px;
+    font-size:
+        clamp(9px, 0.95vw, 12px);
 
-    font-style: italic;
+    font-style:
+        italic;
+
+    line-height:
+        1.3;
 }
 
 
 /* =========================================================
-   TEXTO
+   TEXTO DOS CARDS
    ========================================================= */
 
 .diary-card-text {
-    position: relative;
+    position:
+        relative;
 
-    color: #332b24;
+    color:
+        #332b24;
 
-    font-size: 14px;
+    font-size:
+        clamp(11px, 1.1vw, 14px);
 
-    line-height: 1.6;
+    line-height:
+        1.55;
+}
+
+
+/* =========================================================
+   =========================================================
+   MARCADORES LATERAIS
+   =========================================================
+   ========================================================= */
+
+
+/*
+ * Os marcadores ficam presos à lateral direita
+ * do livro.
+ *
+ * A ideia é parecer que são pedaços de papel
+ * vermelho inseridos entre as páginas.
+ */
+
+.diary-tabs {
+    position:
+        absolute;
+
+    right:
+        -3.2%;
+
+    top:
+        13%;
+
+    display:
+        flex;
+
+    flex-direction:
+        column;
+
+    align-items:
+        flex-start;
+
+    gap:
+        7px;
+
+    z-index:
+        20;
+}
+
+
+/* =========================================================
+   MARCADOR
+   ========================================================= */
+
+.diary-tab {
+    position:
+        relative;
+
+    display:
+        flex;
+
+    align-items:
+        center;
+
+    justify-content:
+        flex-start;
+
+    width:
+        clamp(72px, 7vw, 105px);
+
+    height:
+        clamp(38px, 4vw, 50px);
+
+    padding:
+        0 12px 0 14px;
+
+    box-sizing:
+        border-box;
+
+    border:
+        none;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #8d0b0b,
+            #650707
+        );
+
+    color:
+        #f2dfc5;
+
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
+    font-size:
+        clamp(9px, 0.85vw, 12px);
+
+    font-weight:
+        bold;
+
+    letter-spacing:
+        0.03em;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        2px 3px 7px rgba(0, 0, 0, 0.35);
+
+    /*
+     * Ponta triangular do marcador.
+     */
+    .diary-tab {
+    clip-path: polygon(
+        0 0,
+        100% 0,
+        85% 50%,
+        100% 100%,
+        0 100%
+    );
+}
+
+    transform:
+        translateX(0);
+
+    transition:
+        transform 0.22s ease,
+        filter 0.22s ease,
+        box-shadow 0.22s ease;
+}
+
+
+/* =========================================================
+   PEQUENA BORDA INTERNA DO MARCADOR
+   ========================================================= */
+
+.diary-tab::before {
+    content:
+        '';
+
+    position:
+        absolute;
+
+    inset:
+        3px;
+
+    pointer-events:
+        none;
+
+    border:
+        1px solid rgba(255, 220, 180, 0.18);
+
+    clip-path:
+        polygon(
+            0 0,
+            100% 0,
+            100% 100%,
+            0 100%,
+            12% 50%
+        );
+}
+
+
+/* =========================================================
+   TEXTURA DO MARCADOR
+   ========================================================= */
+
+.diary-tab::after {
+    content:
+        '';
+
+    position:
+        absolute;
+
+    inset:
+        0;
+
+    pointer-events:
+        none;
+
+    background:
+        repeating-linear-gradient(
+            0deg,
+            transparent 0,
+            transparent 3px,
+            rgba(255, 220, 180, 0.045) 4px
+        );
+
+    opacity:
+        0.7;
+}
+
+
+/* =========================================================
+   HOVER
+   ========================================================= */
+
+.diary-tab:hover {
+    transform:
+        translateX(7px);
+
+    filter:
+        brightness(1.12);
+
+    box-shadow:
+        4px 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+
+/* =========================================================
+   MARCADOR ATIVO
+   ========================================================= */
+
+.diary-tab.active {
+    transform:
+        translateX(12px);
+
+    background:
+        linear-gradient(
+            to bottom,
+            #a41111,
+            #780808
+        );
+
+    color:
+        #fff0d8;
+
+    box-shadow:
+        4px 5px 12px rgba(0, 0, 0, 0.45);
+
+    filter:
+        brightness(1.08);
+}
+
+
+/* =========================================================
+   ÍCONE DO MARCADOR
+   ========================================================= */
+
+.diary-tab-icon {
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    margin-right:
+        7px;
+
+    font-size:
+        clamp(12px, 1.1vw, 16px);
+
+    line-height:
+        1;
+}
+
+
+/* =========================================================
+   TEXTO DO MARCADOR
+   ========================================================= */
+
+.diary-tab-label {
+    position:
+        relative;
+
+    z-index:
+        2;
+
+    white-space:
+        nowrap;
+
+    line-height:
+        1.1;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* =========================================================
+   =========================================================
+   PÁGINA DE CRIATURAS
+   =========================================================
+   ========================================================= */
+
+.diary-creature {
+    position:
+        relative;
+
+    width:
+        100%;
+
+    padding-top:
+        2px;
+}
+
+
+/* =========================================================
+   POLAROID
+   ========================================================= */
+
+.diary-creature-polaroid {
+    position:
+        relative;
+
+    float:
+        left;
+
+    width:
+        42%;
+
+    margin:
+        0 18px 12px 0;
+
+    padding:
+        7px 7px 14px;
+
+    box-sizing:
+        border-box;
+
+    background:
+        #eee6d4;
+
+    box-shadow:
+        2px 4px 9px rgba(40, 25, 15, 0.25);
+
+    transform:
+        rotate(-2deg);
+
+    transition:
+        transform 0.25s ease,
+        box-shadow 0.25s ease;
+}
+
+
+/* =========================================================
+   HOVER POLAROID
+   ========================================================= */
+
+.diary-creature-polaroid:hover {
+    transform:
+        rotate(0deg)
+        translateY(-2px);
+
+    box-shadow:
+        3px 6px 12px rgba(40, 25, 15, 0.30);
+}
+
+
+/* =========================================================
+   IMAGEM DA POLAROID
+   ========================================================= */
+
+.diary-polaroid-image {
+    width:
+        100%;
+
+    aspect-ratio:
+        1 / 1;
+
+    overflow:
+        hidden;
+
+    background:
+        #171411;
+}
+
+.diary-polaroid-image img {
+    width:
+        100%;
+
+    height:
+        100%;
+
+    display:
+        block;
+
+    object-fit:
+        cover;
+
+    filter:
+        contrast(1.08)
+        saturate(0.75)
+        sepia(0.12)
+        brightness(0.88);
+}
+
+
+/* =========================================================
+   LEGENDA DA POLAROID
+   ========================================================= */
+
+.diary-polaroid-caption {
+    padding-top:
+        7px;
+
+    color:
+        #302820;
+
+    font-family:
+        'Courier New',
+        monospace;
+
+    font-size:
+        clamp(8px, 0.8vw, 11px);
+
+    font-weight:
+        bold;
+
+    letter-spacing:
+        0.08em;
+
+    text-align:
+        center;
+}
+
+
+/* =========================================================
+   DESCRIÇÃO DA CRIATURA
+   ========================================================= */
+
+.diary-creature-description {
+    position:
+        relative;
+
+    min-height:
+        120px;
+}
+
+.diary-creature-description h3 {
+    margin:
+        0 0 2px;
+
+    color:
+        #3a2920;
+
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
+    font-size:
+        clamp(15px, 1.5vw, 21px);
+
+    font-weight:
+        bold;
+}
+
+
+/* =========================================================
+   SUBTÍTULO DA CRIATURA
+   ========================================================= */
+
+.diary-creature-subtitle {
+    margin-bottom:
+        10px;
+
+    color:
+        #756a5d;
+
+    font-size:
+        clamp(9px, 0.9vw, 12px);
+
+    font-style:
+        italic;
+}
+
+
+/* =========================================================
+   TEXTO DA DESCRIÇÃO
+   ========================================================= */
+
+.diary-creature-description p {
+    margin:
+        0;
+
+    color:
+        #332b24;
+
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
+    font-size:
+        clamp(10px, 1vw, 13px);
+
+    line-height:
+        1.55;
+}
+
+
+/* =========================================================
+   OBSERVAÇÕES DA CRIATURA
+   ========================================================= */
+
+.diary-creature-observations {
+    clear:
+        both;
+
+    margin-top:
+        18px;
+
+    padding-top:
+        10px;
+
+    border-top:
+        1px solid rgba(70, 45, 25, 0.16);
+}
+
+
+/* =========================================================
+   TÍTULO DAS OBSERVAÇÕES
+   ========================================================= */
+
+.diary-creature-observations h4 {
+    margin:
+        0 0 7px;
+
+    color:
+        #650707;
+
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
+    font-size:
+        clamp(11px, 1vw, 14px);
+
+    letter-spacing:
+        0.08em;
+
+    text-transform:
+        uppercase;
+}
+
+
+/* =========================================================
+   LISTA DE OBSERVAÇÕES
+   ========================================================= */
+
+.diary-creature-observations ul {
+    margin:
+        0;
+
+    padding-left:
+        17px;
+
+    color:
+        #40362d;
+
+    font-size:
+        clamp(9px, 0.9vw, 12px);
+
+    line-height:
+        1.55;
+}
+
+.diary-creature-observations li {
+    margin-bottom:
+        4px;
 }
 
 
@@ -575,263 +1043,355 @@
    ========================================================= */
 
 .blood-stain {
-    position: absolute;
+    position:
+        absolute;
 
-    pointer-events: none;
+    pointer-events:
+        none;
 
-    opacity: 0.15;
+    opacity:
+        0.15;
 
-    z-index: 8;
+    z-index:
+        8;
 
-    mix-blend-mode: multiply;
+    mix-blend-mode:
+        multiply;
 }
 
 
 /* =========================================================
-   SCROLLBAR
+   =========================================================
+   RESPONSIVIDADE — TABLET
+   =========================================================
    ========================================================= */
 
-.diary-page::-webkit-scrollbar {
-    width: 5px;
-}
-
-.diary-page::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.diary-page::-webkit-scrollbar-thumb {
-    background:
-        rgba(60, 40, 25, 0.18);
-
-    border-radius: 3px;
-}
-
-.diary-page::-webkit-scrollbar-thumb:hover {
-    background:
-        rgba(60, 40, 25, 0.3);
-}
-
-
-/* =========================================================
-   RESPONSIVIDADE
-   ========================================================= */
-
-@media (max-width: 1050px) {
+@media (max-width: 900px) {
 
     .diary-overlay {
-        padding: 20px;
+        padding:
+            20px;
     }
 
     .diary-container {
-        width: min(760px, 100%);
-        height: min(540px, 82vh);
+        width:
+            min(900px, 92vw);
+
+        max-height:
+            78vh;
     }
 
-    .diary-cover-img {
-        left: -120px;
-        width: 120px;
+    .diary-left-content,
+    .diary-right-content {
+        top:
+            7%;
+
+        height:
+            86%;
+
+        padding:
+            4% 5%;
     }
 
-    .diary-page {
-        padding: 30px;
+    .diary-tabs {
+        right:
+            -3%;
     }
 
-    .diary-title {
-        font-size: 24px;
+    .diary-tab {
+        width:
+            82px;
+
+        height:
+            42px;
     }
 
-    .diary-menu-item {
-        font-size: 16px;
+    .diary-creature-polaroid {
+        width:
+            40%;
     }
 }
 
 
 /* =========================================================
-   TABLET / CELULAR
+   RESPONSIVIDADE — CELULAR
    ========================================================= */
 
-@media (max-width: 760px) {
+@media (max-width: 650px) {
 
     .diary-overlay {
-        align-items: center;
-
-        padding: 15px;
+        padding:
+            10px;
     }
 
     .diary-container {
-        width: 100%;
+        width:
+            96vw;
 
-        height: min(650px, 88vh);
-
-        max-width: 500px;
-    }
-
-    /*
-     * A capa deixa de ficar ao lado
-     * quando a tela é pequena.
-     */
-    .diary-cover-img {
-        display: none;
-    }
-
-    .diary-pages {
-        display: flex;
-
-        flex-direction: column;
-
-        overflow: hidden;
-    }
-
-    .diary-pages::after {
-        display: none;
-    }
-
-    .diary-page {
-        flex: none;
-
-        width: 100%;
-
-        min-height: 0;
-
-        padding: 24px;
-    }
-
-    .diary-page-left {
-        flex: 0 0 auto;
-
-        max-height: 42%;
-
-        overflow-y: auto;
-
-        border-right: 0;
-
-        border-bottom:
-            1px solid rgba(0,0,0,0.12);
-
-        background:
-            linear-gradient(
-                to bottom,
-                rgba(0,0,0,0.05),
-                transparent 15%
-            );
+        max-height:
+            85vh;
     }
 
     .diary-left-content {
-        flex: none;
+        left:
+            15%;
+
+        top:
+            8%;
+
+        width:
+            40%;
+
+        height:
+            84%;
+
+        padding:
+            3% 4%;
     }
 
-    .diary-page-right {
-        flex: 1;
+    .diary-right-content {
+        left:
+            53%;
 
-        overflow-y: auto;
+        top:
+            8%;
 
-        background:
-            linear-gradient(
-                to bottom,
-                rgba(0,0,0,0.05),
-                transparent 15%
-            );
+        width:
+            40%;
+
+        height:
+            84%;
+
+        padding:
+            3% 4%;
     }
+
+
+    /* -----------------------------------------
+       TÍTULOS
+       ----------------------------------------- */
 
     .diary-title {
-        margin-bottom: 14px;
+        margin-bottom:
+            10px;
 
-        font-size: 21px;
+        padding-bottom:
+            4px;
 
-        letter-spacing: 0.08em;
+        font-size:
+            15px;
+
+        border-bottom-width:
+            1px;
     }
 
-    .diary-menu {
-        display: grid;
 
-        grid-template-columns:
-            repeat(2, minmax(0, 1fr));
-
-        gap: 4px;
-    }
-
-    .diary-menu-item {
-        padding: 9px 6px;
-
-        font-size: 14px;
-
-        border-bottom:
-            1px solid rgba(0,0,0,0.06);
-    }
-
-    .diary-menu-item:hover {
-        padding-left: 8px;
-    }
-
-    .diary-menu-icon {
-        width: 20px;
-        min-width: 20px;
-
-        font-size: 15px;
-    }
-
-    .diary-quote {
-        margin-top: 12px;
-
-        padding-top: 8px;
-
-        font-size: 11px;
-    }
+    /* -----------------------------------------
+       CARDS
+       ----------------------------------------- */
 
     .diary-content-list {
-        gap: 12px;
+        gap:
+            6px;
     }
 
     .diary-card {
-        padding: 13px;
+        padding:
+            7px;
     }
 
     .diary-card-title {
-        font-size: 15px;
+        font-size:
+            10px;
+    }
+
+    .diary-card-meta {
+        margin-bottom:
+            4px;
+
+        font-size:
+            7px;
     }
 
     .diary-card-text {
-        font-size: 13px;
+        font-size:
+            8px;
 
-        line-height: 1.55;
+        line-height:
+            1.4;
+    }
+
+
+    /* -----------------------------------------
+       MARCADORES
+       ----------------------------------------- */
+
+    .diary-tabs {
+        right:
+            -5%;
+
+        top:
+            15%;
+
+        gap:
+            4px;
+    }
+
+    .diary-tab {
+        width:
+            64px;
+
+        height:
+            31px;
+
+        padding:
+            0 7px 0 9px;
+
+        font-size:
+            7px;
+    }
+
+    .diary-tab-icon {
+        margin-right:
+            4px;
+
+        font-size:
+            9px;
+    }
+
+
+    /* -----------------------------------------
+       CRIATURA
+       ----------------------------------------- */
+
+    .diary-creature-polaroid {
+        width:
+            44%;
+
+        margin-right:
+            10px;
+
+        padding:
+            5px 5px 9px;
+    }
+
+    .diary-polaroid-caption {
+        padding-top:
+            5px;
+
+        font-size:
+            9px;
+    }
+
+    .diary-creature-description h3 {
+        font-size:
+            12px;
+    }
+
+    .diary-creature-subtitle {
+        margin-bottom:
+            5px;
+
+        font-size:
+            7px;
+    }
+
+    .diary-creature-description p {
+        font-size:
+            8px;
+
+        line-height:
+            1.4;
+    }
+
+    .diary-creature-observations {
+        margin-top:
+            10px;
+
+        padding-top:
+            6px;
+    }
+
+    .diary-creature-observations h4 {
+        margin-bottom:
+            4px;
+
+        font-size:
+            8px;
+    }
+
+    .diary-creature-observations ul {
+        padding-left:
+            12px;
+
+        font-size:
+            7px;
     }
 }
 
 
 /* =========================================================
-   CELULARES PEQUENOS
+   CELULARES MUITO PEQUENOS
    ========================================================= */
 
-@media (max-width: 420px) {
-
-    .diary-overlay {
-        padding: 8px;
-    }
+@media (max-width: 430px) {
 
     .diary-container {
-        height: 94vh;
+        width:
+            98vw;
+
+        max-height:
+            90vh;
     }
 
-    .diary-page {
-        padding: 18px;
-    }
-
-    .diary-page-left {
-        max-height: 44%;
-    }
-
-    .diary-menu {
-        grid-template-columns: 1fr;
-    }
-
-    .diary-menu-item {
-        padding: 8px 5px;
-
-        font-size: 14px;
+    .diary-left-content,
+    .diary-right-content {
+        overflow-y:
+            auto;
     }
 
     .diary-title {
-        font-size: 19px;
+        font-size:
+            13px;
+    }
+
+    .diary-card-text {
+        font-size:
+            7px;
+    }
+
+    .diary-tab {
+        width:
+            55px;
+
+        height:
+            27px;
+
+        font-size:
+            6px;
+    }
+
+    .diary-tab-icon {
+        display:
+            none;
+    }
+
+    .diary-creature-polaroid {
+        width:
+            43%;
+
+        margin-right:
+            8px;
+    }
+
+    .diary-creature-description h3 {
+        font-size:
+            10px;
+    }
+
+    .diary-creature-description p {
+        font-size:
+            7px;
     }
 }
 
@@ -844,9 +1404,9 @@
 
     .diary-container,
     .diary-card,
-    .diary-menu-item,
-    .diary-menu-icon,
-    .diary-cover-img img {
-        transition: none !important;
+    .diary-tab,
+    .diary-creature-polaroid {
+        transition:
+            none !important;
     }
 }
