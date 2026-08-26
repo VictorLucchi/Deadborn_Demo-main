@@ -14,23 +14,23 @@ import './Diary.css';
 const SECTIONS = [
     {
         id: 'docs',
-        label: 'Documentos',
+        label: 'Docs',
     },
     {
         id: 'transcripts',
-        label: 'Transcrições',
+        label: 'Record',
     },
     {
         id: 'creatures',
-        label: 'Criaturas',
+        label: 'Creature',
     },
     {
         id: 'places',
-        label: 'Lugares',
+        label: 'Places',
     },
     {
         id: 'notes',
-        label: 'Anotações',
+        label: 'Notes',
     },
 ];
 
@@ -135,8 +135,11 @@ export function Diary({ isOpen, onClose }) {
         const handleKeyDown = (e) => {
 
             if (e.key === 'Escape') {
+
                 e.preventDefault();
+
                 onClose?.();
+
                 return;
             }
 
@@ -177,6 +180,7 @@ export function Diary({ isOpen, onClose }) {
 
 
         return () => {
+
             window.removeEventListener(
                 'keydown',
                 handleKeyDown
@@ -186,14 +190,30 @@ export function Diary({ isOpen, onClose }) {
     }, [isOpen, selectedIndex, onClose]);
 
 
+    /* -------------------------------------------------------
+       FECHADO
+       ------------------------------------------------------- */
+
     if (!isOpen) {
         return null;
     }
 
 
+    /* -------------------------------------------------------
+       SEÇÃO ATUAL
+       ------------------------------------------------------- */
+
     const currentSection = SECTIONS.find(
         (section) => section.id === activeSection
     );
+
+
+    /* -------------------------------------------------------
+       CRIATURA ATUAL
+       ------------------------------------------------------- */
+
+    const currentCreature =
+        MOCK_DATA.creatures[0];
 
 
     return (
@@ -225,7 +245,9 @@ export function Diary({ isOpen, onClose }) {
                     duration: 0.25,
                 }}
 
-                onClick={(e) => e.stopPropagation()}
+                onClick={(e) =>
+                    e.stopPropagation()
+                }
             >
 
                 <div className="diary-book">
@@ -244,7 +266,7 @@ export function Diary({ isOpen, onClose }) {
 
 
                     {/* =================================================
-                       CONTEÚDO DA PÁGINA ESQUERDA
+                       PÁGINA ESQUERDA
                        ================================================= */}
 
                     <div className="diary-left-content">
@@ -276,6 +298,7 @@ export function Diary({ isOpen, onClose }) {
                                 }}
                             >
 
+
                                 {/* -----------------------------------------
                                    TÍTULO
                                    ----------------------------------------- */}
@@ -285,78 +308,57 @@ export function Diary({ isOpen, onClose }) {
                                 </h2>
 
 
-                                {/* -----------------------------------------
+                                {/* =========================================
                                    CRIATURAS
-                                   ----------------------------------------- */}
+                                   ========================================= */}
 
                                 {activeSection === 'creatures' && (
 
                                     <div className="diary-creature">
+
+                                        {/* ---------------------------------
+                                           POLAROID
+                                           --------------------------------- */}
 
                                         <div className="diary-creature-polaroid">
 
                                             <div className="diary-polaroid-image">
 
                                                 <img
-                                                    src={hunterUrl}
-                                                    alt="Hunter"
+                                                    src={currentCreature.image}
+                                                    alt={currentCreature.name}
                                                     draggable="false"
                                                 />
 
                                             </div>
 
+
                                             <div className="diary-polaroid-caption">
-                                                HUNTER
+                                                {currentCreature.name.toUpperCase()}
                                             </div>
 
                                         </div>
 
+
+                                        {/* ---------------------------------
+                                           DESCRIÇÃO
+                                           --------------------------------- */}
 
                                         <div className="diary-creature-description">
 
                                             <h3>
-                                                Hunter
+                                                {currentCreature.name}
                                             </h3>
 
+
                                             <div className="diary-creature-subtitle">
-                                                Entidade desconhecida
+                                                {currentCreature.subtitle}
                                             </div>
 
+
                                             <p>
-                                                Uma criatura observada nas
-                                                proximidades das regiões onde
-                                                a névoa se torna mais densa.
-                                                Sua origem permanece
-                                                desconhecida.
+                                                {currentCreature.description}
                                             </p>
-
-                                        </div>
-
-
-                                        <div className="diary-creature-observations">
-
-                                            <h4>
-                                                Observações
-                                            </h4>
-
-                                            <ul>
-
-                                                <li>
-                                                    Extremamente hostil.
-                                                </li>
-
-                                                <li>
-                                                    Parece reagir à presença
-                                                    humana antes de ser percebida.
-                                                </li>
-
-                                                <li>
-                                                    Seus padrões de comportamento
-                                                    ainda não foram completamente
-                                                    compreendidos.
-                                                </li>
-
-                                            </ul>
 
                                         </div>
 
@@ -364,9 +366,9 @@ export function Diary({ isOpen, onClose }) {
                                 )}
 
 
-                                {/* -----------------------------------------
+                                {/* =========================================
                                    OUTRAS SEÇÕES
-                                   ----------------------------------------- */}
+                                   ========================================= */}
 
                                 {activeSection !== 'creatures' && (
 
@@ -386,9 +388,11 @@ export function Diary({ isOpen, onClose }) {
                                                             {item.title}
                                                         </div>
 
+
                                                         <div className="diary-card-meta">
                                                             {item.meta}
                                                         </div>
+
 
                                                         <div className="diary-card-text">
                                                             {item.content}
@@ -400,6 +404,94 @@ export function Diary({ isOpen, onClose }) {
                                             )}
 
                                         </div>
+
+                                    </div>
+                                )}
+
+                            </motion.div>
+
+                        </AnimatePresence>
+
+                    </div>
+
+
+                    {/* =================================================
+                       PÁGINA DIREITA
+                       ================================================= */}
+
+                    <div className="diary-right-content">
+
+                        <AnimatePresence
+                            mode="wait"
+                        >
+
+                            <motion.div
+                                key={`right-${activeSection}`}
+
+                                initial={{
+                                    opacity: 0,
+                                    x: 6,
+                                }}
+
+                                animate={{
+                                    opacity: 1,
+                                    x: 0,
+                                }}
+
+                                exit={{
+                                    opacity: 0,
+                                    x: -6,
+                                }}
+
+                                transition={{
+                                    duration: 0.18,
+                                }}
+                            >
+
+                                {/* =========================================
+                                   OBSERVAÇÕES DA CRIATURA
+                                   ========================================= */}
+
+                                {activeSection === 'creatures' && (
+
+                                    <div className="diary-creature-observations">
+
+                                        <h4>
+                                            Observações
+                                        </h4>
+
+
+                                        <ul>
+
+                                            {currentCreature.observations.map(
+                                                (observation, index) => (
+
+                                                    <li key={index}>
+                                                        {observation}
+                                                    </li>
+
+                                                )
+                                            )}
+
+                                        </ul>
+
+                                    </div>
+                                )}
+
+
+                                {/* =========================================
+                                   ESPAÇO DIREITO PARA OUTRAS SEÇÕES
+                                   ========================================= */}
+
+                                {activeSection !== 'creatures' && (
+
+                                    <div className="diary-right-empty">
+
+                                        {/* 
+                                         * A página direita fica livre
+                                         * para futuras informações,
+                                         * imagens, anotações etc.
+                                         */}
 
                                     </div>
                                 )}
@@ -440,6 +532,7 @@ export function Diary({ isOpen, onClose }) {
                                 }
 
                                 aria-label={section.label}
+
                                 title={section.label}
                             >
 

@@ -96,12 +96,11 @@
 
     z-index: 1;
 
+    /* Corrigido: os dois filtros agora funcionam juntos */
     filter:
         contrast(1.02)
         saturate(0.92)
-        brightness(0.94);
-
-    filter:
+        brightness(0.94)
         drop-shadow(
             0 18px 25px rgba(0, 0, 0, 0.55)
         );
@@ -169,15 +168,9 @@
         'Times New Roman',
         serif;
 
-    overflow-y:
-        auto;
-
-    scrollbar-width:
-        thin;
-
-    scrollbar-color:
-        rgba(60, 40, 25, 0.22)
-        transparent;
+    /* SEM SCROLL */
+    overflow:
+        hidden;
 }
 
 
@@ -215,41 +208,9 @@
         'Times New Roman',
         serif;
 
-    overflow-y:
-        auto;
-
-    scrollbar-width:
-        thin;
-
-    scrollbar-color:
-        rgba(60, 40, 25, 0.22)
-        transparent;
-}
-
-
-/* =========================================================
-   SCROLLBAR
-   ========================================================= */
-
-.diary-left-content::-webkit-scrollbar,
-.diary-right-content::-webkit-scrollbar {
-    width:
-        4px;
-}
-
-.diary-left-content::-webkit-scrollbar-track,
-.diary-right-content::-webkit-scrollbar-track {
-    background:
-        transparent;
-}
-
-.diary-left-content::-webkit-scrollbar-thumb,
-.diary-right-content::-webkit-scrollbar-thumb {
-    background:
-        rgba(60, 40, 25, 0.22);
-
-    border-radius:
-        3px;
+    /* SEM SCROLL */
+    overflow:
+        hidden;
 }
 
 
@@ -361,6 +322,7 @@
         transform 0.25s ease,
         box-shadow 0.25s ease;
 }
+
 
 .diary-card:hover {
     background:
@@ -498,7 +460,7 @@
         absolute;
 
     right:
-        -3.2%;
+        3.2%;
 
     top:
         13%;
@@ -543,8 +505,12 @@
     height:
         clamp(38px, 4vw, 50px);
 
+    /*
+     * Esquerda = 9px
+     * Texto fica mais próximo da lateral esquerda.
+     */
     padding:
-        0 12px 0 14px;
+        0 12px 0 9px;
 
     box-sizing:
         border-box;
@@ -579,21 +545,20 @@
     cursor:
         pointer;
 
+    /*
+     * Ponta recortada do marcador.
+     */
+    clip-path:
+        polygon(
+            0 0,
+            100% 0,
+            85% 50%,
+            100% 100%,
+            0 100%
+        );
+
     box-shadow:
         2px 3px 7px rgba(0, 0, 0, 0.35);
-
-    /*
-     * Ponta triangular do marcador.
-     */
-    .diary-tab {
-    clip-path: polygon(
-        0 0,
-        100% 0,
-        85% 50%,
-        100% 100%,
-        0 100%
-    );
-}
 
     transform:
         translateX(0);
@@ -840,6 +805,7 @@
         #171411;
 }
 
+
 .diary-polaroid-image img {
     width:
         100%;
@@ -901,6 +867,7 @@
     min-height:
         120px;
 }
+
 
 .diary-creature-description h3 {
     margin:
@@ -969,18 +936,23 @@
    OBSERVAÇÕES DA CRIATURA
    ========================================================= */
 
-.diary-creature-observations {
-    clear:
-        both;
+/*
+ * As observações devem ficar dentro do
+ * .diary-right-content no HTML.
+ *
+ * Não usamos mais clear: both porque elas
+ * não ficam abaixo da Polaroid.
+ */
 
+.diary-creature-observations {
     margin-top:
-        18px;
+        2%;
 
     padding-top:
-        10px;
+        0;
 
     border-top:
-        1px solid rgba(70, 45, 25, 0.16);
+        none;
 }
 
 
@@ -990,7 +962,10 @@
 
 .diary-creature-observations h4 {
     margin:
-        0 0 7px;
+        0 0 12px;
+
+    padding-bottom:
+        7px;
 
     color:
         #650707;
@@ -1001,13 +976,16 @@
         serif;
 
     font-size:
-        clamp(11px, 1vw, 14px);
+        clamp(13px, 1.2vw, 17px);
 
     letter-spacing:
         0.08em;
 
     text-transform:
         uppercase;
+
+    border-bottom:
+        1px solid rgba(70, 45, 25, 0.20);
 }
 
 
@@ -1020,21 +998,27 @@
         0;
 
     padding-left:
-        17px;
+        18px;
 
     color:
         #40362d;
 
+    font-family:
+        Georgia,
+        'Times New Roman',
+        serif;
+
     font-size:
-        clamp(9px, 0.9vw, 12px);
+        clamp(10px, 0.95vw, 13px);
 
     line-height:
-        1.55;
+        1.6;
 }
+
 
 .diary-creature-observations li {
     margin-bottom:
-        4px;
+        8px;
 }
 
 
@@ -1091,6 +1075,9 @@
 
         padding:
             4% 5%;
+
+        overflow:
+            hidden;
     }
 
     .diary-tabs {
@@ -1109,6 +1096,16 @@
     .diary-creature-polaroid {
         width:
             40%;
+    }
+
+    .diary-creature-observations h4 {
+        font-size:
+            clamp(11px, 1.1vw, 15px);
+    }
+
+    .diary-creature-observations ul {
+        font-size:
+            clamp(9px, 0.9vw, 12px);
     }
 }
 
@@ -1147,6 +1144,9 @@
 
         padding:
             3% 4%;
+
+        overflow:
+            hidden;
     }
 
     .diary-right-content {
@@ -1164,6 +1164,9 @@
 
         padding:
             3% 4%;
+
+        overflow:
+            hidden;
     }
 
 
@@ -1304,16 +1307,21 @@
             1.4;
     }
 
+
+    /* -----------------------------------------
+       OBSERVAÇÕES
+       ----------------------------------------- */
+
     .diary-creature-observations {
         margin-top:
-            10px;
-
-        padding-top:
-            6px;
+            2%;
     }
 
     .diary-creature-observations h4 {
         margin-bottom:
+            6px;
+
+        padding-bottom:
             4px;
 
         font-size:
@@ -1326,6 +1334,14 @@
 
         font-size:
             7px;
+
+        line-height:
+            1.4;
+    }
+
+    .diary-creature-observations li {
+        margin-bottom:
+            4px;
     }
 }
 
@@ -1346,8 +1362,8 @@
 
     .diary-left-content,
     .diary-right-content {
-        overflow-y:
-            auto;
+        overflow:
+            hidden;
     }
 
     .diary-title {
@@ -1392,6 +1408,19 @@
     .diary-creature-description p {
         font-size:
             7px;
+    }
+
+    .diary-creature-observations h4 {
+        font-size:
+            7px;
+    }
+
+    .diary-creature-observations ul {
+        font-size:
+            6px;
+
+        line-height:
+            1.35;
     }
 }
 
