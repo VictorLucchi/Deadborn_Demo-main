@@ -34,6 +34,10 @@ export class InputManager {
         canvas.addEventListener('mousemove', this._handlers.mousemove);
     }
 
+    clearKeys() {
+        this.keys = {};
+    }
+
     destroy(canvas) {
         window.removeEventListener('keydown',   this._handlers.keydown);
         window.removeEventListener('keyup',     this._handlers.keyup);

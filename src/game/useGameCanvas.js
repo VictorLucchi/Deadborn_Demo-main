@@ -14,7 +14,7 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
     useEffect(() => {
         const game = new Game(canvasRef.current, (enemy) => onCombatRef.current?.(enemy));
         gameRef.current = game;
-        game.start();
+        game.start().then(() => game.pause(isPaused));
 
         return () => game.stop();
     }, []);
@@ -22,6 +22,7 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
     const executeCommand = (cmd) => gameRef.current?.executeCommand(cmd);
     const playMusic      = ()    => gameRef.current?.playMusic();
     const removeEnemy    = (e)   => gameRef.current?.em.removeEnemy(e);
+    const setJogador     = (j)   => gameRef.current?.setJogador(j);
 
-    return { canvasRef, executeCommand, playMusic, removeEnemy };
+    return { canvasRef, executeCommand, playMusic, removeEnemy, setJogador };
 }

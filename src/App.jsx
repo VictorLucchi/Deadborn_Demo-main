@@ -90,7 +90,7 @@ function App() {
               <div className="noise" />
               <GameCanvas
                 isPaused={isMenuOpen || isDiaryOpen || !!combatEnemy}
-                onReady={(api) => { gameApiRef.current = api; }}
+                onReady={(api) => { gameApiRef.current = api; api.playMusic(); api.setJogador(jogadorRef.current); }}
                 onCombatTrigger={handleCombatTrigger}
               />
               <AnimatePresence>

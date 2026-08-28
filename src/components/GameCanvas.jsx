@@ -4,13 +4,13 @@ import { DevConsole } from './DevConsole.jsx';
 
 export function GameCanvas({ isPaused, onReady, onCombatTrigger }) {
     const [isConsoleOpen, setIsConsoleOpen] = useState(false);
-    const { canvasRef, executeCommand, playMusic, removeEnemy } = useGameCanvas(
+    const { canvasRef, executeCommand, playMusic, removeEnemy, setJogador } = useGameCanvas(
         isPaused || isConsoleOpen,
         onCombatTrigger
     );
 
     useEffect(() => {
-        onReady?.({ playMusic, removeEnemy });
+        onReady?.({ playMusic, removeEnemy, setJogador });
     }, []);
 
     return (

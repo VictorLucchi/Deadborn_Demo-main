@@ -11,6 +11,7 @@ export class Game {
         this.ctx     = canvas.getContext('2d');
         this.rafId   = null;
         this.paused  = false;
+        this.jogadorEngine = null;
 
         this.input   = new InputManager();
         this.em      = new EntityManager();
@@ -61,15 +62,20 @@ export class Game {
                 this.camera.follow(this.player);
             }
 
-            this.renderer.draw(this.ctx, this.map, this.player, this.em, this.camera, this.ui, this.input.mousePos);
+            this.renderer.draw(this.ctx, this.map, this.player, this.em, this.camera, this.ui, this.input.mousePos, this.jogadorEngine);
             this.rafId = requestAnimationFrame(loop);
         };
 
         this.rafId = requestAnimationFrame(loop);
     }
 
+    setJogador(jogador) {
+        this.jogadorEngine = jogador;
+    }
+
     pause(value) {
         this.paused = value;
+        if (value) this.input.clearKeys();
     }
 
     stop() {

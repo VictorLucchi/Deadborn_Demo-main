@@ -5,12 +5,12 @@ export class Renderer {
             x:     Math.random() * canvas.width,
             y:     Math.random() * canvas.height,
             len:   Math.random() * 14 + 8,
-            speed: Math.random() * 4 + 6,
+            speed: Math.random() * 6 + 14,
             wind:  Math.random() * 1.5 + 0.5,
         }));
     }
 
-    draw(ctx, map, player, entityManager, camera, uiBridge, mousePos) {
+    draw(ctx, map, player, entityManager, camera, uiBridge, mousePos, jogador) {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         map.drawBelow(ctx, camera);
@@ -20,7 +20,7 @@ export class Renderer {
 
         this._drawFog(ctx, player, camera);
         this._drawRain(ctx);
-        uiBridge.drawMouseHUD(ctx, mousePos);
+        uiBridge.drawMouseHUD(ctx, mousePos, jogador);
     }
 
     _drawFog(ctx, player, camera) {
