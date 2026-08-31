@@ -3,6 +3,7 @@ import React, { useState, useEffect, useRef } from 'react';
 export function DevConsole({ onCommand, onToggle }) {
     const [isOpen, setIsOpen] = useState(false);
     const [command, setCommand] = useState('');
+    const [feedback, setFeedback] = useState('');
     const inputRef = useRef(null);
 
     useEffect(() => {
@@ -11,6 +12,7 @@ export function DevConsole({ onCommand, onToggle }) {
                 e.preventDefault();
                 setIsOpen(prev => {
                     const next = !prev;
+                    if (!next) setFeedback('');
                     onToggle?.(next);
                     return next;
                 });
@@ -30,10 +32,16 @@ export function DevConsole({ onCommand, onToggle }) {
     const handleSubmit = (e) => {
         e.preventDefault();
         if (command.trim()) {
-            onCommand(command.trim());
+            const result = onCommand(command.trim());
             setCommand('');
-            setIsOpen(false);
+            if (result) {
+                setFeedback(result);
+                return; // mantém aberto para mostrar o feedback
+            }
         }
+        setFeedback('');
+        setIsOpen(false);
+        onToggle?.(false);
     };
 
     if (!isOpen) return null;
@@ -71,8 +79,13 @@ export function DevConsole({ onCommand, onToggle }) {
                 />
             </form>
             <div style={{ fontSize: '10px', color: '#666', marginTop: '5px', fontFamily: 'monospace' }}>
-                /spawn [name] | /kill [all] [name]
+                /spawn [name] | /kill [all] [name] | /give [item]
             </div>
+            {feedback && (
+                <div style={{ fontSize: '10px', color: '#aaa', marginTop: '4px', fontFamily: 'monospace' }}>
+                    {feedback}
+                </div>
+            )}
         </div>
     );
 }

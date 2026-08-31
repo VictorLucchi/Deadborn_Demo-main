@@ -1,5 +1,6 @@
 export class InputManager {
     constructor() {
+        this._pendingClear = false;
         this.keys = {};
         this.mousePos = null;
         this._handlers = {};
@@ -35,7 +36,14 @@ export class InputManager {
     }
 
     clearKeys() {
-        this.keys = {};
+        this._pendingClear = true;
+    }
+
+    flush() {
+        if (this._pendingClear) {
+            this.keys = {};
+            this._pendingClear = false;
+        }
     }
 
     destroy(canvas) {

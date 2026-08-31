@@ -1,0 +1,392 @@
+/* =========================================================
+   INVENTÁRIO — estética gótica / Cinérea
+   ========================================================= */
+
+.inv-overlay {
+    position: absolute;
+    inset: 0;
+    z-index: 200;
+    background: rgba(0, 0, 0, 0.78);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.inv-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 26px;
+    background: rgba(8, 7, 10, 0.98);
+    border: 1px solid rgba(170, 155, 125, 0.3);
+    box-shadow:
+        0 0 0 1px rgba(0,0,0,0.8),
+        0 0 60px rgba(0,0,0,0.95),
+        inset 0 0 80px rgba(0,0,0,0.4);
+    padding: 46px 52px 36px;
+    font-family: Georgia, "Times New Roman", serif;
+    color: #c8bda8;
+    user-select: none;
+}
+
+.inv-container::before,
+.inv-container::after {
+    content: "";
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-color: rgba(170, 155, 125, 0.45);
+    border-style: solid;
+}
+.inv-container::before { top: 10px;    left: 10px;   border-width: 1px 0 0 1px; }
+.inv-container::after  { bottom: 10px; right: 10px;  border-width: 0 1px 1px 0; }
+
+
+/* ── TÍTULO ── */
+
+.inv-title {
+    font-size: 15px;
+    letter-spacing: 7px;
+    color: rgba(210, 198, 175, 0.9);
+    text-shadow: 0 0 14px rgba(180, 160, 120, 0.25);
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.inv-title-rune {
+    font-size: 10px;
+    color: rgba(170, 155, 125, 0.55);
+}
+
+
+/* ── LAYOUT ── */
+
+.inv-layout {
+    display: flex;
+    gap: 40px;
+    align-items: flex-start;
+}
+
+.inv-section-label {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: rgba(170, 155, 125, 0.45);
+    margin-bottom: 14px;
+    text-align: center;
+    font-family: "Courier New", monospace;
+}
+
+.inv-hint {
+    display: block;
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: rgba(120, 110, 95, 0.4);
+    font-family: "Courier New", monospace;
+    text-align: center;
+    margin-top: 12px;
+}
+
+
+/* ── SAQUE RÁPIDO ── */
+
+.inv-quickslots {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 42px;
+    padding-top: 4px;
+    min-width: 110px;
+}
+
+
+/* ── LOSANGO (slot genérico) ── */
+
+.inv-diamond-slot {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    cursor: pointer;
+}
+
+.inv-diamond-frame {
+    width: 56px;
+    height: 56px;
+    transform: rotate(45deg);
+    border: 1px solid rgba(160, 145, 120, 0.4);
+    background: rgba(10, 9, 12, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    flex-shrink: 0;
+}
+
+.inv-diamond-frame::before {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border: 1px solid rgba(120, 110, 95, 0.18);
+}
+
+.inv-diamond-frame:hover,
+.inv-diamond-frame.cursor {
+    border-color: rgba(210, 190, 140, 0.85);
+    box-shadow: 0 0 10px rgba(180, 160, 120, 0.3);
+}
+
+.inv-diamond-frame.filled {
+    border-color: rgba(189, 41, 41, 0.65);
+    box-shadow: 0 0 8px rgba(189, 41, 41, 0.2);
+}
+
+.inv-diamond-frame.filled.cursor {
+    border-color: rgba(220, 80, 80, 0.9);
+    box-shadow: 0 0 12px rgba(189, 41, 41, 0.45);
+}
+
+.inv-diamond-frame img {
+    width: 68%;
+    height: 68%;
+    object-fit: contain;
+    transform: rotate(-45deg);
+}
+
+.inv-slot-empty {
+    transform: rotate(-45deg);
+    font-size: 13px;
+    color: rgba(170, 155, 125, 0.3);
+    font-family: "Courier New", monospace;
+}
+
+.inv-slot-label {
+    font-size: 9px;
+    letter-spacing: 1px;
+    color: rgba(170, 155, 125, 0.4);
+    font-family: "Courier New", monospace;
+    text-align: center;
+    max-width: 90px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+
+/* ── GRADE ── */
+
+.inv-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.inv-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 84px);
+    grid-template-rows: repeat(5, 84px);
+    gap: 4px;
+}
+
+.inv-grid-slot {
+    position: relative;
+    width: 84px;
+    height: 84px;
+    border: 1px solid rgba(70, 65, 58, 0.6);
+    background: rgba(10, 9, 12, 0.65);
+    cursor: pointer;
+    transition: border-color 0.15s;
+    overflow: visible;
+}
+
+.inv-grid-slot:hover {
+    border-color: rgba(150, 135, 110, 0.45);
+}
+
+.inv-grid-slot.cursor {
+    border-color: rgba(210, 190, 140, 0.85);
+    box-shadow:
+        0 0 0 1px rgba(210, 190, 140, 0.2),
+        inset 0 0 12px rgba(180, 160, 120, 0.08);
+    z-index: 3;
+}
+
+.inv-grid-slot.covered {
+    background: rgba(189, 41, 41, 0.05);
+    border-color: rgba(189, 41, 41, 0.12);
+}
+
+.inv-grid-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    background: rgba(18, 16, 20, 0.96);
+    border: 1px solid rgba(150, 135, 110, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: rgba(210, 198, 175, 0.75);
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.6);
+}
+
+.inv-grid-item img {
+    width: 78%;
+    height: 78%;
+    object-fit: contain;
+}
+
+
+/* ── PAPER DOLL ── */
+
+.inv-paper-doll {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+}
+
+.inv-doll-wrap {
+    position: relative;
+    width: 248px;
+    height: 430px;
+}
+
+.inv-doll-img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    filter: contrast(1.05) saturate(0.45) brightness(0.7);
+    display: block;
+}
+
+.inv-armor-slot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+}
+
+.inv-armor-slot .inv-diamond-frame {
+    width: 42px;
+    height: 42px;
+}
+
+.inv-armor-slot .inv-slot-empty {
+    font-size: 8px;
+}
+
+.inv-equipped-weapon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+
+/* ── MENU DE CONTEXTO ── */
+
+.inv-context-menu {
+    position: fixed;
+    z-index: 300;
+    background: rgba(8, 7, 10, 0.98);
+    border: 1px solid rgba(170, 155, 125, 0.35);
+    box-shadow:
+        0 0 0 1px rgba(0,0,0,0.9),
+        0 8px 32px rgba(0,0,0,0.8);
+    min-width: 200px;
+    padding: 16px 0 10px;
+}
+
+.inv-context-menu::before,
+.inv-context-menu::after {
+    content: "";
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-color: rgba(170, 155, 125, 0.4);
+    border-style: solid;
+}
+.inv-context-menu::before { top: 5px;    left: 5px;   border-width: 1px 0 0 1px; }
+.inv-context-menu::after  { bottom: 5px; right: 5px;  border-width: 0 1px 1px 0; }
+
+.inv-context-title {
+    font-size: 11px;
+    letter-spacing: 3px;
+    color: rgba(210, 198, 175, 0.9);
+    padding: 0 18px 10px;
+    font-family: Georgia, serif;
+}
+
+.inv-context-desc {
+    font-size: 10px;
+    color: rgba(150, 140, 125, 0.7);
+    padding: 0 18px 8px;
+    font-family: "Courier New", monospace;
+    letter-spacing: 0.5px;
+    line-height: 1.5;
+}
+
+.inv-context-divider {
+    height: 1px;
+    background: linear-gradient(to right, transparent, rgba(170, 155, 125, 0.3), transparent);
+    margin: 0 14px 10px;
+}
+
+.inv-context-action {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    background: none;
+    border: none;
+    color: rgba(175, 166, 150, 0.7);
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: 2px;
+    padding: 9px 18px;
+    cursor: pointer;
+    text-align: left;
+    transition: color 0.15s, background 0.15s;
+}
+
+.inv-context-action:hover,
+.inv-context-action.selected {
+    background: rgba(170, 155, 125, 0.08);
+    color: rgba(210, 198, 175, 0.95);
+}
+
+.inv-context-action.selected {
+    color: rgba(220, 200, 155, 1);
+}
+
+.inv-context-cursor {
+    font-size: 9px;
+    color: rgba(189, 41, 41, 0.9);
+    width: 12px;
+    flex-shrink: 0;
+}
+
+
+/* ── FECHAR ── */
+
+.inv-close {
+    background: none;
+    border: 1px solid rgba(170, 155, 125, 0.2);
+    color: rgba(175, 166, 150, 0.5);
+    font-family: "Courier New", monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    padding: 9px 30px;
+    cursor: pointer;
+    transition: border-color 0.2s, color 0.2s;
+}
+
+.inv-close:hover {
+    border-color: rgba(189, 41, 41, 0.55);
+    color: rgba(210, 198, 175, 0.9);
+}

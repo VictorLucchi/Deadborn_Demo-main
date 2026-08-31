@@ -1,59 +1,29 @@
 export class HUDRenderer {
 
     constructor() {
+        this._ready = false;
+    }
 
-        // ========================================
-        // ELEMENTO PRINCIPAL
-        // ========================================
+    _init() {
+        this._hud         = document.getElementById('game-hud');
+        if (!this._hud) return false;
 
-        this._hud = document.getElementById('game-hud');
-
-        if (!this._hud) {
-            console.warn(
-                '[HUDRenderer] Elemento #game-hud não encontrado.'
-            );
-
-            return;
-        }
-
-
-        // ========================================
-        // ELEMENTOS DO HUD
-        // ========================================
-
-        this._avatar =
-            document.getElementById('hud-avatar-image');
-
-        this._name =
-            document.getElementById('hud-name');
-
-        this._healthFill =
-            document.getElementById('hud-health-fill');
-
-        this._healthText =
-            document.getElementById('hud-health-text');
-
-        this._manaFill =
-            document.getElementById('hud-mana-fill');
-
-        this._manaText =
-            document.getElementById('hud-mana-text');
-
-        this._weaponIcon =
-            document.getElementById('hud-weapon-icon');
-
-
-        // ========================================
-        // AVATAR
-        // ========================================
+        this._avatar      = document.getElementById('hud-avatar-image');
+        this._name        = document.getElementById('hud-name');
+        this._healthFill  = document.getElementById('hud-health-fill');
+        this._healthText  = document.getElementById('hud-health-text');
+        this._manaFill    = document.getElementById('hud-mana-fill');
+        this._manaText    = document.getElementById('hud-mana-text');
+        this._weaponIcon  = document.getElementById('hud-weapon-icon');
 
         if (this._avatar) {
-
             this._avatar.src = new URL(
-                '../../assets/images/Hades.jpeg',
+                '../../assets/images/hades_Avatar.png',
                 import.meta.url
             ).href;
         }
+
+        return true;
     }
 
 
@@ -62,10 +32,8 @@ export class HUDRenderer {
     // ========================================
 
     draw(jogador) {
-
-        if (!this._hud || !jogador) {
-            return;
-        }
+        if (!this._ready) this._ready = this._init();
+        if (!this._ready || !jogador) return;
 
         this._updateName(jogador);
         this._updateHealth(jogador);

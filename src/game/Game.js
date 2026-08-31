@@ -4,6 +4,21 @@ import { Renderer }      from './render/Renderer.js';
 import { UIBridge }      from './UIBridge/UIBridge.js';
 import { AudioManager }  from './audio/AudioManager.js';
 import { createWorld }   from './world/World.js';
+import { HealthPotion }  from '../engine/items/consumables/HealthPotion.js';
+import { ManaPotion }    from '../engine/items/consumables/ManaPotion.js';
+import { AbyssalBlood }  from '../engine/items/drops/AbyssalBlood.js';
+import { MutatedCore }   from '../engine/items/drops/MutatedCore.js';
+import { IronSword }     from '../engine/items/weapons/IronSword.js';
+import { SteelSword }    from '../engine/items/weapons/SteelSword.js';
+
+const ITEM_REGISTRY = {
+    'pocao de vida':   () => new HealthPotion(),
+    'pocao de mana':   () => new ManaPotion(),
+    'abyssal blood':   () => new AbyssalBlood(),
+    'mutated core':    () => new MutatedCore(),
+    'espada de ferro': () => new IronSword(),
+    'espada de aco':   () => new SteelSword(),
+};
 
 export class Game {
     constructor(canvas, onCombatTrigger) {
@@ -49,20 +64,25 @@ export class Game {
 
         let lastTime = 0;
         const loop = (timestamp) => {
-            const delta = timestamp - lastTime;
-            lastTime = timestamp;
+            try {
+                const delta = timestamp - lastTime;
+                lastTime = timestamp;
 
-            if (!this.paused) {
-                this.player.update(
-                    this.input.keys,
-                    delta,
-                    (x, y, w, h) => this.map.checkCollision(x, y, w, h)
-                );
-                this.em.update(delta, (x, y, w, h) => this.map.checkCollision(x, y, w, h));
-                this.camera.follow(this.player);
+                if (!this.paused) {
+                    this.input.flush();
+                    this.player.update(
+                        this.input.keys,
+                        delta,
+                        (x, y, w, h) => this.map.checkCollision(x, y, w, h)
+                    );
+                    this.em.update(delta, (x, y, w, h) => this.map.checkCollision(x, y, w, h));
+                    this.camera.follow(this.player);
+                }
+
+                this.renderer.draw(this.ctx, this.map, this.player, this.em, this.camera, this.ui, this.input.mousePos, this.jogadorEngine);
+            } catch (err) {
+                console.error('[Game loop error]', err);
             }
-
-            this.renderer.draw(this.ctx, this.map, this.player, this.em, this.camera, this.ui, this.input.mousePos, this.jogadorEngine);
             this.rafId = requestAnimationFrame(loop);
         };
 
@@ -75,7 +95,7 @@ export class Game {
 
     pause(value) {
         this.paused = value;
-        if (value) this.input.clearKeys();
+        this.input.clearKeys();
     }
 
     stop() {
@@ -99,6 +119,14 @@ export class Game {
             this.em.killHunters(true);
         } else if (action === '/kill' && args[1]?.toLowerCase() === 'hunter') {
             this.em.killHunters(false);
+        } else if (action === '/give') {
+            const nomeBruto = args.slice(1).join(' ').toLowerCase()
+                .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+            const factory = ITEM_REGISTRY[nomeBruto];
+            if (!factory) return `Item "${args.slice(1).join(' ')}" não encontrado.`;
+            if (!this.jogadorEngine) return 'Nenhum jogador ativo.';
+            this.jogadorEngine.adicionarItem(factory());
+            return `${factory().nome} adicionado ao inventário.`;
         }
     }
 

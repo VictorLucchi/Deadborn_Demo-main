@@ -19,7 +19,10 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
         return () => game.stop();
     }, []);
 
-    const executeCommand = (cmd) => gameRef.current?.executeCommand(cmd);
+    const executeCommand = (cmd) => {
+        gameRef.current?.executeCommand(cmd);
+        gameRef.current?.input.clearKeys();
+    };
     const playMusic      = ()    => gameRef.current?.playMusic();
     const removeEnemy    = (e)   => gameRef.current?.em.removeEnemy(e);
     const setJogador     = (j)   => gameRef.current?.setJogador(j);

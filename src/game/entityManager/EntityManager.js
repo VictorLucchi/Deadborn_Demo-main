@@ -22,10 +22,10 @@ export class EntityManager {
     spawnHunter(sprites, offsetX = 100) {
         const hunter = new Hunter(
             {
-                idle:      sprites.idleHunter,
-                walkRight: sprites.walkRightHunter,
-                walkLeft:  sprites.walkLeftHunter,
-                run:       sprites.runHunter,
+                idle:      sprites.idle,
+                walkRight: sprites.walkRight,
+                walkLeft:  sprites.walkLeft,
+                run:       sprites.run,
             },
             this.player.x + offsetX,
             this.player.y
