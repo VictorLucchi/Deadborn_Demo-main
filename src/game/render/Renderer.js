@@ -20,7 +20,7 @@ export class Renderer {
 
         this._drawFog(ctx, player, camera);
         this._drawRain(ctx);
-        uiBridge.drawMouseHUD(ctx, mousePos, jogador);
+        uiBridge.draw(ctx, mousePos, jogador);
     }
 
     _drawFog(ctx, player, camera) {

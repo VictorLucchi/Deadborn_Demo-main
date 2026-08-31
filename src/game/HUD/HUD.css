@@ -1,0 +1,634 @@
+/* =========================================================
+   CINÉREA — HUD
+   Interface ritualística / gótica
+   ========================================================= */
+
+
+/* =========================================================
+   HUD PRINCIPAL
+   ========================================================= */
+
+.hud {
+    position: absolute;
+
+    top: 24px;
+    left: 24px;
+
+    width: 360px;
+    min-height: 150px;
+
+    display: flex;
+    align-items: flex-start;
+
+    pointer-events: none;
+
+    z-index: 100;
+
+    color: #c8bda8;
+
+    font-family:
+        Georgia,
+        "Times New Roman",
+        serif;
+
+    user-select: none;
+}
+
+
+/* =========================================================
+   AVATAR
+   ========================================================= */
+
+.hud-avatar {
+    position: relative;
+
+    width: 72px;
+    height: 110px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================================
+   MOLDURA DO AVATAR
+   ========================================================= */
+
+.hud-avatar-frame {
+    position: relative;
+
+    width: 68px;
+    height: 68px;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+
+    border: 1px solid rgba(200, 189, 168, 0.75);
+
+    background:
+        rgba(10, 9, 11, 0.85);
+
+    box-shadow:
+        0 0 0 5px rgba(10, 9, 11, 0.45),
+        0 0 0 6px rgba(120, 110, 95, 0.25);
+
+}
+
+
+/* =========================================================
+   IMAGEM
+   ========================================================= */
+
+.hud-avatar-frame img {
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    object-fit: cover;
+
+    filter:
+        contrast(1.08)
+        saturate(0.65)
+        brightness(0.82);
+
+}
+
+
+/* =========================================================
+   SOMBRA INTERNA DO AVATAR
+   ========================================================= */
+
+.hud-avatar-frame::after {
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle,
+            transparent 48%,
+            rgba(0, 0, 0, 0.2) 68%,
+            rgba(0, 0, 0, 0.65) 100%
+        );
+}
+
+
+/* =========================================================
+   RUNAS / LOSANGOS
+   ========================================================= */
+
+.hud-rune {
+    position: absolute;
+
+    width: 7px;
+    height: 7px;
+
+    border: 1px solid
+        rgba(170, 155, 125, 0.75);
+
+    transform: rotate(45deg);
+
+    background:
+        rgba(10, 9, 11, 0.8);
+
+    box-sizing: border-box;
+}
+
+
+/* =========================================================
+   RUNA SUPERIOR
+   ========================================================= */
+
+.hud-rune-top {
+    top: 3px;
+    left: 50%;
+
+    transform:
+        translateX(-50%)
+        rotate(45deg);
+}
+
+
+/* =========================================================
+   RUNA INFERIOR
+   ========================================================= */
+
+.hud-rune-bottom {
+    bottom: 3px;
+    left: 50%;
+
+    transform:
+        translateX(-50%)
+        rotate(45deg);
+}
+
+
+/* =========================================================
+   LINHAS DO EIXO DO AVATAR
+   ========================================================= */
+
+.hud-avatar::before,
+.hud-avatar::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 50%;
+
+    width: 1px;
+
+    background:
+        rgba(140, 125, 105, 0.45);
+
+    transform:
+        translateX(-50%);
+}
+
+
+/* linha superior */
+
+.hud-avatar::before {
+    top: 0;
+    height: 20px;
+}
+
+
+/* linha inferior */
+
+.hud-avatar::after {
+    bottom: 0;
+    height: 20px;
+}
+
+
+/* =========================================================
+   INFORMAÇÕES
+   ========================================================= */
+
+.hud-info {
+    position: relative;
+
+    width: 190px;
+
+    margin-left: 24px;
+
+    padding-top: 20px;
+}
+
+
+/* =========================================================
+   NOME
+   ========================================================= */
+
+.hud-name {
+    position: relative;
+
+    height: 18px;
+
+    display: flex;
+    align-items: center;
+
+    margin-bottom: 8px;
+}
+
+
+.hud-name::before {
+    content: "";
+
+    width: 6px;
+    height: 6px;
+
+    margin-right: 8px;
+
+    border: 1px solid
+        rgba(170, 155, 125, 0.7);
+
+    transform: rotate(45deg);
+}
+
+
+.hud-name span {
+    display: block;
+
+    color:
+        rgba(210, 198, 175, 0.95);
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: 3px;
+
+    line-height: 1;
+
+    text-shadow:
+        0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+
+/* =========================================================
+   LINHA DECORATIVA DO NOME
+   ========================================================= */
+
+.hud-name::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 95px;
+    right: 0;
+
+    top: 50%;
+
+    height: 1px;
+
+    background:
+        linear-gradient(
+            to right,
+            rgba(150, 135, 110, 0.6),
+            transparent
+        );
+}
+
+
+/* =========================================================
+   STATUS
+   ========================================================= */
+
+.hud-stat {
+    position: relative;
+
+    width: 100%;
+
+    height: 24px;
+
+    margin-bottom: 4px;
+}
+
+
+/* =========================================================
+   LINHA DA BARRA
+   ========================================================= */
+
+.hud-stat-line {
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    top: 12px;
+
+    height: 1px;
+
+    background:
+        rgba(80, 75, 68, 0.7);
+}
+
+
+/* =========================================================
+   PREENCHIMENTO
+   ========================================================= */
+
+.hud-stat-fill {
+
+    position: absolute;
+
+    left: 0;
+    top: -1px;
+
+    width: 100%;
+
+    height: 2px;
+
+    transform-origin: left center;
+
+    transition:
+        width 0.2s ease;
+
+}
+
+
+/* =========================================================
+   VIDA
+   ========================================================= */
+
+.hud-health .hud-stat-fill {
+
+    background:
+        #bd2929;
+
+    box-shadow:
+        0 0 5px rgba(189, 41, 41, 0.35);
+}
+
+
+/* =========================================================
+   MANA
+   ========================================================= */
+
+.hud-mana .hud-stat-fill {
+
+    background:
+        #4b8db4;
+
+    box-shadow:
+        0 0 5px rgba(75, 141, 180, 0.35);
+}
+
+
+/* =========================================================
+   MARCADORES DAS BARRAS
+   ========================================================= */
+
+.hud-stat-line::before,
+.hud-stat-line::after {
+
+    content: "";
+
+    position: absolute;
+
+    top: 50%;
+
+    width: 5px;
+    height: 5px;
+
+    border: 1px solid
+        rgba(170, 155, 125, 0.65);
+
+    background:
+        #0a090b;
+
+    transform:
+        translateY(-50%)
+        rotate(45deg);
+}
+
+
+.hud-stat-line::before {
+    left: -3px;
+}
+
+
+.hud-stat-line::after {
+    right: -3px;
+}
+
+
+/* =========================================================
+   TEXTO DAS BARRAS
+   ========================================================= */
+
+.hud-stat-text {
+
+    position: absolute;
+
+    left: 7px;
+
+    top: 0;
+
+    color:
+        rgba(175, 166, 150, 0.85);
+
+    font-family:
+        "Courier New",
+        monospace;
+
+    font-size: 8px;
+
+    letter-spacing: 1px;
+
+    line-height: 1;
+
+    background:
+        rgba(5, 5, 8, 0.75);
+
+    padding:
+        0 4px;
+}
+
+
+/* =========================================================
+   EQUIPAMENTO
+   ========================================================= */
+
+.hud-equipment {
+
+    position: absolute;
+
+    left: 28px;
+    top: 122px;
+
+    width: 38px;
+    height: 38px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+/* =========================================================
+   MOLDURA DA ARMA
+   ========================================================= */
+
+.hud-equipment-frame {
+
+    position: relative;
+
+    width: 30px;
+    height: 30px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid
+        rgba(160, 145, 120, 0.7);
+
+    transform: rotate(45deg);
+
+    background:
+        rgba(8, 7, 10, 0.8);
+}
+
+
+/* =========================================================
+   SEGUNDO LOSANGO
+   ========================================================= */
+
+.hud-equipment-frame::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 4px;
+
+    border: 1px solid
+        rgba(120, 110, 95, 0.35);
+}
+
+
+/* =========================================================
+   ÍCONE DA ARMA
+   ========================================================= */
+
+#hud-weapon-icon {
+
+    position: relative;
+
+    z-index: 2;
+
+    color:
+        rgba(190, 180, 155, 0.8);
+
+    font-family:
+        Georgia,
+        serif;
+
+    font-size: 17px;
+
+    line-height: 1;
+
+    transform: rotate(-45deg);
+}
+
+
+/* =========================================================
+   ESTADO DE VIDA CRÍTICA
+   ========================================================= */
+
+.hud-health-critical
+.hud-health .hud-stat-fill {
+
+    animation:
+        hud-blood-pulse 1.2s ease-in-out infinite;
+}
+
+
+@keyframes hud-blood-pulse {
+
+    0%,
+    100% {
+        opacity: 0.7;
+    }
+
+    50% {
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   VIDA VAZIA
+   ========================================================= */
+
+.hud-health-empty
+.hud-health .hud-stat-fill {
+
+    opacity: 0;
+}
+
+
+/* =========================================================
+   RESPONSIVO
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    .hud {
+        top: 18px;
+        left: 18px;
+
+        transform:
+            scale(0.9);
+
+        transform-origin:
+            top left;
+    }
+}
+
+
+@media (max-width: 650px) {
+
+    .hud {
+
+        top: 12px;
+        left: 12px;
+
+        transform:
+            scale(0.78);
+
+        transform-origin:
+            top left;
+    }
+}
+
+
+@media (max-width: 430px) {
+
+    .hud {
+
+        top: 8px;
+        left: 8px;
+
+        transform:
+            scale(0.68);
+    }
+}
