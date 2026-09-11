@@ -1,7 +1,8 @@
 import { Item } from '../Item.js';
+import icon from '../../../assets/items/consumiveis/health potion.png';
 
 export class HealthPotion extends Item {
-    constructor() { super("Poção de Vida", "consumivel", "Restaura 50 de vida"); this.cura = 50; }
+    constructor() { super("Poção de Vida", "consumivel", "Restaura 50 de vida"); this.cura = 50; this.icon = icon; }
     async usar(usuario) {
         const vidaAntes = usuario.vida;
         usuario.curar(this.cura);

@@ -116,7 +116,7 @@ export function Inventory({ jogador, quickSlots, setQuickSlots, onClose }) {
             const emptyIdx = quickSlots.findIndex(s => s === null);
             if (emptyIdx !== -1) {
                 const next = [...quickSlots];
-                next[emptyIdx] = contextItem;
+                next[emptyIdx] = Object.assign(Object.create(Object.getPrototypeOf(contextItem)), contextItem);
                 setQuickSlots(next);
             }
         }

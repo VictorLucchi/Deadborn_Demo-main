@@ -164,24 +164,14 @@ export class HUDRenderer {
             return;
         }
 
-        /*
-         * Por enquanto usamos o símbolo.
-         *
-         * Depois podemos trocar isso por:
-         *
-         * - imagem da arma
-         * - sprite
-         * - ícone específico
-         * - classe CSS
-         */
+        const frame = this._weaponIcon.closest('.hud-equipment-frame');
 
         if (jogador.armaEquipada) {
-
             this._weaponIcon.textContent = '⚔';
-
+            frame?.classList.add('filled');
         } else {
-
             this._weaponIcon.textContent = '—';
+            frame?.classList.remove('filled');
         }
     }
 }

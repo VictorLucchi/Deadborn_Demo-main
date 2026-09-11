@@ -6,6 +6,8 @@ import { Diary } from './components/Diary.jsx'
 import { MainMenu } from './components/MainMenu.jsx'
 import { CombatScreen } from './components/CombatScreen.jsx'
 import { Inventory } from './components/Inventory.jsx'
+import { QuickSlotHUD } from './components/QuickSlotHUD.jsx'
+import { KeybindGuide } from './components/KeybindGuide.jsx'
 import { criarPersonagem } from './engine/GameEngine.js'
 import './App.css'
 
@@ -148,6 +150,9 @@ function App() {
                   />
                 )}
               </AnimatePresence>
+
+              <QuickSlotHUD quickSlots={quickSlots} />
+              <KeybindGuide />
 
               {combatEnemy && (
                 <CombatScreen
