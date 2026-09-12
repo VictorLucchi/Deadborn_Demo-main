@@ -50,7 +50,5 @@ export async function createWorld(canvasWidth, canvasHeight) {
     const player = new Player({ idle, walkRight, walkLeft }, map.width / 2, map.height / 2);
 
     const hunterSprites = { idle: idleHunter, walkRight: walkRightHunter, walkLeft: walkLeftHunter, run: runHunter };
-    const initialHunter = new Hunter(hunterSprites, map.width / 2 + 200, map.height / 2);
-
-    return { map, camera, player, initialEnemies: [initialHunter], hunterSprites };
+    return { map, camera, player, initialEnemies: [], hunterSprites };
 }

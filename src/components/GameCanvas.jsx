@@ -10,13 +10,13 @@ export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle
         setIsConsoleOpen(val);
         onConsoleToggle?.(val);
     };
-    const { canvasRef, executeCommand, playMusic, removeEnemy, setJogador } = useGameCanvas(
+    const { canvasRef, executeCommand, playMusic, playIntro, removeEnemy, setJogador } = useGameCanvas(
         isPaused || isConsoleOpen,
         onCombatTrigger
     );
 
     useEffect(() => {
-        onReady?.({ playMusic, removeEnemy, setJogador });
+        onReady?.({ playMusic, playIntro, removeEnemy, setJogador });
     }, []);
 
     return (

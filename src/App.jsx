@@ -8,6 +8,7 @@ import { CombatScreen } from './components/CombatScreen.jsx'
 import { Inventory } from './components/Inventory.jsx'
 import { QuickSlotHUD } from './components/QuickSlotHUD.jsx'
 import { KeybindGuide } from './components/KeybindGuide.jsx'
+import { IntroSubtitles } from './components/IntroSubtitles.jsx'
 import { criarPersonagem } from './engine/GameEngine.js'
 import './App.css'
 
@@ -19,20 +20,14 @@ function App() {
   const [isInventoryOpen, setIsInventoryOpen] = useState(false)
   const [quickSlots, setQuickSlots] = useState([null, null, null, null])
   const [isConsoleOpen, setIsConsoleOpen] = useState(false)
+  const [introPhase, setIntroPhase] = useState('idle') // idle | closing | intro | opening
+  const [subtitlePhase, setSubtitlePhase] = useState(null) // null | hades | aya
   const gameApiRef = useRef(null)
   const jogadorRef = useRef(null)
 
-  const startGame = async () => {
-    // Cria um jogador padrão ao iniciar o jogo
+  const startGame = () => {
     jogadorRef.current = criarPersonagem('Hades', '3', 'male')
-    setPage('game')
-
-    setTimeout(async () => {
-        const game = document.getElementById('game')
-        if (game && !document.fullscreenElement) {
-            try { await game.requestFullscreen() } catch (error) { console.error(error) }
-        }
-    }, 0)
+    setIntroPhase('closing')
   }
 
   const handleCombatTrigger = (enemy) => {
@@ -82,36 +77,67 @@ function App() {
   }, [page, isDiaryOpen, isMenuOpen, isInventoryOpen, quickSlots, combatEnemy, isConsoleOpen])
 
   return (
-    <div style={{ perspective: '1200px' }}>
+    <div style={{ position: 'relative' }}>
+      {subtitlePhase && (
+        <IntroSubtitles phase={subtitlePhase} />
+      )}
+
+      {/* Vinheta de transição */}
+      {(introPhase === 'closing' || introPhase === 'intro') && (
+        <motion.div
+          key="vignette"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1.2, ease: 'easeIn' }}
+          onAnimationComplete={() => {
+            if (introPhase === 'closing') {
+              setIntroPhase('intro');
+              setPage('game');
+            }
+          }}
+          style={{
+            position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none',
+            background: 'radial-gradient(ellipse at center, transparent 0%, black 70%)',
+          }}
+        />
+      )}
       <AnimatePresence mode="wait">
        {page === 'home' && (
-    <motion.div
-        key="home"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0, rotateY: 90 }}
-        transition={{ duration: 0.6, ease: 'easeIn' }}
-        style={{ transformStyle: 'preserve-3d' }}
-    >
-        <MainMenu
-    onNewGame={startGame}
-      />
-    </motion.div>
-)}
+        <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
+          <MainMenu onNewGame={startGame} />
+        </motion.div>
+      )}
 
         {page === 'game' && (
           <motion.div
             key="game"
-            initial={{ opacity: 0, rotateY: -90 }}
-            animate={{ opacity: 1, rotateY: 0 }}
-            transition={{ duration: 0.6, ease: 'easeOut' }}
-            style={{ transformStyle: 'preserve-3d' }}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: introPhase === 'opening' ? 1 : 0 }}
+            transition={{ duration: 1.2, ease: 'easeIn' }}
           >
             <div id="game">
               <div className="noise" />
               <GameCanvas
                 isPaused={isMenuOpen || isDiaryOpen || isInventoryOpen || !!combatEnemy}
-                onReady={(api) => { gameApiRef.current = api; api.playMusic(); api.setJogador(jogadorRef.current); }}
+                onReady={(api) => {
+                  gameApiRef.current = api;
+                  api.setJogador(jogadorRef.current);
+                  api.playIntro({
+                    onHadesStart: () => setSubtitlePhase('hades'),
+                    onAyaStart:   () => setSubtitlePhase('aya'),
+                    onComplete:   () => {
+                      setSubtitlePhase(null);
+                      setIntroPhase('opening');
+                      setTimeout(async () => {
+                        const game = document.getElementById('game');
+                        if (game && !document.fullscreenElement) {
+                          try { await game.requestFullscreen(); } catch (e) { console.error(e); }
+                        }
+                        api.playMusic();
+                      }, 0);
+                    },
+                  });
+                }}
                 onCombatTrigger={handleCombatTrigger}
                 onConsoleToggle={setIsConsoleOpen}
               />

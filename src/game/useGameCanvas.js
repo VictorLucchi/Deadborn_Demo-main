@@ -23,9 +23,10 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
         gameRef.current?.executeCommand(cmd);
         gameRef.current?.input.clearKeys();
     };
-    const playMusic      = ()    => gameRef.current?.playMusic();
-    const removeEnemy    = (e)   => gameRef.current?.em.removeEnemy(e);
-    const setJogador     = (j)   => gameRef.current?.setJogador(j);
+    const playMusic   = ()    => gameRef.current?.playMusic();
+    const playIntro   = (callbacks) => gameRef.current?.playIntro(callbacks);
+    const removeEnemy = (e)   => gameRef.current?.em.removeEnemy(e);
+    const setJogador  = (j)   => gameRef.current?.setJogador(j);
 
-    return { canvasRef, executeCommand, playMusic, removeEnemy, setJogador };
+    return { canvasRef, executeCommand, playMusic, playIntro, removeEnemy, setJogador };
 }

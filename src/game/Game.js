@@ -109,6 +109,10 @@ export class Game {
         this.audio.playBackgroundMusic();
     }
 
+    playIntro(callbacks) {
+        this.audio.playIntro(callbacks);
+    }
+
     executeCommand(cmd) {
         const args   = cmd.trim().split(' ');
         const action = args[0].toLowerCase();
