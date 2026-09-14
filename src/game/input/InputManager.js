@@ -13,13 +13,17 @@ export class InputManager {
             ? cameraRef
             : () => cameraRef.current;
 
+        const IGNORED_KEYS = new Set(["'", 'Enter', 'Escape', 'Tab']);
         this._handlers.keydown = (e) => {
             const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-            if (key !== "'") this.keys[key] = true;
+            if (!IGNORED_KEYS.has(e.key)) this.keys[key] = true;
         };
         this._handlers.keyup = (e) => {
             const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
-            this.keys[key] = false;
+            delete this.keys[key];
+        };
+        this._handlers.blur = () => {
+            this.keys = {};
         };
         this._handlers.mousemove = (e) => {
             const rect = canvas.getBoundingClientRect();
@@ -32,6 +36,7 @@ export class InputManager {
 
         window.addEventListener('keydown',   this._handlers.keydown);
         window.addEventListener('keyup',     this._handlers.keyup);
+        window.addEventListener('blur',      this._handlers.blur);
         canvas.addEventListener('mousemove', this._handlers.mousemove);
     }
 
@@ -49,6 +54,7 @@ export class InputManager {
     destroy(canvas) {
         window.removeEventListener('keydown',   this._handlers.keydown);
         window.removeEventListener('keyup',     this._handlers.keyup);
+        window.removeEventListener('blur',      this._handlers.blur);
         canvas.removeEventListener('mousemove', this._handlers.mousemove);
     }
 }

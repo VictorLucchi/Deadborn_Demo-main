@@ -12,12 +12,12 @@ import { IronSword }     from '../engine/items/weapons/IronSword.js';
 import { SteelSword }    from '../engine/items/weapons/SteelSword.js';
 
 const ITEM_REGISTRY = {
-    'pocao de vida':   () => new HealthPotion(),
-    'pocao de mana':   () => new ManaPotion(),
-    'abyssal blood':   () => new AbyssalBlood(),
-    'mutated core':    () => new MutatedCore(),
-    'espada de ferro': () => new IronSword(),
-    'espada de aco':   () => new SteelSword(),
+    'health potion': () => new HealthPotion(),
+    'mana potion':   () => new ManaPotion(),
+    'abyssal blood': () => new AbyssalBlood(),
+    'mutated core':  () => new MutatedCore(),
+    'iron sword':    () => new IronSword(),
+    'steel sword':   () => new SteelSword(),
 };
 
 export class Game {
@@ -111,6 +111,10 @@ export class Game {
 
     playIntro(callbacks) {
         this.audio.playIntro(callbacks);
+    }
+
+    skipIntro() {
+        this.audio.skipIntro();
     }
 
     executeCommand(cmd) {

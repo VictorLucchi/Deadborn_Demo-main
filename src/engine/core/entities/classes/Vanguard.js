@@ -4,11 +4,6 @@ import { QuickStrike } from '../../../abilities/common/QuickStrike.js';
 import { SwiftSlash } from '../../../abilities/common/SwiftSlash.js';
 import { BlitzAssault } from '../../../abilities/common/BlitzAssault.js';
 import { Momentum } from '../../../abilities/support/Momentum.js';
-import { IronSword } from '../../../items/weapons/IronSword.js';
-import { SteelSword } from '../../../items/weapons/SteelSword.js';
-import { HealthPotion } from '../../../items/consumables/HealthPotion.js';
-import { ManaPotion } from '../../../items/consumables/ManaPotion.js';
-
 export class Vanguard extends Player {
     constructor(nome, genero = 'male') {
         super(nome, 100, 12, 14, 6, 8, genero);
@@ -16,13 +11,6 @@ export class Vanguard extends Player {
         this.momentum = 0;
         this.agilidadeOriginal = this.agilidade;
         this.temMomentum = true;
-        const espada = new IronSword();
-        this.adicionarItem(espada);
-        this.equiparArma(espada);
-        this.adicionarItem(new SteelSword());
-        this.adicionarItem(new HealthPotion());
-        this.adicionarItem(new HealthPotion());
-        this.adicionarItem(new ManaPotion());
     }
 
     usarHabilidade(index, alvo) {

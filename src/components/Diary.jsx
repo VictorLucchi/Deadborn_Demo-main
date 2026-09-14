@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 import paginaDuplaUrl from '../assets/Diary/diario.png';
-import hunterUrl from '../assets/Diary/polaroid hunter.png';
 
 import './Diary.css';
 
@@ -39,81 +38,14 @@ const SECTIONS = [
    CONTEÚDO
    ========================================================= */
 
-const MOCK_DATA = {
-
-    docs: [
-        {
-            title: 'Relatório Médico',
-            meta: 'Hospital Municipal — Manchado de sangue',
-            content:
-                'O paciente apresenta sinais severos de desassociação. A névoa parece afetar não apenas a visão, mas a percepção do tempo.',
-        },
-
-        {
-            title: 'Carta Queimada',
-            meta: 'Casa Paroquial — Parcialmente legível',
-            content:
-                '...eles estão vindo. Não abra a porta. O conhecimento é a luz, mas a luz atrai as mariposas...',
-        },
-    ],
-
-
-    transcripts: [
-        {
-            title: 'Gravação 01: "A Criança"',
-            meta: 'Duração: 02:47',
-            content:
-                '...ela não chorava. Apenas olhava. Seus olhos eram escuros demais. Disseram que era a filha da Mãe, mas eu sei que não.',
-        },
-    ],
-
-
-    creatures: [
-        {
-            name: 'Hunter',
-
-            subtitle: 'Entidade desconhecida',
-
-            image: hunterUrl,
-
-            description:
-                'Uma criatura observada nas proximidades das regiões onde a névoa se torna mais densa. Sua origem permanece desconhecida.',
-
-            observations: [
-                'Extremamente hostil.',
-                'Parece reagir à presença humana antes de ser percebida.',
-                'Seus padrões de comportamento ainda não foram completamente compreendidos.',
-            ],
-        },
-    ],
-
-
-    places: [
-        {
-            title: 'Hospital Municipal',
-            meta: 'Fechado desde 1958',
-            content:
-                'Muitos desaparecimentos ocorreram aqui. O cheiro de ferro e coisas velhas ainda persiste.',
-        },
-    ],
-
-
-    notes: [
-        {
-            title: 'A Névoa',
-            meta: 'Observação pessoal',
-            content:
-                'Ela observa. Mesmo quando você fecha os olhos. Este lugar não quer ser esquecido.',
-        },
-    ],
-};
+const EMPTY_ENTRIES = { docs: [], transcripts: [], creatures: [], places: [], notes: [] };
 
 
 /* =========================================================
    COMPONENTE
    ========================================================= */
 
-export function Diary({ isOpen, onClose }) {
+export function Diary({ isOpen, onClose, entries = EMPTY_ENTRIES }) {
 
     const [activeSection, setActiveSection] = useState('creatures');
 
@@ -212,8 +144,7 @@ export function Diary({ isOpen, onClose }) {
        CRIATURA ATUAL
        ------------------------------------------------------- */
 
-    const currentCreature =
-        MOCK_DATA.creatures[0];
+    const currentCreature = entries.creatures[0];
 
 
     return (
@@ -313,56 +244,32 @@ export function Diary({ isOpen, onClose }) {
                                    ========================================= */}
 
                                 {activeSection === 'creatures' && (
+                                    currentCreature ? (
+                                        <div className="diary-creature">
 
-                                    <div className="diary-creature">
-
-                                        {/* ---------------------------------
-                                           POLAROID
-                                           --------------------------------- */}
-
-                                        <div className="diary-creature-polaroid">
-
-                                            <div className="diary-polaroid-image">
-
-                                                <img
-                                                    src={currentCreature.image}
-                                                    alt={currentCreature.name}
-                                                    draggable="false"
-                                                />
-
+                                            <div className="diary-creature-polaroid">
+                                                <div className="diary-polaroid-image">
+                                                    <img
+                                                        src={currentCreature.image}
+                                                        alt={currentCreature.name}
+                                                        draggable="false"
+                                                    />
+                                                </div>
+                                                <div className="diary-polaroid-caption">
+                                                    {currentCreature.name.toUpperCase()}
+                                                </div>
                                             </div>
 
-
-                                            <div className="diary-polaroid-caption">
-                                                {currentCreature.name.toUpperCase()}
+                                            <div className="diary-creature-description">
+                                                <h3>{currentCreature.name}</h3>
+                                                <div className="diary-creature-subtitle">{currentCreature.subtitle}</div>
+                                                <p>{currentCreature.description}</p>
                                             </div>
 
                                         </div>
-
-
-                                        {/* ---------------------------------
-                                           DESCRIÇÃO
-                                           --------------------------------- */}
-
-                                        <div className="diary-creature-description">
-
-                                            <h3>
-                                                {currentCreature.name}
-                                            </h3>
-
-
-                                            <div className="diary-creature-subtitle">
-                                                {currentCreature.subtitle}
-                                            </div>
-
-
-                                            <p>
-                                                {currentCreature.description}
-                                            </p>
-
-                                        </div>
-
-                                    </div>
+                                    ) : (
+                                        <p className="diary-empty">Nenhuma criatura registrada ainda.</p>
+                                    )
                                 )}
 
 
@@ -376,32 +283,16 @@ export function Diary({ isOpen, onClose }) {
 
                                         <div className="diary-content-list">
 
-                                            {MOCK_DATA[activeSection]?.map(
-                                                (item, index) => (
-
-                                                    <div
-                                                        key={index}
-                                                        className="diary-card"
-                                                    >
-
-                                                        <div className="diary-card-title">
-                                                            {item.title}
-                                                        </div>
-
-
-                                                        <div className="diary-card-meta">
-                                                            {item.meta}
-                                                        </div>
-
-
-                                                        <div className="diary-card-text">
-                                                            {item.content}
-                                                        </div>
-
+                                            {entries[activeSection]?.length > 0
+                                                ? entries[activeSection].map((item, index) => (
+                                                    <div key={index} className="diary-card">
+                                                        <div className="diary-card-title">{item.title}</div>
+                                                        <div className="diary-card-meta">{item.meta}</div>
+                                                        <div className="diary-card-text">{item.content}</div>
                                                     </div>
-
-                                                )
-                                            )}
+                                                ))
+                                                : <p className="diary-empty">Nenhuma entrada ainda.</p>
+                                            }
 
                                         </div>
 
@@ -452,7 +343,7 @@ export function Diary({ isOpen, onClose }) {
                                    OBSERVAÇÕES DA CRIATURA
                                    ========================================= */}
 
-                                {activeSection === 'creatures' && (
+                                {activeSection === 'creatures' && currentCreature && (
 
                                     <div className="diary-creature-observations">
 

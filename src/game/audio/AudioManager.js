@@ -32,7 +32,18 @@ export class AudioManager {
         });
     }
 
+    skipIntro() {
+        this.hadesAudio.pause();
+        this.hadesAudio.currentTime = 0;
+        this.ayaAudio.pause();
+        this.ayaAudio.currentTime = 0;
+        this.rain.volume = 0;
+        this.rain.pause();
+        this._onIntroComplete = null;
+    }
+
     playIntro({ onHadesStart, onAyaStart, onComplete } = {}) {
+        this._onIntroComplete = onComplete;
         // Chuva alta
         this.rain.volume = 0.9;
         this.rain.currentTime = 0;
@@ -66,7 +77,8 @@ export class AudioManager {
             this.ayaAudio.addEventListener("ended", () => {
                 clearInterval(fadeInterval);
                 this.rain.volume = 0;
-                onComplete?.();
+                this._onIntroComplete?.();
+                this._onIntroComplete = null;
             }, { once: true });
         }, { once: true });
     }

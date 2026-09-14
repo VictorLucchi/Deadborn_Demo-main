@@ -2,21 +2,34 @@ import { useEffect, useRef } from 'react';
 import { Game } from './Game.js';
 
 export function useGameCanvas(isPaused, onCombatTrigger) {
-    const canvasRef = useRef(null);
-    const gameRef   = useRef(null);
-    const onCombatRef = useRef(onCombatTrigger);
-    onCombatRef.current = onCombatTrigger;
+    const canvasRef    = useRef(null);
+    const gameRef      = useRef(null);
+    const readyRef     = useRef(false);
+    const isPausedRef  = useRef(isPaused);
+    const onCombatRef  = useRef(onCombatTrigger);
+
+    isPausedRef.current  = isPaused;
+    onCombatRef.current  = onCombatTrigger;
 
     useEffect(() => {
-        if (gameRef.current) gameRef.current.pause(isPaused);
+        if (readyRef.current) gameRef.current.pause(isPaused);
     }, [isPaused]);
 
     useEffect(() => {
+        let cancelled = false;
         const game = new Game(canvasRef.current, (enemy) => onCombatRef.current?.(enemy));
         gameRef.current = game;
-        game.start().then(() => game.pause(isPaused));
+        game.start().then(() => {
+            if (cancelled) return;
+            readyRef.current = true;
+            game.pause(isPausedRef.current);
+        });
 
-        return () => game.stop();
+        return () => {
+            cancelled = true;
+            readyRef.current = false;
+            game.stop();
+        };
     }, []);
 
     const executeCommand = (cmd) => {

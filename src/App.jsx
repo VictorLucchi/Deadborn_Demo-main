@@ -20,26 +20,41 @@ function App() {
   const [isInventoryOpen, setIsInventoryOpen] = useState(false)
   const [quickSlots, setQuickSlots] = useState([null, null, null, null])
   const [isConsoleOpen, setIsConsoleOpen] = useState(false)
-  const [introPhase, setIntroPhase] = useState('idle') // idle | closing | intro | opening
-  const [subtitlePhase, setSubtitlePhase] = useState(null) // null | hades | aya
+  const [introPhase, setIntroPhase] = useState('idle')
+  const [subtitlePhase, setSubtitlePhase] = useState(null)
+  const [diaryEntries, setDiaryEntries] = useState({ docs: [], transcripts: [], creatures: [], places: [], notes: [] })
   const gameApiRef = useRef(null)
   const jogadorRef = useRef(null)
+  const skipIntroRef = useRef(null)
 
   const startGame = () => {
     jogadorRef.current = criarPersonagem('Hades', '3', 'male')
     setIntroPhase('closing')
   }
 
+  const continueGame = () => {
+    jogadorRef.current = criarPersonagem('Hades', '3', 'male')
+    setPage('game')
+    setIntroPhase('opening')
+  }
+
   const handleCombatTrigger = (enemy) => {
-    // Pausa o canvas e abre o combate
     setCombatEnemy(enemy)
   }
 
   const handleCombatClose = () => {
-    // Remove o hunter do mapa e retoma o jogo
     if (combatEnemy) gameApiRef.current?.removeEnemy(combatEnemy)
     setCombatEnemy(null)
   }
+
+  useEffect(() => {
+    const handleSkip = (e) => {
+      if (e.key !== 'Enter') return;
+      skipIntroRef.current?.();
+    };
+    window.addEventListener('keydown', handleSkip);
+    return () => window.removeEventListener('keydown', handleSkip);
+  }, [])
 
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -104,7 +119,7 @@ function App() {
       <AnimatePresence mode="wait">
        {page === 'home' && (
         <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
-          <MainMenu onNewGame={startGame} />
+          <MainMenu onNewGame={startGame} onContinue={continueGame} />
         </motion.div>
       )}
 
@@ -122,20 +137,34 @@ function App() {
                 onReady={(api) => {
                   gameApiRef.current = api;
                   api.setJogador(jogadorRef.current);
+
+                  if (introPhase === 'opening') {
+                    api.playMusic();
+                    return;
+                  }
+
+                  const onComplete = () => {
+                    skipIntroRef.current = null;
+                    setSubtitlePhase(null);
+                    setIntroPhase('opening');
+                    setTimeout(async () => {
+                      const game = document.getElementById('game');
+                      if (game && !document.fullscreenElement) {
+                        try { await game.requestFullscreen(); } catch (e) { console.error(e); }
+                      }
+                      api.playMusic();
+                    }, 0);
+                  };
+
+                  skipIntroRef.current = () => {
+                    api.skipIntro();
+                    onComplete();
+                  };
+
                   api.playIntro({
                     onHadesStart: () => setSubtitlePhase('hades'),
                     onAyaStart:   () => setSubtitlePhase('aya'),
-                    onComplete:   () => {
-                      setSubtitlePhase(null);
-                      setIntroPhase('opening');
-                      setTimeout(async () => {
-                        const game = document.getElementById('game');
-                        if (game && !document.fullscreenElement) {
-                          try { await game.requestFullscreen(); } catch (e) { console.error(e); }
-                        }
-                        api.playMusic();
-                      }, 0);
-                    },
+                    onComplete,
                   });
                 }}
                 onCombatTrigger={handleCombatTrigger}
@@ -161,7 +190,8 @@ function App() {
                 {isDiaryOpen && (
                   <Diary 
                     isOpen={isDiaryOpen} 
-                    onClose={() => setIsDiaryOpen(false)} 
+                    onClose={() => setIsDiaryOpen(false)}
+                    entries={diaryEntries}
                   />
                 )}
               </AnimatePresence>

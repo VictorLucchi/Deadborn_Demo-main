@@ -3,9 +3,6 @@ import { BasicAttack } from '../../../abilities/common/BasicAttack.js';
 import { HellFlame } from '../../../abilities/player/hades/HellFlame.js';
 import { DeathTouch } from '../../../abilities/player/hades/DeathTouch.js';
 import { GlimpseOfHell } from '../../../abilities/player/hades/GlimpseOfHell.js';
-import { HealthPotion } from '../../../items/consumables/HealthPotion.js';
-import { ManaPotion } from '../../../items/consumables/ManaPotion.js';
-
 export class Successor extends Player {
     constructor(nome, genero = 'male') {
         super(nome, 0, 10, 8, 16, 14, genero);
@@ -21,11 +18,6 @@ export class Successor extends Player {
         this.chamasAzuisAtivas = false;
         this.chamasVermelhasAtivas = false;
         this.marcaDemoniaca = false;
-
-        this.adicionarItem(new HealthPotion());
-        this.adicionarItem(new HealthPotion());
-        this.adicionarItem(new ManaPotion());
-        this.adicionarItem(new ManaPotion());
     }
 
     acumularChamasAzuis(quantidade) {

@@ -2,27 +2,15 @@ import { useEffect, useState } from 'react'
 import './MainMenu.css'
 import deadbornLogo from '../assets/images/deadborn-logo-oficial.png'
 
-export function MainMenu({ onNewGame }) {
+export function MainMenu({ onNewGame, onContinue }) {
 
     const [selectedOption, setSelectedOption] = useState(0)
 
     const options = [
-        {
-            label: 'Novo Jogo',
-            action: onNewGame
-        },
-        {
-            label: 'Continuar',
-            action: () => console.log('Continuar')
-        },
-        {
-            label: 'Opções',
-            action: () => console.log('Opções')
-        },
-        {
-            label: 'Sair',
-            action: () => console.log('Sair')
-        }
+        { label: 'Novo Jogo', action: onNewGame },
+        { label: 'Continuar', action: onContinue },
+        { label: 'Opções',    action: () => console.log('Opções') },
+        { label: 'Sair',      action: () => console.log('Sair') }
     ]
 
     useEffect(() => {
