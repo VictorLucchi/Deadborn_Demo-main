@@ -3,7 +3,9 @@ import { EntityManager } from './entityManager/EntityManager.js';
 import { Renderer }      from './render/Renderer.js';
 import { UIBridge }      from './UIBridge/UIBridge.js';
 import { AudioManager }  from './audio/AudioManager.js';
-import { createWorld }   from './world/World.js';
+import { loadMap, getSharedImages } from './world/World.js';
+import { Player }        from './entities/Player.js';
+import { Crow }          from './entities/Crow.js';
 import { CrowDialogue }  from './crow/CrowDialogue.js';
 import { Lantern }       from '../engine/items/weapons/Lantern.js';
 import { HealthPotion }  from '../engine/items/consumables/HealthPotion.js';
@@ -21,6 +23,9 @@ const ITEM_REGISTRY = {
     'iron sword':    () => new IronSword(),
     'steel sword':   () => new SteelSword(),
 };
+
+const DOOR_INTERACT_DIST = 80;
+const FADE_DURATION = 400; // ms
 
 export class Game {
     constructor(canvas, onCombatTrigger) {
@@ -42,37 +47,64 @@ export class Game {
         this.player   = null;
         this.renderer = null;
         this.sprites  = {};
+
+        this.currentMapName = 'casaTeste1';
+
+        // fade
+        this._fadeAlpha    = 0;
+        this._fadeDir      = 0; // 1 = escurecer, -1 = clarear
+        this._fadeCallback = null;
+
+        // porta próxima
+        this._nearDoor     = null;
+        this._doorPrompt   = null;
     }
 
     async start() {
         this._setupResize();
         this.input.init(this.canvas, { current: null, set: (cam) => { this.camera = cam; } });
 
-        const { map, camera, player, crow, initialEnemies, hunterSprites } = await createWorld(
-            this.canvas.width,
-            this.canvas.height
+        const imgs = await getSharedImages();
+
+        const { map, camera } = await loadMap('casaTeste1', this.canvas.width, this.canvas.height);
+        this.map    = map;
+        this.camera = camera;
+
+        const playerSpawn = map.getSpawn('Player_Start');
+        const crowSpawn   = map.getSpawn('Crow_Start');
+
+        this.player = new Player(
+            { idle: imgs.idle, walkRight: imgs.walkRight, walkLeft: imgs.walkLeft },
+            playerSpawn ? playerSpawn.x : map.width / 2,
+            playerSpawn ? playerSpawn.y : map.height / 2
         );
+        this.crow = new Crow(
+            imgs.corvImg,
+            crowSpawn ? crowSpawn.x : map.width / 2 - 200,
+            crowSpawn ? crowSpawn.y : map.height / 2 + 200
+        );
+        this.sprites = { idle: imgs.idleHunter, walkRight: imgs.walkRightHunter,
+                         walkLeft: imgs.walkLeftHunter, run: imgs.runHunter };
 
-        this.map     = map;
-        this.camera  = camera;
-        this.player  = player;
-        this.sprites = hunterSprites;
-        this.crow    = crow;
+        this._initWorld();
+        this._startLoop();
+    }
 
-        this.crowDialogue = new CrowDialogue(crow);
+    _initWorld() {
+        this.crowDialogue = new CrowDialogue(this.crow);
         this.crowDialogue.onDialogue     = (data) => this.onCrowDialogue?.(data);
         this.crowDialogue.onPromptChange = (v)    => this.onCrowPrompt?.(v);
 
-        // atualiza a referência da câmera no InputManager
         this.input._cameraGetter = () => this.camera;
+        this.em.init(this.player, [], this.crow, this.crowDialogue);
+        this.renderer = this.renderer ?? new Renderer(this.canvas);
+    }
 
-        this.em.init(player, initialEnemies, crow, this.crowDialogue);
-        this.renderer = new Renderer(this.canvas);
-
+    _startLoop() {
         let lastTime = 0;
         const loop = (timestamp) => {
             try {
-                const delta = timestamp - lastTime;
+                const delta = Math.min(timestamp - lastTime, 100);
                 lastTime = timestamp;
 
                 if (!this.paused) {
@@ -84,16 +116,104 @@ export class Game {
                     );
                     this.em.update(delta, (x, y, w, h) => this.map.checkCollision(x, y, w, h));
                     this.camera.follow(this.player);
+                    this._updateDoorDetection();
+                    this._updateFade(delta);
                 }
 
-                this.renderer.draw(this.ctx, this.map, this.player, this.em, this.camera, this.ui, this.input.mousePos, this.jogadorEngine, { hasLantern: this.crowDialogue?.hasLantern, showPrompt: this.crowDialogue?.showPrompt, crow: this.crow?.visible ? this.crow : null });
+                this.renderer.draw(
+                    this.ctx, this.map, this.player, this.em, this.camera,
+                    this.ui, this.input.mousePos, this.jogadorEngine,
+                    {
+                        hasLantern: this.crowDialogue?.hasLantern,
+                        showPrompt: this.crowDialogue?.showPrompt,
+                        crow: this.crow?.visible ? this.crow : null,
+                        doorPrompt: this._doorPrompt,
+                        fadeAlpha:  this._fadeAlpha,
+                        indoors:    this.currentMapName !== 'casaTeste1',
+                    }
+                );
             } catch (err) {
                 console.error('[Game loop error]', err);
             }
             this.rafId = requestAnimationFrame(loop);
         };
-
         this.rafId = requestAnimationFrame(loop);
+    }
+
+    _updateDoorDetection() {
+        const interactions = this.map.getInteractions();
+        this._nearDoor   = null;
+        this._doorPrompt = null;
+
+        for (const obj of interactions) {
+            const props = Object.fromEntries((obj.properties ?? []).map(p => [p.name, p.value]));
+            if ((props.InteractionType ?? props.interactionType) !== 'door') continue;
+
+            const cx = obj.x + obj.width  / 2;
+            const cy = obj.y + obj.height / 2;
+            const dx = this.player.x - cx;
+            const dy = this.player.y - cy;
+
+            if (Math.sqrt(dx * dx + dy * dy) < DOOR_INTERACT_DIST) {
+                this._nearDoor   = { ...obj, props };
+                this._doorPrompt = props.prompt ?? '[E] Entrar';
+
+                if (this.input.keys['e'] || this.input.keys['E']) {
+                    this.input.keys['e'] = false;
+                    this.input.keys['E'] = false;
+                    this._triggerDoorTransition(props);
+                }
+                break;
+            }
+        }
+    }
+
+    _triggerDoorTransition(props) {
+        if (this._fadeDir !== 0) return;
+        this._fadeDir = 1;
+        this._fadeCallback = async () => {
+            const targetMap   = props.targetMap;
+            const targetSpawn = props.targetSpawn;
+
+            const { map, camera } = await loadMap(targetMap, this.canvas.width, this.canvas.height);
+
+            this.map    = map;
+            this.camera = camera;
+            this.currentMapName = targetMap;
+
+            const spawn = map.getSpawn(targetSpawn);
+            if (spawn) {
+                this.player.x = spawn.x;
+                this.player.y = spawn.y;
+            }
+
+            this.input._cameraGetter = () => this.camera;
+            this.em.init(this.player, [], this.crow, this.crowDialogue);
+            this.camera.follow(this.player);
+        };
+    }
+
+    _updateFade(delta) {
+        if (this._fadeDir === 0) return;
+        const step = delta / FADE_DURATION;
+
+        if (this._fadeDir === 1) {
+            this._fadeAlpha = Math.min(1, this._fadeAlpha + step);
+            if (this._fadeAlpha >= 1 && this._fadeCallback) {
+                const cb = this._fadeCallback;
+                this._fadeCallback = null;
+                this._fadeDir = 0;
+                cb().then(() => {
+                    this._fadeDir = -1;
+                }).catch(err => {
+                    console.error('[Fade transition error]', err);
+                    this._fadeDir = -1;
+                });
+            }
+        } else {
+            this._fadeAlpha = Math.max(0, this._fadeAlpha - step);
+            if (this._fadeAlpha <= 0) this._fadeDir = 0;
+        }
     }
 
     setJogador(jogador) {

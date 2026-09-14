@@ -73,6 +73,8 @@ export class Player {
         this.animator.update(delta);
     }
 
+    get sortY() { return this.y + this.animator.frameH * 0.25; }
+
     draw(ctx, camera, scale = 0.25) {
         const w = this.animator.frameW * scale;
         const screenX = this.x - camera.x - w / 2;

@@ -17,15 +17,32 @@ export class Renderer {
         ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
 
         map.drawBelow(ctx, camera);
-        map.drawAbove(ctx, camera);
-        player.draw(ctx, camera);
-        entityManager.draw(ctx, camera);
 
-        this._drawFog(ctx, player, camera, crowState);
+        // Y-sorting: mistura tiles de objects com entidades usando sortY
+        const objectTiles = map.getObjectTiles(camera);
+        const renderables = [
+            { sortY: player.sortY, draw: (ctx) => player.draw(ctx, camera) },
+            ...entityManager.enemies.map(e => ({ sortY: e.sortY, draw: (ctx) => e.draw(ctx, camera) })),
+            ...(crowState?.crow ? [{ sortY: crowState.crow.sortY, draw: (ctx) => crowState.crow.draw(ctx, camera) }] : []),
+            ...objectTiles,
+        ];
+        renderables.sort((a, b) => a.sortY - b.sortY);
+        renderables.forEach(r => r.draw(ctx));
+
+        if (!crowState?.indoors) this._drawFog(ctx, player, camera, crowState);
         this._drawRain(ctx);
         uiBridge.draw(ctx, mousePos, jogador);
 
         if (crowState?.showPrompt) this._drawInteractPrompt(ctx, player, camera);
+        if (crowState?.doorPrompt) this._drawDoorPrompt(ctx, player, camera, crowState.doorPrompt);
+
+        if (crowState?.fadeAlpha > 0) {
+            ctx.save();
+            ctx.globalAlpha = crowState.fadeAlpha;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+            ctx.restore();
+        }
     }
 
     _drawFog(ctx, player, camera, crowState) {
@@ -139,6 +156,21 @@ export class Renderer {
         ctx.fillStyle = 'rgba(0,0,0,0.6)';
         ctx.fillRect(px - tw / 2 - 6, py - 14, tw + 12, 20);
 
+        ctx.fillStyle = '#e8e0c8';
+        ctx.fillText(text, px, py);
+        ctx.restore();
+    }
+
+    _drawDoorPrompt(ctx, player, camera, text) {
+        const px = player.x - camera.x;
+        const py = player.y - camera.y - 40;
+
+        ctx.save();
+        ctx.font = 'bold 13px monospace';
+        ctx.textAlign = 'center';
+        const tw = ctx.measureText(text).width;
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(px - tw / 2 - 6, py - 14, tw + 12, 20);
         ctx.fillStyle = '#e8e0c8';
         ctx.fillText(text, px, py);
         ctx.restore();

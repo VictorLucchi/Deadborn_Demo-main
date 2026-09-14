@@ -27,7 +27,7 @@ export class AudioManager {
             if (this.currentMusic !== this.ambientMusic) {
                 this.currentMusic = this.ambientMusic;
                 this.currentMusic.currentTime = 0;
-                this.currentMusic.play();
+                this.currentMusic.play().catch(() => {});
             }
         });
     }
@@ -47,17 +47,17 @@ export class AudioManager {
         // Chuva alta
         this.rain.volume = 0.9;
         this.rain.currentTime = 0;
-        this.rain.play();
+        this.rain.play().catch(() => {});
 
         // Toca Hades
         this.hadesAudio.currentTime = 0;
-        this.hadesAudio.play();
+        this.hadesAudio.play().catch(() => {});
         onHadesStart?.();
 
         this.hadesAudio.addEventListener("ended", () => {
             // Toca Aya e faz fade da chuva
             this.ayaAudio.currentTime = 0;
-            this.ayaAudio.play();
+            this.ayaAudio.play().catch(() => {});
             onAyaStart?.();
 
             const fadeDuration = this.ayaAudio.duration || 10;
@@ -90,11 +90,11 @@ export class AudioManager {
 
         this.currentMusic = this.introMusic;
         this.currentMusic.currentTime = 0;
-        this.currentMusic.play();
+        this.currentMusic.play().catch(() => {});
 
         this.rain.currentTime = 0;
         this.rain.volume = 0.5;
-        this.rain.play();
+        this.rain.play().catch(() => {});
     }
 
     stop() {

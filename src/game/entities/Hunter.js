@@ -246,6 +246,8 @@ export class Hunter {
         if (!this.jumping) this.animator.update(delta);
     }
 
+    get sortY() { return this.y; }
+
     draw(ctx, camera, scale = 0.3) {
         const w = this.animator.frameW * scale;
         const screenX = this.x - camera.x - w / 2;

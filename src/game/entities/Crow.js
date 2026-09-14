@@ -25,6 +25,8 @@ export class Crow {
         }
     }
 
+    get sortY() { return this.y; }
+
     draw(ctx, camera) {
         if (!this.visible) return;
         const sx = this.x - camera.x - this.drawW / 2;

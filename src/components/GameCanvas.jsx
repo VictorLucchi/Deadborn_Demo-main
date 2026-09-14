@@ -35,7 +35,7 @@ export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle
             <div id="game-hud" className="hud">
                 <div className="hud-avatar">
                     <div className="hud-avatar-frame">
-                        <img id="hud-avatar-image" src="" alt="" />
+                        <img id="hud-avatar-image" src={null} alt="" />
                     </div>
                     <div className="hud-rune hud-rune-top"></div>
                     <div className="hud-rune hud-rune-bottom"></div>
