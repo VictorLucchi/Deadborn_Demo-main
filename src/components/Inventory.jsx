@@ -198,8 +198,8 @@ export function Inventory({ jogador, quickSlots, setQuickSlots, onClose }) {
                                     onClick={() => { setFocusZone('quick'); setCursorIdx(i); }}
                                 >
                                     <div className={`inv-diamond-frame ${item ? 'filled' : ''} ${focused ? 'cursor' : ''}`}>
-                                        {item?.icon
-                                            ? <img src={item.icon} alt={item.nome} />
+                                        {item?.iconUrl || item?.icon
+                                            ? <img src={item.iconUrl ?? item.icon} alt={item.nome} />
                                             : <span className="inv-slot-empty">{i + 1}</span>
                                         }
                                     </div>
@@ -234,8 +234,8 @@ export function Inventory({ jogador, quickSlots, setQuickSlots, onClose }) {
                                                     height: `calc(${ref?.size?.[1] ?? 1} * 100% + ${(ref?.size?.[1] ?? 1) - 1} * 4px)`,
                                                 }}
                                             >
-                                                {ref?.icon
-                                                    ? <img src={ref.icon} alt={ref.nome} />
+                                                {ref?.iconUrl || ref?.icon
+                                                    ? <img src={ref.iconUrl ?? ref.icon} alt={ref.nome} />
                                                     : <span>{ref?.nome?.slice(0, 4).toUpperCase()}</span>
                                                 }
                                             </div>
@@ -271,7 +271,10 @@ export function Inventory({ jogador, quickSlots, setQuickSlots, onClose }) {
                             <div className="inv-equipped-weapon">
                                 <span className="inv-section-label" style={{ marginBottom: 4 }}>ARMA</span>
                                 <div className="inv-diamond-frame filled" style={{ width: 40, height: 40 }}>
-                                    <span className="inv-slot-empty">⚔</span>
+                                    {jogador.armaEquipada.iconUrl || jogador.armaEquipada.icon
+                                        ? <img src={jogador.armaEquipada.iconUrl ?? jogador.armaEquipada.icon} alt={jogador.armaEquipada.nome} />
+                                        : <span className="inv-slot-empty">⚔</span>
+                                    }
                                 </div>
                                 <span className="inv-slot-label">{jogador.armaEquipada.nome}</span>
                             </div>

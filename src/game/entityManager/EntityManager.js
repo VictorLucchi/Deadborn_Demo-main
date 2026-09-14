@@ -4,12 +4,16 @@ export class EntityManager {
     constructor() {
         this.enemies = [];
         this.player = null;
+        this.crow = null;
+        this.crowDialogue = null;
         this.onCombatTrigger = null;
     }
 
-    init(player, initialEnemies = []) {
+    init(player, initialEnemies = [], crow = null, crowDialogue = null) {
         this.player = player;
         this.enemies = initialEnemies;
+        this.crow = crow;
+        this.crowDialogue = crowDialogue;
         this._bindCombatTrigger();
     }
 
@@ -50,9 +54,12 @@ export class EntityManager {
 
     update(delta, checkCollision) {
         this.enemies.forEach(e => e.update(delta, this.player, checkCollision));
+        if (this.crow) this.crow.update(delta);
+        if (this.crowDialogue) this.crowDialogue.update(this.player);
     }
 
     draw(ctx, camera) {
         this.enemies.forEach(e => e.draw(ctx, camera));
+        if (this.crow) this.crow.draw(ctx, camera);
     }
 }

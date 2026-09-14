@@ -1,0 +1,92 @@
+.crow-dialogue-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding-bottom: 48px;
+    pointer-events: none;
+}
+
+.crow-dialogue-box {
+    pointer-events: all;
+    width: min(680px, 90vw);
+    background: #0a0a0f;
+    border: 2px solid #3a3a5c;
+    box-shadow: 0 0 24px rgba(60, 80, 180, 0.25), inset 0 0 40px rgba(0,0,0,0.6);
+    padding: 20px 28px 18px;
+    font-family: 'Courier New', monospace;
+    color: #ddd8c4;
+    position: relative;
+}
+
+.crow-dialogue-speaker {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: #7a8ab8;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #1e1e30;
+    padding-bottom: 6px;
+}
+
+.crow-dialogue-text {
+    font-size: 15px;
+    line-height: 1.7;
+    min-height: 52px;
+    white-space: pre-wrap;
+}
+
+.crow-cursor {
+    animation: blink 0.7s step-end infinite;
+    color: #7a8ab8;
+}
+
+@keyframes blink {
+    50% { opacity: 0; }
+}
+
+.crow-dialogue-hint {
+    text-align: right;
+    font-size: 11px;
+    color: #4a5070;
+    margin-top: 10px;
+    letter-spacing: 2px;
+    animation: blink 1s step-end infinite;
+}
+
+.crow-dialogue-acquired {
+    font-size: 12px;
+    letter-spacing: 2px;
+    color: #8899cc;
+    text-transform: uppercase;
+    margin-bottom: 12px;
+    text-align: center;
+}
+
+.crow-dialogue-options {
+    margin-top: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.crow-dialogue-option {
+    background: none;
+    border: 1px solid #2a2a44;
+    color: #c8d0e8;
+    font-family: 'Courier New', monospace;
+    font-size: 14px;
+    padding: 8px 16px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.15s, border-color 0.15s;
+    letter-spacing: 1px;
+}
+
+.crow-dialogue-option:hover {
+    background: rgba(60, 80, 160, 0.2);
+    border-color: #5566aa;
+    color: #fff;
+}

@@ -159,17 +159,20 @@ export class HUDRenderer {
     // ========================================
 
     _updateWeapon(jogador) {
-
-        if (!this._weaponIcon) {
-            return;
-        }
+        if (!this._weaponIcon) return;
 
         const frame = this._weaponIcon.closest('.hud-equipment-frame');
 
         if (jogador.armaEquipada) {
-            this._weaponIcon.textContent = '⚔';
+            const url = jogador.armaEquipada.iconUrl;
+            if (url) {
+                this._weaponIcon.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:contain;" />`;
+            } else {
+                this._weaponIcon.textContent = '⚔';
+            }
             frame?.classList.add('filled');
         } else {
+            this._weaponIcon.innerHTML = '';
             this._weaponIcon.textContent = '—';
             frame?.classList.remove('filled');
         }

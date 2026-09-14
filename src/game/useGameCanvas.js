@@ -32,14 +32,17 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
         };
     }, []);
 
-    const executeCommand = (cmd) => {
-        gameRef.current?.executeCommand(cmd);
-        gameRef.current?.input.clearKeys();
-    };
-    const playMusic   = ()    => gameRef.current?.playMusic();
-    const playIntro   = (callbacks) => gameRef.current?.playIntro(callbacks);
-    const removeEnemy = (e)   => gameRef.current?.em.removeEnemy(e);
-    const setJogador  = (j)   => gameRef.current?.setJogador(j);
+    const executeCommand   = (cmd) => { gameRef.current?.executeCommand(cmd); gameRef.current?.input.clearKeys(); };
+    const playMusic        = ()    => gameRef.current?.playMusic();
+    const playIntro        = (cb)  => gameRef.current?.playIntro(cb);
+    const skipIntro        = ()    => gameRef.current?.skipIntro();
+    const removeEnemy      = (e)   => gameRef.current?.em.removeEnemy(e);
+    const setJogador       = (j)   => gameRef.current?.setJogador(j);
+    const setCrowCallbacks = (cb)  => gameRef.current?.setCrowCallbacks(cb);
+    const crowInteract     = ()    => gameRef.current?.crowInteract();
+    const crowPickup       = ()    => gameRef.current?.crowPickupLantern();
+    const crowUnlock       = ()    => gameRef.current?.crowUnlockDialogue();
+    const getCrowState     = ()    => gameRef.current?.crowDialogue ?? null;
 
-    return { canvasRef, executeCommand, playMusic, playIntro, removeEnemy, setJogador };
+    return { canvasRef, executeCommand, playMusic, playIntro, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock, getCrowState };
 }

@@ -9,6 +9,7 @@ import { Inventory } from './components/Inventory.jsx'
 import { QuickSlotHUD } from './components/QuickSlotHUD.jsx'
 import { KeybindGuide } from './components/KeybindGuide.jsx'
 import { IntroSubtitles } from './components/IntroSubtitles.jsx'
+import { CrowDialogueBox } from './components/CrowDialogueBox.jsx'
 import { criarPersonagem } from './engine/GameEngine.js'
 import './App.css'
 
@@ -23,6 +24,9 @@ function App() {
   const [introPhase, setIntroPhase] = useState('idle')
   const [subtitlePhase, setSubtitlePhase] = useState(null)
   const [diaryEntries, setDiaryEntries] = useState({ docs: [], transcripts: [], creatures: [], places: [], notes: [] })
+  const [crowDialogue, setCrowDialogue] = useState(null)   // { lines, speaker, options? }
+  const [showCrowPrompt, setShowCrowPrompt] = useState(false)
+  const [hasLantern, setHasLantern] = useState(false)
   const gameApiRef = useRef(null)
   const jogadorRef = useRef(null)
   const skipIntroRef = useRef(null)
@@ -36,6 +40,20 @@ function App() {
     jogadorRef.current = criarPersonagem('Hades', '3', 'male')
     setPage('game')
     setIntroPhase('opening')
+  }
+
+  const handleCrowDialogueClose = () => {
+    setCrowDialogue(null)
+    gameApiRef.current?.crowUnlock()
+  }
+
+  const handleCrowOption = (opt) => {
+    setCrowDialogue(null)
+    if (opt === 'Equipar') {
+      gameApiRef.current?.crowPickup()
+      setHasLantern(true)
+    }
+    gameApiRef.current?.crowUnlock()
   }
 
   const handleCombatTrigger = (enemy) => {
@@ -62,6 +80,7 @@ function App() {
       if (isConsoleOpen) return;
 
       if (e.key === 'Escape') {
+        if (crowDialogue) return; // Esc não fecha diálogo do corvo, só abre menu
         if (isDiaryOpen) setIsDiaryOpen(false);
         else if (isInventoryOpen) setIsInventoryOpen(false);
         else setIsMenuOpen(prev => !prev);
@@ -78,7 +97,7 @@ function App() {
 
       // saque rápido — teclas 1-4 só funcionam fora de qualquer overlay
       const slot = parseInt(e.key) - 1;
-      if (slot >= 0 && slot <= 3 && !isMenuOpen && !isDiaryOpen && !isInventoryOpen && !combatEnemy) {
+      if (slot >= 0 && slot <= 3 && !isMenuOpen && !isDiaryOpen && !isInventoryOpen && !combatEnemy && !crowDialogue) {
         const item = quickSlots[slot];
         if (item && jogadorRef.current) {
           item.usar?.(jogadorRef.current);
@@ -89,7 +108,19 @@ function App() {
     }
     window.addEventListener('keydown', handleKeyDown)
     return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [page, isDiaryOpen, isMenuOpen, isInventoryOpen, quickSlots, combatEnemy, isConsoleOpen])
+  }, [page, isDiaryOpen, isMenuOpen, isInventoryOpen, quickSlots, combatEnemy, isConsoleOpen, crowDialogue])
+
+  // tecla E para interagir com o corvo
+  useEffect(() => {
+    const handler = (e) => {
+      if (e.key !== 'e' && e.key !== 'E') return;
+      if (page !== 'game') return;
+      if (isMenuOpen || isDiaryOpen || isInventoryOpen || combatEnemy || crowDialogue) return;
+      if (showCrowPrompt) gameApiRef.current?.crowInteract();
+    };
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [page, showCrowPrompt, isMenuOpen, isDiaryOpen, isInventoryOpen, combatEnemy, crowDialogue])
 
   return (
     <div style={{ position: 'relative' }}>
@@ -133,10 +164,15 @@ function App() {
             <div id="game">
               <div className="noise" />
               <GameCanvas
-                isPaused={isMenuOpen || isDiaryOpen || isInventoryOpen || !!combatEnemy}
+                isPaused={isMenuOpen || isDiaryOpen || isInventoryOpen || !!combatEnemy || !!crowDialogue}
+                hasLantern={hasLantern}
                 onReady={(api) => {
                   gameApiRef.current = api;
                   api.setJogador(jogadorRef.current);
+                  api.setCrowCallbacks({
+                    onDialogue: (data) => setCrowDialogue(data),
+                    onPrompt:   (v)    => setShowCrowPrompt(v),
+                  });
 
                   if (introPhase === 'opening') {
                     api.playMusic();
@@ -209,6 +245,14 @@ function App() {
 
               <QuickSlotHUD quickSlots={quickSlots} />
               <KeybindGuide />
+
+              {crowDialogue && (
+                <CrowDialogueBox
+                  data={crowDialogue}
+                  onClose={handleCrowDialogueClose}
+                  onOption={handleCrowOption}
+                />
+              )}
 
               {combatEnemy && (
                 <CombatScreen

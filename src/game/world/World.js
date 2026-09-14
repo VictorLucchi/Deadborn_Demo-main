@@ -1,5 +1,6 @@
 import { Player }  from '../entities/Player.js';
 import { Hunter }  from '../entities/Hunter.js';
+import { Crow }    from '../entities/Crow.js';
 import { Camera }  from '../Camera.js';
 import { GameMap } from '../map/Map.js';
 
@@ -9,6 +10,7 @@ import arcadia1Url    from '../../assets/map/arcadia1.png';
 import solo2Url       from '../../assets/map/Solo2.jpeg';
 import arcadia2Url    from '../../assets/map/arcadia2.png';
 import solo3Url       from '../../assets/map/solo3.jpeg';
+import corvoUrl       from '../../assets/sprite-corvo/anfitrião(corvo).png';
 import idleUrl        from '../../assets/sprites/idle hades.png';
 import walkRightUrl   from '../../assets/sprites/hades walking direita.png';
 import walkLeftUrl    from '../../assets/sprites/hades walking esquerda.png';
@@ -30,6 +32,7 @@ export async function createWorld(canvasWidth, canvasHeight) {
         floor1, arcadia1, solo2, arcadia2, solo3,
         idle, walkRight, walkLeft,
         idleHunter, walkRightHunter, walkLeftHunter, runHunter,
+        corvImg,
     ] = await Promise.all([
         loadImage(floor1Url),
         loadImage(arcadia1Url),
@@ -43,12 +46,16 @@ export async function createWorld(canvasWidth, canvasHeight) {
         loadImage(walkRightHunterUrl),
         loadImage(walkLeftHunterUrl),
         loadImage(runHunterUrl),
+        loadImage(corvoUrl),
     ]);
 
     const map    = new GameMap(mapData, [floor1, arcadia1, solo2, arcadia2, solo3]);
     const camera = new Camera(map.width, map.height, canvasWidth, canvasHeight);
     const player = new Player({ idle, walkRight, walkLeft }, map.width / 2, map.height / 2);
 
+    // corvo mais distante do spawn do Hades
+    const crow = new Crow(corvImg, map.width / 2 + 300, map.height / 2 - 550);
+
     const hunterSprites = { idle: idleHunter, walkRight: walkRightHunter, walkLeft: walkLeftHunter, run: runHunter };
-    return { map, camera, player, initialEnemies: [], hunterSprites };
+    return { map, camera, player, crow, initialEnemies: [], hunterSprites };
 }

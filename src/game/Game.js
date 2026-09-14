@@ -4,6 +4,8 @@ import { Renderer }      from './render/Renderer.js';
 import { UIBridge }      from './UIBridge/UIBridge.js';
 import { AudioManager }  from './audio/AudioManager.js';
 import { createWorld }   from './world/World.js';
+import { CrowDialogue }  from './crow/CrowDialogue.js';
+import { Lantern }       from '../engine/items/weapons/Lantern.js';
 import { HealthPotion }  from '../engine/items/consumables/HealthPotion.js';
 import { ManaPotion }    from '../engine/items/consumables/ManaPotion.js';
 import { AbyssalBlood }  from '../engine/items/drops/AbyssalBlood.js';
@@ -46,7 +48,7 @@ export class Game {
         this._setupResize();
         this.input.init(this.canvas, { current: null, set: (cam) => { this.camera = cam; } });
 
-        const { map, camera, player, initialEnemies, hunterSprites } = await createWorld(
+        const { map, camera, player, crow, initialEnemies, hunterSprites } = await createWorld(
             this.canvas.width,
             this.canvas.height
         );
@@ -55,11 +57,16 @@ export class Game {
         this.camera  = camera;
         this.player  = player;
         this.sprites = hunterSprites;
+        this.crow    = crow;
+
+        this.crowDialogue = new CrowDialogue(crow);
+        this.crowDialogue.onDialogue     = (data) => this.onCrowDialogue?.(data);
+        this.crowDialogue.onPromptChange = (v)    => this.onCrowPrompt?.(v);
 
         // atualiza a referência da câmera no InputManager
         this.input._cameraGetter = () => this.camera;
 
-        this.em.init(player, initialEnemies);
+        this.em.init(player, initialEnemies, crow, this.crowDialogue);
         this.renderer = new Renderer(this.canvas);
 
         let lastTime = 0;
@@ -79,7 +86,7 @@ export class Game {
                     this.camera.follow(this.player);
                 }
 
-                this.renderer.draw(this.ctx, this.map, this.player, this.em, this.camera, this.ui, this.input.mousePos, this.jogadorEngine);
+                this.renderer.draw(this.ctx, this.map, this.player, this.em, this.camera, this.ui, this.input.mousePos, this.jogadorEngine, { hasLantern: this.crowDialogue?.hasLantern, showPrompt: this.crowDialogue?.showPrompt, crow: this.crow?.visible ? this.crow : null });
             } catch (err) {
                 console.error('[Game loop error]', err);
             }
@@ -91,6 +98,33 @@ export class Game {
 
     setJogador(jogador) {
         this.jogadorEngine = jogador;
+    }
+
+    setCrowCallbacks({ onDialogue, onPrompt }) {
+        this.onCrowDialogue = onDialogue;
+        this.onCrowPrompt   = onPrompt;
+        if (this.crowDialogue) {
+            this.crowDialogue.onDialogue     = (data) => onDialogue?.(data);
+            this.crowDialogue.onPromptChange = (v)    => onPrompt?.(v);
+        }
+    }
+
+    crowInteract() {
+        this.crowDialogue?.triggerInteract();
+    }
+
+    crowPickupLantern() {
+        this.crowDialogue?.pickupLantern();
+        if (this.crow) this.crow.visible = false;
+        if (this.jogadorEngine) {
+            const lantern = new Lantern();
+            this.jogadorEngine.adicionarItem?.(lantern);
+            this.jogadorEngine.armaEquipada = lantern;
+        }
+    }
+
+    crowUnlockDialogue() {
+        this.crowDialogue?.setDialogueLock(false);
     }
 
     pause(value) {
