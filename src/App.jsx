@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+
 import { GameCanvas } from './components/GameCanvas.jsx'
 import { GameMenu } from './components/GameMenu.jsx'
 import { Diary } from './components/Diary.jsx'
@@ -9,11 +10,16 @@ import { Inventory } from './components/Inventory.jsx'
 import { QuickSlotHUD } from './components/QuickSlotHUD.jsx'
 import { KeybindGuide } from './components/KeybindGuide.jsx'
 import { IntroSubtitles } from './components/IntroSubtitles.jsx'
+import { IntroScene } from './components/IntroScene.jsx'
 import { CrowDialogueBox } from './components/CrowDialogueBox.jsx'
+
 import { criarPersonagem } from './engine/GameEngine.js'
+
 import './App.css'
 
+
 function App() {
+
   const [page, setPage] = useState('home')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDiaryOpen, setIsDiaryOpen] = useState(false)
@@ -21,252 +27,731 @@ function App() {
   const [isInventoryOpen, setIsInventoryOpen] = useState(false)
   const [quickSlots, setQuickSlots] = useState([null, null, null, null])
   const [isConsoleOpen, setIsConsoleOpen] = useState(false)
+
   const [introPhase, setIntroPhase] = useState('idle')
   const [subtitlePhase, setSubtitlePhase] = useState(null)
-  const [diaryEntries, setDiaryEntries] = useState({ docs: [], transcripts: [], creatures: [], places: [], notes: [] })
-  const [crowDialogue, setCrowDialogue] = useState(null)   // { lines, speaker, options? }
+
+  const [showHadesTitle, setShowHadesTitle] = useState(false)
+  const [introSceneActive, setIntroSceneActive] = useState(false)
+
+  const [diaryEntries, setDiaryEntries] = useState({
+    docs: [],
+    transcripts: [],
+    creatures: [],
+    places: [],
+    notes: []
+  })
+
+  const [crowDialogue, setCrowDialogue] = useState(null)
   const [showCrowPrompt, setShowCrowPrompt] = useState(false)
   const [hasLantern, setHasLantern] = useState(false)
+
   const gameApiRef = useRef(null)
   const jogadorRef = useRef(null)
   const skipIntroRef = useRef(null)
 
+
+  // =========================================================
+  // NOVO JOGO
+  // =========================================================
+
   const startGame = () => {
     jogadorRef.current = criarPersonagem('Hades', '3', 'male')
+
     setIntroPhase('closing')
   }
 
+
+  // =========================================================
+  // CONTINUAR
+  // =========================================================
+
   const continueGame = () => {
     jogadorRef.current = criarPersonagem('Hades', '3', 'male')
+
     setPage('game')
     setIntroPhase('opening')
   }
+
+
+  // =========================================================
+  // DIÁLOGO DO CORVO
+  // =========================================================
 
   const handleCrowDialogueClose = () => {
     setCrowDialogue(null)
     gameApiRef.current?.crowUnlock()
   }
 
+
   const handleCrowOption = (opt) => {
+
     setCrowDialogue(null)
+
     if (opt === 'Equipar') {
       gameApiRef.current?.crowPickup()
       setHasLantern(true)
     }
+
     gameApiRef.current?.crowUnlock()
   }
+
+
+  // =========================================================
+  // COMBATE
+  // =========================================================
 
   const handleCombatTrigger = (enemy) => {
     setCombatEnemy(enemy)
   }
 
+
   const handleCombatClose = () => {
-    if (combatEnemy) gameApiRef.current?.removeEnemy(combatEnemy)
+
+    if (combatEnemy) {
+      gameApiRef.current?.removeEnemy(combatEnemy)
+    }
+
     setCombatEnemy(null)
   }
 
+
+  // =========================================================
+  // ENTER — PULAR INTRO
+  // =========================================================
+
   useEffect(() => {
+
     const handleSkip = (e) => {
-      if (e.key !== 'Enter') return;
-      skipIntroRef.current?.();
-    };
-    window.addEventListener('keydown', handleSkip);
-    return () => window.removeEventListener('keydown', handleSkip);
+
+      if (e.key !== 'Enter') return
+
+      skipIntroRef.current?.()
+    }
+
+    window.addEventListener('keydown', handleSkip)
+
+    return () => {
+      window.removeEventListener('keydown', handleSkip)
+    }
+
   }, [])
 
+
+  // =========================================================
+  // CONTROLES DO JOGO
+  // =========================================================
+
   useEffect(() => {
+
     const handleKeyDown = (e) => {
-      if (page !== 'game') return;
-      if (isConsoleOpen) return;
+
+      if (page !== 'game') return
+      if (isConsoleOpen) return
+
 
       if (e.key === 'Escape') {
-        if (crowDialogue) return; // Esc não fecha diálogo do corvo, só abre menu
-        if (isDiaryOpen) setIsDiaryOpen(false);
-        else if (isInventoryOpen) setIsInventoryOpen(false);
-        else setIsMenuOpen(prev => !prev);
+
+        if (crowDialogue) return
+
+        if (isDiaryOpen) {
+          setIsDiaryOpen(false)
+        }
+
+        else if (isInventoryOpen) {
+          setIsInventoryOpen(false)
+        }
+
+        else {
+          setIsMenuOpen(prev => !prev)
+        }
       }
+
 
       if (e.key === 'Tab') {
-        e.preventDefault();
-        if (!isMenuOpen && !isInventoryOpen) setIsDiaryOpen(prev => !prev);
+
+        e.preventDefault()
+
+        if (!isMenuOpen && !isInventoryOpen) {
+          setIsDiaryOpen(prev => !prev)
+        }
       }
+
 
       if (e.key === 'i' || e.key === 'I') {
-        if (!isMenuOpen && !isDiaryOpen) setIsInventoryOpen(prev => !prev);
+
+        if (!isMenuOpen && !isDiaryOpen) {
+          setIsInventoryOpen(prev => !prev)
+        }
       }
 
-      // saque rápido — teclas 1-4 só funcionam fora de qualquer overlay
-      const slot = parseInt(e.key) - 1;
-      if (slot >= 0 && slot <= 3 && !isMenuOpen && !isDiaryOpen && !isInventoryOpen && !combatEnemy && !crowDialogue) {
-        const item = quickSlots[slot];
+
+      // saque rápido — teclas 1-4
+      const slot = parseInt(e.key) - 1
+
+      if (
+        slot >= 0 &&
+        slot <= 3 &&
+        !isMenuOpen &&
+        !isDiaryOpen &&
+        !isInventoryOpen &&
+        !combatEnemy &&
+        !crowDialogue
+      ) {
+
+        const item = quickSlots[slot]
+
         if (item && jogadorRef.current) {
-          item.usar?.(jogadorRef.current);
-          jogadorRef.current.removerItem?.(item);
-          setQuickSlots(prev => { const n = [...prev]; n[slot] = null; return n; });
+
+          item.usar?.(jogadorRef.current)
+
+          jogadorRef.current.removerItem?.(item)
+
+          setQuickSlots(prev => {
+
+            const n = [...prev]
+
+            n[slot] = null
+
+            return n
+          })
         }
       }
     }
-    window.addEventListener('keydown', handleKeyDown)
-    return () => window.removeEventListener('keydown', handleKeyDown)
-  }, [page, isDiaryOpen, isMenuOpen, isInventoryOpen, quickSlots, combatEnemy, isConsoleOpen, crowDialogue])
 
-  // tecla E para interagir com o corvo
+
+    window.addEventListener('keydown', handleKeyDown)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown)
+    }
+
+  }, [
+    page,
+    isDiaryOpen,
+    isMenuOpen,
+    isInventoryOpen,
+    quickSlots,
+    combatEnemy,
+    isConsoleOpen,
+    crowDialogue
+  ])
+
+
+  // =========================================================
+  // TECLA E — CORVO
+  // =========================================================
+
   useEffect(() => {
+
     const handler = (e) => {
-      if (e.key !== 'e' && e.key !== 'E') return;
-      if (page !== 'game') return;
-      if (isMenuOpen || isDiaryOpen || isInventoryOpen || combatEnemy || crowDialogue) return;
-      if (showCrowPrompt) gameApiRef.current?.crowInteract();
-    };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
-  }, [page, showCrowPrompt, isMenuOpen, isDiaryOpen, isInventoryOpen, combatEnemy, crowDialogue])
+
+      if (e.key !== 'e' && e.key !== 'E') return
+      if (page !== 'game') return
+
+      if (
+        isMenuOpen ||
+        isDiaryOpen ||
+        isInventoryOpen ||
+        combatEnemy ||
+        crowDialogue
+      ) return
+
+      if (showCrowPrompt) {
+        gameApiRef.current?.crowInteract()
+      }
+    }
+
+
+    window.addEventListener('keydown', handler)
+
+    return () => {
+      window.removeEventListener('keydown', handler)
+    }
+
+  }, [
+    page,
+    showCrowPrompt,
+    isMenuOpen,
+    isDiaryOpen,
+    isInventoryOpen,
+    combatEnemy,
+    crowDialogue
+  ])
+
+
+  // =========================================================
+  // RENDER
+  // =========================================================
 
   return (
+
     <div style={{ position: 'relative' }}>
-      {subtitlePhase && (
-        <IntroSubtitles phase={subtitlePhase} />
+
+
+      {/* =====================================================
+          VINHETA DE TRANSIÇÃO
+      ===================================================== */}
+
+      {(introPhase === 'closing' || introPhase === 'intro') && (
+
+        <motion.div
+
+          key="vignette"
+
+          initial={{ opacity: 0 }}
+
+          animate={{ opacity: 1 }}
+
+          transition={{
+            duration: 1.2,
+            ease: 'easeIn'
+          }}
+
+          onAnimationComplete={() => {
+
+            if (introPhase === 'closing') {
+
+              setIntroPhase('intro')
+              setPage('game')
+            }
+
+          }}
+
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 9999,
+            pointerEvents: 'none',
+            background:
+              'radial-gradient(ellipse at center, transparent 0%, black 70%)'
+          }}
+
+        />
+
       )}
 
-      {/* Vinheta de transição */}
-      {(introPhase === 'closing' || introPhase === 'intro') && (
-        <motion.div
-          key="vignette"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 1.2, ease: 'easeIn' }}
-          onAnimationComplete={() => {
-            if (introPhase === 'closing') {
-              setIntroPhase('intro');
-              setPage('game');
-            }
-          }}
-          style={{
-            position: 'fixed', inset: 0, zIndex: 9999, pointerEvents: 'none',
-            background: 'radial-gradient(ellipse at center, transparent 0%, black 70%)',
-          }}
-        />
-      )}
+
+      {/* =====================================================
+          PÁGINAS
+      ===================================================== */}
+
       <AnimatePresence mode="wait">
-       {page === 'home' && (
-        <motion.div key="home" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.4 }}>
-          <MainMenu onNewGame={startGame} onContinue={continueGame} />
-        </motion.div>
-      )}
+
+
+        {/* ===================== HOME ===================== */}
+
+        {page === 'home' && (
+
+          <motion.div
+
+            key="home"
+
+            initial={{ opacity: 0 }}
+
+            animate={{ opacity: 1 }}
+
+            exit={{ opacity: 0 }}
+
+            transition={{ duration: 0.4 }}
+
+          >
+
+            <MainMenu
+              onNewGame={startGame}
+              onContinue={continueGame}
+            />
+
+          </motion.div>
+
+        )}
+
+
+        {/* ===================== GAME ===================== */}
 
         {page === 'game' && (
+
           <motion.div
+
             key="game"
+
             initial={{ opacity: 0 }}
-            animate={{ opacity: introPhase === 'opening' ? 1 : 0 }}
-            transition={{ duration: 1.2, ease: 'easeIn' }}
+
+            animate={{
+              opacity: introPhase === 'opening' ? 1 : 0
+            }}
+
+            transition={{
+              duration: 1.2,
+              ease: 'easeIn'
+            }}
+
+            style={{
+              position: 'relative',
+              zIndex: 1
+            }}
+
           >
+
             <div id="game">
+
               <div className="noise" />
+
+
               <GameCanvas
-                isPaused={isMenuOpen || isDiaryOpen || isInventoryOpen || !!combatEnemy || !!crowDialogue}
+
+                isPaused={
+                  isMenuOpen ||
+                  isDiaryOpen ||
+                  isInventoryOpen ||
+                  !!combatEnemy ||
+                  !!crowDialogue
+                }
+
                 hasLantern={hasLantern}
+
+
                 onReady={(api) => {
-                  gameApiRef.current = api;
-                  api.setJogador(jogadorRef.current);
+
+                  gameApiRef.current = api
+
+                  api.setJogador(jogadorRef.current)
+
+
                   api.setCrowCallbacks({
-                    onDialogue: (data) => setCrowDialogue(data),
-                    onPrompt:   (v)    => setShowCrowPrompt(v),
-                  });
+
+                    onDialogue: (data) =>
+                      setCrowDialogue(data),
+
+                    onPrompt: (v) =>
+                      setShowCrowPrompt(v)
+
+                  })
+
+
+                  // =================================================
+                  // CONTINUAR — NÃO EXECUTA A INTRO
+                  // =================================================
 
                   if (introPhase === 'opening') {
-                    api.playMusic();
-                    return;
+
+                    api.playMusic()
+
+                    return
                   }
 
+
+                  // =================================================
+                  // AQUI A INTRO VISUAL COMEÇA
+                  // =================================================
+
+                  setIntroSceneActive(true)
+
+
+                  // =================================================
+                  // FINAL DA INTRO
+                  // =================================================
+
                   const onComplete = () => {
-                    skipIntroRef.current = null;
-                    setSubtitlePhase(null);
-                    setIntroPhase('opening');
+
+                    skipIntroRef.current = null
+
+                    setSubtitlePhase(null)
+
+                    setIntroSceneActive(false)
+
+                    setShowHadesTitle(false)
+
+                    setIntroPhase('opening')
+
+
                     setTimeout(async () => {
-                      const game = document.getElementById('game');
-                      if (game && !document.fullscreenElement) {
-                        try { await game.requestFullscreen(); } catch (e) { console.error(e); }
+
+                      const game =
+                        document.getElementById('game')
+
+
+                      if (
+                        game &&
+                        !document.fullscreenElement
+                      ) {
+
+                        try {
+
+                          await game.requestFullscreen()
+
+                        }
+
+                        catch (e) {
+
+                          console.error(e)
+
+                        }
                       }
-                      api.playMusic();
-                    }, 0);
-                  };
+
+
+                      api.playMusic()
+
+                    }, 0)
+                  }
+
+
+                  // =================================================
+                  // PULAR INTRO
+                  // =================================================
 
                   skipIntroRef.current = () => {
-                    api.skipIntro();
-                    onComplete();
-                  };
+
+                    api.skipIntro()
+
+                    setIntroSceneActive(false)
+
+                    setShowHadesTitle(false)
+
+                    onComplete()
+                  }
+
+
+                  // =================================================
+                  // EXECUTA A INTRO
+                  // =================================================
 
                   api.playIntro({
-                    onHadesStart: () => setSubtitlePhase('hades'),
-                    onAyaStart:   () => setSubtitlePhase('aya'),
-                    onComplete,
-                  });
+
+                    // -----------------------------------------------
+                    // HADES
+                    // -----------------------------------------------
+
+                    onHadesStart: () => {
+
+                      setSubtitlePhase('hades')
+
+                    },
+
+
+                    // -----------------------------------------------
+                    // AYA
+                    // -----------------------------------------------
+
+                    onAyaStart: () => {
+
+                      setSubtitlePhase('aya')
+
+
+                      setTimeout(() => {
+
+                        setShowHadesTitle(true)
+
+                      }, 9000)
+
+
+                      setTimeout(() => {
+
+                        setShowHadesTitle(false)
+
+                      }, 13000)
+
+                    },
+
+
+                    // -----------------------------------------------
+                    // FINAL
+                    // -----------------------------------------------
+
+                    onComplete
+
+                  })
+
                 }}
+
+
                 onCombatTrigger={handleCombatTrigger}
+
                 onConsoleToggle={setIsConsoleOpen}
+
               />
+
+
+              {/* ===================================================
+                  MENU
+              =================================================== */}
+
               <AnimatePresence>
+
                 {isMenuOpen && (
-                  <GameMenu 
-                    onResume={() => setIsMenuOpen(false)} 
-                    onQuit={() => {
+
+                  <GameMenu
+
+                    onResume={() =>
                       setIsMenuOpen(false)
+                    }
+
+                    onQuit={() => {
+
+                      setIsMenuOpen(false)
+
                       setPage('home')
+
                     }}
+
                     onOpenDiary={() => {
-                      setIsMenuOpen(false);
-                      setIsDiaryOpen(true);
+
+                      setIsMenuOpen(false)
+
+                      setIsDiaryOpen(true)
+
                     }}
+
                   />
+
                 )}
+
               </AnimatePresence>
 
+
+              {/* ===================================================
+                  DIÁRIO
+              =================================================== */}
+
               <AnimatePresence>
+
                 {isDiaryOpen && (
-                  <Diary 
-                    isOpen={isDiaryOpen} 
-                    onClose={() => setIsDiaryOpen(false)}
+
+                  <Diary
+
+                    isOpen={isDiaryOpen}
+
+                    onClose={() =>
+                      setIsDiaryOpen(false)
+                    }
+
                     entries={diaryEntries}
+
                   />
+
                 )}
+
               </AnimatePresence>
+
+
+              {/* ===================================================
+                  INVENTÁRIO
+              =================================================== */}
 
               <AnimatePresence>
+
                 {isInventoryOpen && (
+
                   <Inventory
+
                     jogador={jogadorRef.current}
+
                     quickSlots={quickSlots}
+
                     setQuickSlots={setQuickSlots}
-                    onClose={() => setIsInventoryOpen(false)}
+
+                    onClose={() =>
+                      setIsInventoryOpen(false)
+                    }
+
                   />
+
                 )}
+
               </AnimatePresence>
 
-              <QuickSlotHUD quickSlots={quickSlots} />
+
+              <QuickSlotHUD
+                quickSlots={quickSlots}
+              />
+
               <KeybindGuide />
 
+
+              {/* ===================================================
+                  DIÁLOGO DO CORVO
+              =================================================== */}
+
               {crowDialogue && (
+
                 <CrowDialogueBox
+
                   data={crowDialogue}
+
                   onClose={handleCrowDialogueClose}
+
                   onOption={handleCrowOption}
+
                 />
+
               )}
 
+
+              {/* ===================================================
+                  COMBATE
+              =================================================== */}
+
               {combatEnemy && (
+
                 <CombatScreen
+
                   jogador={jogadorRef.current}
+
                   enemyType="hunter"
+
                   onClose={handleCombatClose}
+
                 />
+
               )}
+
             </div>
+
           </motion.div>
+
         )}
+
       </AnimatePresence>
+
+
+      {/* =========================================================
+          INTRO VISUAL
+
+          IMPORTANTE:
+          Agora ela é ativada no INÍCIO da intro,
+          e não em onHadesStart.
+      ========================================================= */}
+
+      <AnimatePresence>
+
+        {introSceneActive && (
+
+          <IntroScene
+            key="intro-scene"
+            showHades={showHadesTitle}
+          />
+
+        )}
+
+      </AnimatePresence>
+
+
+      {/* =========================================================
+          LEGENDAS
+      ========================================================= */}
+
+      {subtitlePhase && (
+
+        <IntroSubtitles
+          phase={subtitlePhase}
+        />
+
+      )}
+
     </div>
+
   )
 }
+
 
 export default App

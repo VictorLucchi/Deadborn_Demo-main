@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const HADES_LINES = [
@@ -36,15 +37,15 @@ export function IntroSubtitles({ phase }) {
     return () => timers.forEach(clearTimeout);
   }, [phase]);
 
-  return (
+  return createPortal(
     <AnimatePresence mode="wait">
       {current && (
         <motion.div
           key={current.text}
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.6 }}
+          initial={{ opacity: 0, scale: current.big ? 0.85 : 1 }}
+          animate={{ opacity: 1, scale: 1 }}
+          exit={{ opacity: 0, scale: current.big ? 1.05 : 1 }}
+          transition={{ duration: current.big ? 1.4 : 0.6, ease: 'easeOut' }}
           style={{
             position: 'fixed',
             inset: 0,
@@ -56,22 +57,25 @@ export function IntroSubtitles({ phase }) {
             paddingBottom: current.big ? 0 : '10vh',
           }}
         >
-          <p style={{
-            color: 'white',
-            fontFamily: 'serif',
-            fontSize: current.big ? '15vw' : '1.4rem',
-            fontWeight: current.big ? '900' : '400',
-            letterSpacing: current.big ? '0.2em' : '0.05em',
-            textAlign: 'center',
-            textShadow: '0 0 30px rgba(255,255,255,0.3)',
-            margin: 0,
-            padding: '0 2rem',
-            lineHeight: 1.4,
-          }}>
-            {current.text}
-          </p>
+          {!current.big && (
+            <p style={{
+              color: 'white',
+              fontFamily: '"Cinzel", Georgia, serif',
+              fontSize: '1.4rem',
+              fontWeight: '400',
+              letterSpacing: '0.08em',
+              textAlign: 'center',
+              textShadow: '0 0 20px rgba(255,255,255,0.2), 0 2px 4px rgba(0,0,0,0.8)',
+              margin: 0,
+              padding: '0 2rem',
+              lineHeight: 1.6,
+            }}>
+              {current.text}
+            </p>
+          )}
         </motion.div>
       )}
-    </AnimatePresence>
+    </AnimatePresence>,
+    document.body
   );
 }
