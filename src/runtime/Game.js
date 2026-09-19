@@ -58,6 +58,7 @@ export class Game {
         // porta próxima
         this._nearDoor     = null;
         this._doorPrompt   = null;
+        this._doorInteractions = [];
     }
 
     async start() {
@@ -69,6 +70,7 @@ export class Game {
         const { map, camera } = await loadMap('casaTeste1', this.canvas.width, this.canvas.height);
         this.map    = map;
         this.camera = camera;
+        this._cacheDoorInteractions();
 
         const playerSpawn = map.getSpawn('Player_Start');
         const crowSpawn   = map.getSpawn('Crow_Start');
@@ -141,13 +143,11 @@ export class Game {
     }
 
     _updateDoorDetection() {
-        const interactions = this.map.getInteractions();
         this._nearDoor   = null;
         this._doorPrompt = null;
 
-        for (const obj of interactions) {
-            const props = Object.fromEntries((obj.properties ?? []).map(p => [p.name, p.value]));
-            if ((props.InteractionType ?? props.interactionType) !== 'door') continue;
+        for (const door of this._doorInteractions) {
+            const { obj, props } = door;
 
             const cx = obj.x + obj.width  / 2;
             const cy = obj.y + obj.height / 2;
@@ -155,7 +155,7 @@ export class Game {
             const dy = this.player.y - cy;
 
             if (Math.sqrt(dx * dx + dy * dy) < DOOR_INTERACT_DIST) {
-                this._nearDoor   = { ...obj, props };
+                this._nearDoor   = door;
                 this._doorPrompt = props.prompt ?? '[E] Entrar';
 
                 if (this.input.keys['e'] || this.input.keys['E']) {
@@ -164,6 +164,22 @@ export class Game {
                     this._triggerDoorTransition(props);
                 }
                 break;
+            }
+        }
+    }
+
+    _cacheDoorInteractions() {
+        this._doorInteractions = [];
+
+        for (const obj of this.map.getInteractions()) {
+            const props = {};
+
+            for (const property of obj.properties ?? []) {
+                props[property.name] = property.value;
+            }
+
+            if ((props.InteractionType ?? props.interactionType) === 'door') {
+                this._doorInteractions.push({ obj, props });
             }
         }
     }
@@ -180,6 +196,7 @@ export class Game {
             this.map    = map;
             this.camera = camera;
             this.currentMapName = targetMap;
+            this._cacheDoorInteractions();
 
             const spawn = map.getSpawn(targetSpawn);
             if (spawn) {
@@ -256,6 +273,7 @@ export class Game {
         cancelAnimationFrame(this.rafId);
         this.audio.stop();
         this.input.destroy(this.canvas);
+        this.ui.destroy();
         window.removeEventListener('resize', this._resizeHandler);
     }
 

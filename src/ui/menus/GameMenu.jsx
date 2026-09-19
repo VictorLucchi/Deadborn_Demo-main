@@ -3,8 +3,8 @@ import { motion } from 'framer-motion';
 
 import './GameMenu.css';
 
-import cinereaLogo from '../assets/images/cinerea-logo.png';
-import menuSymbol from '../assets/images/logo-seletor.png';
+import cinereaLogo from '../../assets/images/cinerea-logo.png';
+import menuSymbol from '../../assets/images/logo-seletor.png';
 
 
 const ITEMS = [

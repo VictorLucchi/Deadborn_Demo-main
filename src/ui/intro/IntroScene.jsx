@@ -1,10 +1,10 @@
 import { useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import eye1Img from '../assets/intro/Eye1.png';
-import eye2Img from '../assets/intro/Eye2.png';
-import eye3Img from '../assets/intro/Eye3.png';
-import eye4Img from '../assets/intro/Eye4.png';
+import eye1Img from '../../assets/intro/Eye1.png';
+import eye2Img from '../../assets/intro/Eye2.png';
+import eye3Img from '../../assets/intro/Eye3.png';
+import eye4Img from '../../assets/intro/Eye4.png';
 
 // Todos nas bordas/cantos, centro livre
 const EYES = [

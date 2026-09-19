@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { useGameCanvas } from '../game/useGameCanvas.js';
+import { useGameCanvas } from '../../runtime/useGameCanvas.js';
 import { DevConsole } from './DevConsole.jsx';
-import '../game/HUD/HUD.css';
+import '../../runtime/HUD/HUD.css';
 
 export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle }) {
     const [isConsoleOpen, setIsConsoleOpen] = useState(false);

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
-import { GameEngine, criarPersonagem } from '../engine/GameEngine.js';
+import { GameEngine, criarPersonagem } from '../../engine/GameEngine.js';
 import './CombatScreen.css';
 
 function StatBar({ label, value, max, color }) {

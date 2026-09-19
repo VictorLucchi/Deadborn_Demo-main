@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import './MainMenu.css'
-import deadbornLogo from '../assets/images/deadborn-logo-oficial.png'
+import deadbornLogo from '../../assets/images/deadborn-logo-oficial.png'
 
 export function MainMenu({ onNewGame, onContinue }) {
 

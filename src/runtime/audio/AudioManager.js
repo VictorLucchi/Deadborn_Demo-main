@@ -8,6 +8,9 @@ export class AudioManager {
 
     constructor() {
         this.currentMusic = null;
+        this._rainFadeInterval = null;
+        this._onHadesEnded = null;
+        this._onAyaEnded = null;
 
         this.introMusic  = new Audio(introMusic);
         this.ambientMusic = new Audio(ambientMusic);
@@ -33,6 +36,8 @@ export class AudioManager {
     }
 
     skipIntro() {
+        this._stopRainFade();
+        this._clearIntroListeners();
         this.hadesAudio.pause();
         this.hadesAudio.currentTime = 0;
         this.ayaAudio.pause();
@@ -43,6 +48,8 @@ export class AudioManager {
     }
 
     playIntro({ onHadesStart, onAyaStart, onComplete } = {}) {
+        this._stopRainFade();
+        this._clearIntroListeners();
         this._onIntroComplete = onComplete;
         // Chuva alta
         this.rain.volume = 0.9;
@@ -54,7 +61,9 @@ export class AudioManager {
         this.hadesAudio.play().catch(() => {});
         onHadesStart?.();
 
-        this.hadesAudio.addEventListener("ended", () => {
+        this._onHadesEnded = () => {
+            this._onHadesEnded = null;
+
             // Toca Aya e faz fade da chuva
             this.ayaAudio.currentTime = 0;
             this.ayaAudio.play().catch(() => {});
@@ -65,22 +74,27 @@ export class AudioManager {
             const interval = (fadeDuration * 1000) / steps;
             const volumeStep = this.rain.volume / steps;
 
-            const fadeInterval = setInterval(() => {
+            this._rainFadeInterval = setInterval(() => {
                 if (this.rain.volume > volumeStep) {
                     this.rain.volume = Math.max(0, this.rain.volume - volumeStep);
                 } else {
                     this.rain.volume = 0;
-                    clearInterval(fadeInterval);
+                    this._stopRainFade();
                 }
             }, interval);
 
-            this.ayaAudio.addEventListener("ended", () => {
-                clearInterval(fadeInterval);
+            this._onAyaEnded = () => {
+                this._onAyaEnded = null;
+                this._stopRainFade();
                 this.rain.volume = 0;
                 this._onIntroComplete?.();
                 this._onIntroComplete = null;
-            }, { once: true });
-        }, { once: true });
+            };
+
+            this.ayaAudio.addEventListener("ended", this._onAyaEnded, { once: true });
+        };
+
+        this.hadesAudio.addEventListener("ended", this._onHadesEnded, { once: true });
     }
 
     playBackgroundMusic() {
@@ -98,6 +112,8 @@ export class AudioManager {
     }
 
     stop() {
+        this._stopRainFade();
+        this._clearIntroListeners();
         if (this.currentMusic) {
             this.currentMusic.pause();
             this.currentMusic.currentTime = 0;
@@ -108,6 +124,25 @@ export class AudioManager {
         this.hadesAudio.currentTime = 0;
         this.ayaAudio.pause();
         this.ayaAudio.currentTime = 0;
+    }
+
+    _stopRainFade() {
+        if (this._rainFadeInterval !== null) {
+            clearInterval(this._rainFadeInterval);
+            this._rainFadeInterval = null;
+        }
+    }
+
+    _clearIntroListeners() {
+        if (this._onHadesEnded) {
+            this.hadesAudio.removeEventListener("ended", this._onHadesEnded);
+            this._onHadesEnded = null;
+        }
+
+        if (this._onAyaEnded) {
+            this.ayaAudio.removeEventListener("ended", this._onAyaEnded);
+            this._onAyaEnded = null;
+        }
     }
 
 }

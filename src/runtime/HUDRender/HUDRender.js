@@ -2,6 +2,10 @@ export class HUDRenderer {
 
     constructor() {
         this._ready = false;
+        this._lastName = undefined;
+        this._lastHealth = undefined;
+        this._lastMana = undefined;
+        this._lastWeapon = undefined;
     }
 
     _init() {
@@ -52,8 +56,11 @@ export class HUDRenderer {
             return;
         }
 
-        this._name.textContent =
-            jogador.nome?.toUpperCase() ?? 'HADES';
+        const name = jogador.nome?.toUpperCase() ?? 'HADES';
+        if (name === this._lastName) return;
+
+        this._name.textContent = name;
+        this._lastName = name;
     }
 
 
@@ -86,29 +93,14 @@ export class HUDRenderer {
             );
 
 
-        // Preenchimento da barra
+        const healthKey = `${current}/${max}`;
+        if (healthKey === this._lastHealth) return;
 
-        this._healthFill.style.width =
-            `${pct * 100}%`;
-
-
-        // Texto
-
-        this._healthText.textContent =
-            `VIDA ${Math.floor(current)}/${Math.floor(max)}`;
-
-
-        // Estado visual
-
-        this._hud.classList.toggle(
-            'hud-health-empty',
-            current <= 0
-        );
-
-        this._hud.classList.toggle(
-            'hud-health-critical',
-            pct > 0 && pct <= 0.25
-        );
+        this._healthFill.style.width = `${pct * 100}%`;
+        this._healthText.textContent = `VIDA ${Math.floor(current)}/${Math.floor(max)}`;
+        this._hud.classList.toggle('hud-health-empty', current <= 0);
+        this._hud.classList.toggle('hud-health-critical', pct > 0 && pct <= 0.25);
+        this._lastHealth = healthKey;
     }
 
 
@@ -141,16 +133,12 @@ export class HUDRenderer {
             );
 
 
-        // Preenchimento
+        const manaKey = `${current}/${max}`;
+        if (manaKey === this._lastMana) return;
 
-        this._manaFill.style.width =
-            `${pct * 100}%`;
-
-
-        // Texto
-
-        this._manaText.textContent =
-            `MANA ${Math.floor(current)}/${Math.floor(max)}`;
+        this._manaFill.style.width = `${pct * 100}%`;
+        this._manaText.textContent = `MANA ${Math.floor(current)}/${Math.floor(max)}`;
+        this._lastMana = manaKey;
     }
 
 
@@ -162,9 +150,13 @@ export class HUDRenderer {
         if (!this._weaponIcon) return;
 
         const frame = this._weaponIcon.closest('.hud-equipment-frame');
+        const weapon = jogador.armaEquipada;
+        const weaponKey = weapon?.iconUrl ?? weapon?.icon ?? weapon?.nome ?? null;
 
-        if (jogador.armaEquipada) {
-            const url = jogador.armaEquipada.iconUrl;
+        if (weaponKey === this._lastWeapon) return;
+
+        if (weapon) {
+            const url = weapon.iconUrl;
             if (url) {
                 this._weaponIcon.innerHTML = `<img src="${url}" style="width:100%;height:100%;object-fit:contain;" />`;
             } else {
@@ -176,5 +168,7 @@ export class HUDRenderer {
             this._weaponIcon.textContent = '—';
             frame?.classList.remove('filled');
         }
+
+        this._lastWeapon = weaponKey;
     }
 }

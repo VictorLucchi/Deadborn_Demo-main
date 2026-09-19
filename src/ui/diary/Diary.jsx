@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-import paginaDuplaUrl from '../assets/Diary/diario.png';
+import paginaDuplaUrl from '../../assets/Diary/diario.png';
 
 import './Diary.css';
 

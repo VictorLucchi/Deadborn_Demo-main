@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import hadesFullbody from '../assets/images/Hades_Fullbody.png';
+import hadesFullbody from '../../assets/images/Hades_Fullbody.png';
 import './Inventory.css';
 
 const GRID_COLS = 4;

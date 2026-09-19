@@ -7,14 +7,16 @@ export class UIBridge {
         this._showCoords = false;
         this._hud = new HUDRenderer();
 
-        window.addEventListener('keydown', (e) => {
+        this._onKeyDown = (e) => {
 
             if (e.key === 'F4') {
                 e.preventDefault();
                 this._showCoords = !this._showCoords;
             }
 
-        });
+        };
+
+        window.addEventListener('keydown', this._onKeyDown);
     }
 
     draw(ctx, mousePos, jogador) {
@@ -49,5 +51,9 @@ export class UIBridge {
         if (jogador) {
             this._hud.draw(jogador);
         }
+    }
+
+    destroy() {
+        window.removeEventListener('keydown', this._onKeyDown);
     }
 }
