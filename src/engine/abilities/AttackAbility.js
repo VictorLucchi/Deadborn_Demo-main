@@ -19,5 +19,5 @@ export class AttackAbility extends Ability {
         return { dano: danoTotal, critico };
     }
 
-    executar(usuario, alvo) { throw new Error("Metodo executar() deve ser implementado."); }
+    executar(_usuario, _alvo) { throw new Error("Metodo executar() deve ser implementado."); }
 }

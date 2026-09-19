@@ -5,7 +5,7 @@ import { Camera }  from '../Camera.js';
 import { GameMap } from '../map/Map.js';
 
 import casaTeste1Data from '../../assets/map/casaTeste1.json';
-import casa01Data     from '../../assets/map/Casa01.json';
+import casa01DataRaw  from '../../assets/map/Casa01.Json?raw';
 import floor1Url      from '../../assets/map/floor1.jpeg';
 import arcadia1Url    from '../../assets/map/arcadia1.png';
 import solo2Url       from '../../assets/map/Solo2.jpeg';
@@ -21,6 +21,11 @@ import idleHunterUrl      from '../../assets/sprites/Hunter/idle hunter.png';
 import walkRightHunterUrl from '../../assets/sprites/Hunter/hunter walking direita.png';
 import walkLeftHunterUrl  from '../../assets/sprites/Hunter/hunter walking esquerda.png';
 import runHunterUrl       from '../../assets/sprites/Hunter/hunter run.png';
+import idleWalkerUrl      from '../../assets/sprites/BroodhostWalker/Idle.png';
+import walkLeftWalkerUrl  from '../../assets/sprites/BroodhostWalker/walking-left.png';
+import walkRightWalkerUrl from '../../assets/sprites/BroodhostWalker/walking-right.png';
+
+const casa01Data = JSON.parse(casa01DataRaw);
 
 function loadImage(src) {
     return new Promise(resolve => {
@@ -35,18 +40,24 @@ let _sharedImages = null;
 async function getSharedImages() {
     if (_sharedImages) return _sharedImages;
     const [floor1, arcadia1, solo2, arcadia2, solo3, casaTeste, woodFloor,
-           idle, walkRight, walkLeft, idleHunter, walkRightHunter, walkLeftHunter, runHunter, corvImg] =
+           idle, walkRight, walkLeft, idleHunter, walkRightHunter, walkLeftHunter, runHunter,
+           idleWalker, walkLeftWalker, walkRightWalker, corvImg] =
         await Promise.all([
             loadImage(floor1Url), loadImage(arcadia1Url), loadImage(solo2Url),
             loadImage(arcadia2Url), loadImage(solo3Url), loadImage(casaTesteUrl),
             loadImage(woodFloorUrl),
             loadImage(idleUrl), loadImage(walkRightUrl), loadImage(walkLeftUrl),
             loadImage(idleHunterUrl), loadImage(walkRightHunterUrl),
-            loadImage(walkLeftHunterUrl), loadImage(runHunterUrl), loadImage(corvoUrl),
+            loadImage(walkLeftHunterUrl), loadImage(runHunterUrl),
+            loadImage(idleWalkerUrl), loadImage(walkLeftWalkerUrl),
+            loadImage(walkRightWalkerUrl), loadImage(corvoUrl),
         ]);
     _sharedImages = { floor1, arcadia1, solo2, arcadia2, solo3, casaTeste, woodFloor,
                       idle, walkRight, walkLeft, idleHunter, walkRightHunter,
                       walkLeftHunter, runHunter, corvImg };
+    _sharedImages.idleWalker = idleWalker;
+    _sharedImages.walkLeftWalker = walkLeftWalker;
+    _sharedImages.walkRightWalker = walkRightWalker;
     return _sharedImages;
 }
 

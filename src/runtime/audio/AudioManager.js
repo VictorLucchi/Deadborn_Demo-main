@@ -3,6 +3,7 @@ import ambientMusic from "../../assets/audio/music/Theme-default-looping.mp3";
 import rainSound    from "../../assets/audio/ambient/rain.mp3";
 import hadesVoice   from "../../assets/audio/introdução/Hades.mp3";
 import ayaVoice     from "../../assets/audio/introdução/Aya1.mp3";
+import diaryWritingSound from "../../assets/audio/SFX/escrita.mp3";
 
 export class AudioManager {
 
@@ -17,14 +18,16 @@ export class AudioManager {
         this.rain        = new Audio(rainSound);
         this.hadesAudio  = new Audio(hadesVoice);
         this.ayaAudio    = new Audio(ayaVoice);
+        this.diaryWritingAudio = new Audio(diaryWritingSound);
         
         this.hadesAudio.volume   = 1.0;
         this.ayaAudio.volume    = 0.7;
-        this.introMusic.volume  = 0.7;
-        this.ambientMusic.volume = 0.8;
+        this.introMusic.volume  = 0.6;
+        this.ambientMusic.volume = 0.6;
         this.ambientMusic.loop  = true;
         this.rain.loop          = true;
         this.rain.volume        = 0.5;
+        this.diaryWritingAudio.volume = 0.65;
 
         this.introMusic.addEventListener("ended", () => {
             if (this.currentMusic !== this.ambientMusic) {
@@ -111,6 +114,11 @@ export class AudioManager {
         this.rain.play().catch(() => {});
     }
 
+    playDiaryWriting() {
+        this.diaryWritingAudio.currentTime = 0;
+        this.diaryWritingAudio.play().catch(() => {});
+    }
+
     stop() {
         this._stopRainFade();
         this._clearIntroListeners();
@@ -124,6 +132,8 @@ export class AudioManager {
         this.hadesAudio.currentTime = 0;
         this.ayaAudio.pause();
         this.ayaAudio.currentTime = 0;
+        this.diaryWritingAudio.pause();
+        this.diaryWritingAudio.currentTime = 0;
     }
 
     _stopRainFade() {

@@ -47,6 +47,7 @@ export class Hunter {
         // ===============================
 
         this.currentAnim = 'idle';
+        this.combatType = 'hunter';
 
         this.marked = false;
         this.combatTriggered = false;

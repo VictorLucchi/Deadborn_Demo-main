@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { GameEngine, criarPersonagem } from '../../engine/GameEngine.js';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { GameEngine } from '../../engine/GameEngine.js';
 import './CombatScreen.css';
 
 function StatBar({ label, value, max, color }) {
@@ -25,7 +25,7 @@ function CharCard({ char, isActive, isEnemy }) {
             setTimeout(() => setShake(false), 400);
         }
         prevVida.current = char?.vida;
-    }, [char?.vida]);
+    }, [char]);
 
     if (!char) return null;
     return (
@@ -65,43 +65,38 @@ function BattleLog({ logs }) {
     );
 }
 
-export function CombatScreen({ jogador, enemyType = 'hunter', onClose }) {
-    const engineRef = useRef(null);
-    const [estado, setEstado] = useState(null);
+export function CombatScreen({ jogador, enemyType = 'hunter', onClose, onPlayerDefeated }) {
     const [logs, setLogs] = useState([]);
     const [modal, setModal] = useState(null); // 'habilidades' | 'itens' | 'armas'
     const [finalizado, setFinalizado] = useState(false);
 
     const addLogs = useCallback((msgs) => setLogs(prev => [...prev, ...msgs]), []);
+    const engine = useMemo(() => new GameEngine((msg) => addLogs([msg])), [addLogs]);
+    const [estado, setEstado] = useState(() => engine.iniciarPvE(jogador, enemyType));
 
-    useEffect(() => {
-        const engine = new GameEngine((msg) => addLogs([msg]));
-        engineRef.current = engine;
-        const novoEstado = engine.iniciarPvE(jogador, enemyType);
-        setEstado({ ...novoEstado });
-    }, []);
+    function finalizarAcao(resultado) {
+        addLogs(resultado.msgs);
+        setEstado({ ...engine.getEstado() });
+
+        if (!engine.emAndamento) {
+            setFinalizado(true);
+            if (!jogador.estaVivo()) onPlayerDefeated?.();
+        }
+    }
 
     function executarAcao(tipo, indice = 0) {
-        const engine = engineRef.current;
         if (!engine || !engine.emAndamento) return;
         const resultado = engine.executarAcaoJogador(tipo, indice);
         if (resultado?.then) {
-            resultado.then(r => {
-                addLogs(r.msgs);
-                setEstado({ ...engine.getEstado() });
-                if (!engine.emAndamento) setFinalizado(true);
-            });
+            resultado.then(finalizarAcao);
         } else {
-            addLogs(resultado.msgs);
-            setEstado({ ...engine.getEstado() });
-            if (!engine.emAndamento) setFinalizado(true);
+            finalizarAcao(resultado);
         }
         setModal(null);
     }
 
     if (!estado) return null;
 
-    const engine = engineRef.current;
     const jogadorAtual = estado.jogadorAtual;
     const inimigo = estado.inimigo;
     const consumiveis = engine ? engine.getConsumiveis(jogadorAtual) : [];

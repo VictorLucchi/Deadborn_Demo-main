@@ -10,14 +10,14 @@ export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle
         setIsConsoleOpen(val);
         onConsoleToggle?.(val);
     };
-    const { canvasRef, executeCommand, playMusic, playIntro, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock } = useGameCanvas(
+    const { canvasRef, executeCommand, playMusic, playIntro, playDiaryWriting, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock } = useGameCanvas(
         isPaused || isConsoleOpen,
         onCombatTrigger
     );
 
     useEffect(() => {
-        onReady?.({ playMusic, playIntro, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock });
-    }, []);
+        onReady?.({ playMusic, playIntro, playDiaryWriting, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock });
+    }, [crowInteract, crowPickup, crowUnlock, onReady, playDiaryWriting, playIntro, playMusic, removeEnemy, setCrowCallbacks, setJogador, skipIntro]);
 
     return (
         <>

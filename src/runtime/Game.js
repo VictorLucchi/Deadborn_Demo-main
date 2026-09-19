@@ -85,8 +85,12 @@ export class Game {
             crowSpawn ? crowSpawn.x : map.width / 2 - 200,
             crowSpawn ? crowSpawn.y : map.height / 2 + 200
         );
-        this.sprites = { idle: imgs.idleHunter, walkRight: imgs.walkRightHunter,
-                         walkLeft: imgs.walkLeftHunter, run: imgs.runHunter };
+        this.sprites = {
+            idle: imgs.idleHunter, walkRight: imgs.walkRightHunter,
+            walkLeft: imgs.walkLeftHunter, run: imgs.runHunter,
+            idleWalker: imgs.idleWalker, walkLeftWalker: imgs.walkLeftWalker,
+            walkRightWalker: imgs.walkRightWalker,
+        };
 
         this._initWorld();
         this._startLoop();
@@ -285,6 +289,10 @@ export class Game {
         this.audio.playIntro(callbacks);
     }
 
+    playDiaryWriting() {
+        this.audio.playDiaryWriting();
+    }
+
     skipIntro() {
         this.audio.skipIntro();
     }
@@ -295,10 +303,16 @@ export class Game {
 
         if (action === '/spawn' && args[1]?.toLowerCase() === 'hunter') {
             this.em.spawnHunter(this.sprites);
+        } else if (action === '/spawn' && args[1]?.toLowerCase() === 'walker') {
+            this.em.spawnBroodhostWalker(this.sprites);
         } else if (action === '/kill' && args[1]?.toLowerCase() === 'all' && args[2]?.toLowerCase() === 'hunter') {
             this.em.killHunters(true);
         } else if (action === '/kill' && args[1]?.toLowerCase() === 'hunter') {
             this.em.killHunters(false);
+        } else if (action === '/kill' && args[1]?.toLowerCase() === 'all' && args[2]?.toLowerCase() === 'walker') {
+            this.em.killBroodhostWalkers(true);
+        } else if (action === '/kill' && args[1]?.toLowerCase() === 'walker') {
+            this.em.killBroodhostWalkers(false);
         } else if (action === '/give') {
             const nomeBruto = args.slice(1).join(' ').toLowerCase()
                 .normalize('NFD').replace(/[\u0300-\u036f]/g, '');

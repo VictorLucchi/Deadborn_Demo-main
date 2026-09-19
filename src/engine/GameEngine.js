@@ -2,6 +2,7 @@ import { TurnManager } from './combate/TurnManager.js';
 import { LootSystem } from './systems/LootSystem.js';
 import { Goblin } from './core/entities/enemies/Goblin.js';
 import { HunterEnemy } from './core/entities/enemies/HunterEnemy.js';
+import { BroodhostWalkerEnemy } from './core/entities/enemies/BroodhostWalkerEnemy.js';
 import { Confident } from './core/entities/classes/Confident.js';
 import { Vanguard } from './core/entities/classes/Vanguard.js';
 import { Successor } from './core/entities/classes/Successor.js';
@@ -14,6 +15,7 @@ export function criarPersonagem(nome, classeId, genero = 'male') {
 
 function criarInimigo(tipo = 'hunter') {
     if (tipo === 'goblin') return new Goblin();
+    if (tipo === 'broodhostWalker') return new BroodhostWalkerEnemy();
     return new HunterEnemy();
 }
 
