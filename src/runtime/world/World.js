@@ -13,14 +13,14 @@ import arcadia2Url    from '../../assets/map/arcadia2.png';
 import solo3Url       from '../../assets/map/solo3.jpeg';
 import casaTesteUrl   from '../../assets/map/casa Teste.png';
 import woodFloorUrl   from '../../assets/map/woodfloor.jpg';
-import corvoUrl       from '../../assets/sprite-corvo/anfitrião(corvo).png';
-import idleUrl        from '../../assets/sprites/idle hades.png';
-import walkRightUrl   from '../../assets/sprites/hades walking direita.png';
-import walkLeftUrl    from '../../assets/sprites/hades walking esquerda.png';
-import idleHunterUrl      from '../../assets/sprites/idle hunter.png';
-import walkRightHunterUrl from '../../assets/sprites/hunter walking direita.png';
-import walkLeftHunterUrl  from '../../assets/sprites/hunter walking esquerda.png';
-import runHunterUrl       from '../../assets/sprites/hunter run.png';
+import corvoUrl       from '../../assets/sprites/sprite-corvo/anfitrião(corvo).png';
+import idleUrl        from '../../assets/sprites/Hades/idle hades.png';
+import walkRightUrl   from '../../assets/sprites/Hades/hades walking direita.png';
+import walkLeftUrl    from '../../assets/sprites/Hades/hades walking esquerda.png';
+import idleHunterUrl      from '../../assets/sprites/Hunter/idle hunter.png';
+import walkRightHunterUrl from '../../assets/sprites/Hunter/hunter walking direita.png';
+import walkLeftHunterUrl  from '../../assets/sprites/Hunter/hunter walking esquerda.png';
+import runHunterUrl       from '../../assets/sprites/Hunter/hunter run.png';
 
 function loadImage(src) {
     return new Promise(resolve => {

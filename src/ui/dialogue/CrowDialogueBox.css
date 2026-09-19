@@ -90,3 +90,9 @@
     border-color: #5566aa;
     color: #fff;
 }
+
+.crow-dialogue-option.selected {
+    background: rgba(60, 80, 160, 0.2);
+    border-color: #7a8ed0;
+    color: #fff;
+}

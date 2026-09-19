@@ -28,7 +28,7 @@ const INTERACT_DIALOGUE = {
         'Embora eu pudesse simplesmente mergulhar no escuro...',
         'eu prefiro enxergar o caminho que escolhi.',
     ],
-    options: ['Examinar', 'Equipar'],
+    options: ['Equipar'],
 };
 
 export class CrowDialogue {

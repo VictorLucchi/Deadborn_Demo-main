@@ -17,6 +17,36 @@
   overflow: hidden;
 }
 
+.diary-update-notification {
+  position: absolute;
+  right: 28px;
+  bottom: 32px;
+  z-index: 12;
+  padding: 12px 18px;
+  border: 1px solid rgba(197, 158, 88, 0.75);
+  background: rgba(17, 12, 8, 0.92);
+  box-shadow: 0 0 18px rgba(197, 158, 88, 0.24);
+  color: #ead8aa;
+  font-family: 'Cinzel', Georgia, serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  pointer-events: none;
+  animation: diary-update-in 0.25s ease-out;
+}
+
+@keyframes diary-update-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .noise {
   position: fixed;
   inset: 0;

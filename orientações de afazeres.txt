@@ -1,0 +1,292 @@
+UTF-8
+
+Criaturas: 
+
+    criação da host serpent
+                const Enemy = require('../Enemy');
+                const BasicAttack = require('../../../abilities/common/BasicAttack');
+                const Constriction = require('../../../abilities/enemy/Constriction');
+                const CorruptBreath = require('../../../abilities/enemy/CorruptBreath');
+                const HealthPotion = require('../../../items/consumables/HealthPotion');
+                const ManaPotion = require('../../../items/consumables/ManaPotion');
+                const AbyssalBlood = require('../../../items/drops/AbyssalBlood');
+                const MutatedCore = require('../../../items/drops/MutatedCore');
+
+                class HostSerpent extends Enemy {
+                    constructor() {
+                        super("Host Serpent", 900, 300, 25, 35, 10, 10);
+                        this.xpReward = 100;
+                        this.habilidades = [new BasicAttack(), new Constriction(), new CorruptBreath()];
+                        this.lootTable = [
+                            { item: HealthPotion, chance: 1.0 }, { item: ManaPotion, chance: 1.0 },
+                            { item: AbyssalBlood, chance: 0.5 }, { item: MutatedCore, chance: 0.06 }
+                        ];
+                    }
+                }
+                module.exports = HostSerpent;   
+
+                
+                const AttackAbility = require('../AttackAbility');
+                class Constriction extends AttackAbility {
+                    constructor(){ super("Constriction", 4, "forca", 8, 18); this.chanceCritico = 0.10; }
+                    executar(usuario, alvo) {
+                        const resultado = this.rolarDano(usuario);
+                        alvo.receberDano(resultado.dano);
+                        if (Math.random() < 0.30) resultado.constricted = true;
+                        return resultado;
+                    }
+                }
+                module.exports = Constriction;
+
+                const AttackAbility = require('../AttackAbility');
+                class CorruptBreath extends AttackAbility {
+                    constructor(){ super("Corrupt Breath", 8, "controle", 10, 20); this.chanceCritico = 0.15; }
+                    executar(usuario, alvo) {
+                        const resultado = this.rolarDano(usuario);
+                        alvo.receberDano(resultado.dano);
+                        alvo.envenenar(Math.floor(Math.random() * 5) + 3);
+                        resultado.envenenou = true;
+                        return resultado;
+                    }
+                }
+                module.exports = CorruptBreath;
+
+                A ideia dela é ser uma criatura que prenda o jogador caso ele não tome cuidado.
+                Ela restringe e envenena com movimentos muitos rapidos.
+                A ideia dela é ter 3 mov set que alternam de acordo com a vida restante que ela possui.
+                (Ela não avisa que troca de fase)
+
+                
+
+    criação do broodhost walker
+
+                    const Enemy = require('../Enemy');
+                    const BasicAttack = require('../../../abilities/common/BasicAttack');
+                    const SporeCloud = require('../../../abilities/enemy/SporeCloud');
+                    const HealthPotion = require('../../../items/consumables/HealthPotion');
+                    const MutatedCore = require('../../../items/drops/MutatedCore');
+
+                    class BroodhostWalker extends Enemy {
+                        constructor() {
+                            super("Broodhost Walker", 400, 30, 12, 5, 18, 8);
+                            this.xpReward = 25;
+                            this.habilidades = [new BasicAttack(), new SporeCloud()];
+                            this.lootTable = [{ item: HealthPotion, chance: 0.6 }, { item: MutatedCore, chance: 0.20 }];
+                        }
+                    }
+                    module.exports = BroodhostWalker;
+
+                    const AttackAbility = require('../AttackAbility');
+                    class SporeCloud extends AttackAbility {
+                        constructor(){ super("Spore Cloud", 10, "controle", 8, 15); this.chanceCritico = 0.05; }
+                        executar(usuario, alvo) {
+                            const resultado = this.rolarDano(usuario);
+                            alvo.receberDano(resultado.dano);
+                            if (Math.random() < 0.40) {
+                                alvo.envenenar(Math.floor(Math.random() * 3) + 2);
+                                alvo.aplicarMarcas(2);
+                                resultado.envenenou = true;
+                                resultado.marcado = true;
+                            }
+                            return resultado;
+                        }
+                    }
+                    module.exports = SporeCloud;
+
+                    BroodhostWalker é uma criatura mais simples sendo o mais tranquilo entre eles.
+                    A criatura mais basica e mais facil de lidar em combate e pelo jogo.
+                    Quero uma IA simples de movimentação, ele deve ser lento e nada complexo, ao chegar no campo de visão dele
+                    ele vai seguir o player ate que ele saia de seu campo de visão.
+                    Ele anda em grupos e seu perigo esta nisso, a IA deve ter noção da posição das
+                    criaturas do mesmo tipo dela em volta do jogador, para tentar sempre cerca-lo.
+
+
+NPC:
+
+            Anfitrião:
+
+                Anfitrião tem tanto metodo de dialogo quanto de combate, é um npc que vai surgir num evento ao final da demo curta.
+                Ele vai surgir com um som de corvos, e então uma luz azulada surge como transição para sua aparição.
+                Deixei os sprites todos dele prontos.
+                Rola o dialogo entre ele e o jogador.
+                Anfitrão deve ter a IA mais complexa de combate com 4 fases.
+
+                apos a segunda fase finalizar, o combate se encerra e o anfitrião fica no chão como derrotado.
+                
+                ~~~~~~~~~~~~~~
+                Após a cutcene de encerremanto onde inicia a reta final
+                Anfitrião se ergue com umas falas e então inicia o segundo combate
+                com as ultimas duas fases de combate com mov set novo e adaptado.
+                Ele deve ter ao todo 8 mov set e durante o combate final na segunda fase da vida
+                Alterna os 8 mov set se adaptando de acordo com o jogador e a forma que ele luta.
+
+                Se ele vencer, não retorna o game over. Inicia o final ruim.
+
+
+
+Telas:
+
+                fazer a tela de game over quando a vida é zerada com as opçoes:
+                        numero de mortes: (x)
+
+                        Return menu
+                        continue 
+
+                a tela de novo jogo:
+                        ao clicar novo jogo ter uma tela intermediaria antes de iniciar o looping
+                        como informaçoes como cadastrar usuario e iniciar o jogo.
+                
+                Tela de continuar:
+                        logar conta ja cadastrada no banco de dados.
+
+                opçoes:
+                        Tela com opçoes de audio, volume, claridade, etc.
+
+                inventario:
+                        Atualizar as funções que podem ser usadas.
+
+Sistema:
+
+        Adaptar o banco no postgree e a API de servidor para salvar as info do jogador sobre onde parou
+        e onde estava. Salvar: posição de todos os inimigos e jogador exatamente onde pararam.
+        Todas as infos anotadas no diario
+        inventario
+        status do jogador
+        nivel
+        tempo de jogo
+        Eventos passados
+
+            Diário
+            O Diário não inicia completamente vazio.
+            Deve possuir um sistema de entradas desbloqueáveis e atualizáveis conforme os eventos do jogo acontecem.
+            Incluir método para adicionar novas entradas caso ainda não existam.
+            Incluir método para atualizar/evoluir uma entrada existente conforme Hades obtém novas informações.
+            As entradas devem possuir, no mínimo:
+            id
+            categoria
+            titulo
+            tipo
+            texto/descrição
+            estado de desbloqueio, quando necessário.
+            Entradas iniciais
+
+            Notes:
+
+            Ele ainda está adormecido... Preciso acordá-lo.
+            Essa névoa é diferente, parece que ofusca a passagem da noite para o dia.
+            Os demônios não podem me escutar aqui.
+
+            Places:
+
+            Cinérea é um lugar difícil de entrar, parece desolado.
+            Essa energia está quase tão forte quanto a energia vital dos demônios.
+
+            Outras categorias/entradas podem ser adicionadas posteriormente conforme a progressão.
+
+            Documentos visuais
+            O Diário também poderá conter documentos visuais.
+            Caso uma entrada seja um documento visual:
+            Deve possuir uma descrição dentro do Diário.
+            Deve possuir um botão para abrir/acessar o documento.
+            O documento deve ser exibido separadamente em uma visualização própria.
+            O sistema deve diferenciar entradas de texto e entradas de documento.
+            Evento: Corvo
+            No início do jogo, Hades encontra o Corvo/Anfitrião.
+            Após a interação inicial, quando o Corvo finalizar sua participação e desaparecer:
+            Disparar um evento relacionado ao desaparecimento.
+            O Diário deve receber automaticamente uma nova anotação sobre o Corvo.
+            A entrada pode inicialmente registrar apenas o que Hades sabe naquele momento.
+            Conforme novos acontecimentos revelarem informações sobre o Corvo, a mesma entrada poderá ser atualizada, em vez de necessariamente criar uma nova.
+            Sistema de evolução das entradas
+
+            O Diário deve trabalhar com dois conceitos principais:
+
+            Adicionar entrada
+
+            Usado quando Hades descobre algo completamente novo.
+
+            Atualizar entrada
+
+            Usado quando Hades já possui uma anotação, mas descobre novas informações sobre aquilo.
+
+            Exemplo:
+
+            Primeiro registro:
+            "O corvo me esperava na entrada do vilarejo."
+
+            Após novas descobertas:
+            "O corvo me esperava na entrada do vilarejo.
+            Ele carregava uma lanterna e parecia saber que eu chegaria."
+
+            Após novas descobertas:
+            "O corvo me esperava na entrada do vilarejo.
+            Ele carregava uma lanterna e parecia saber que eu chegaria.
+            Ainda não sei o que ele realmente é."
+            Integração com eventos do jogo
+
+            O Diário não deve controlar diretamente quando os acontecimentos ocorrem.
+
+            Os sistemas do jogo devem comunicar os acontecimentos ao Diário.
+
+            Exemplos de eventos:
+
+            CORVO_DESAPARECEU
+            PORTAO_CINEREA_ENCONTRADO
+            PRIMEIRO_DEMONIO
+            ANFITRIAO_ENCONTRADO
+            MARCA_DEMONIACA_DESCOBERTA
+            DOCUMENTO_ENCONTRADO
+
+            Cada evento poderá:
+
+            desbloquear uma nova entrada;
+            atualizar uma entrada existente;
+            liberar um documento visual;
+            alterar informações já registradas.
+
+            Objetivo: fazer o Diário funcionar como um registro daquilo que Hades sabe e compreende naquele momento da história, permitindo que as anotações evoluam junto com a narrativa.
+                    Sempre que uma nova anotação for recebida, dispara o metodo tocando o som (nome do audio)
+                    E aparece um alerta no canto inferior direito abaixo das missões escrito:
+
+                    DIARIO ATUALIZADO
+
+Inventario>
+
+        Reparei que não tem o metodo de mover o item de slot e nem tem o metodo de remover
+        o item equipado como armadura ou nas maos.
+        E não tem como acessar os items de armadura como fazemos com o invetario rapido
+        ao clicar tab.
+
+        Deve haver uma tecla de combinação de items onde caso você clique nele e selecione
+        o os itens corretos, transforma num novo.
+        itens combinaveis terão em sua descrição (c) de combinavel
+        
+
+Itens:  
+
+        Armadura:
+
+        Combate:
+
+        Utilidades:
+
+        Consumiveis:
+
+        Chaves:
+
+Assets: 
+
+        Itens: 
+                Todos os itens devem ter assets
+
+
+
+
+
+
+                    
+
+
+
+
+

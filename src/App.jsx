@@ -12,11 +12,51 @@ import { KeybindGuide } from './ui/menus/KeybindGuide.jsx'
 import { IntroSubtitles } from './ui/intro/IntroSubtitles.jsx'
 import { IntroScene } from './ui/intro/IntroScene.jsx'
 import { CrowDialogueBox } from './ui/dialogue/CrowDialogueBox.jsx'
+import diaryWritingSound from './assets/audio/SFX/escrita.mp3'
 
 import { criarPersonagem } from './engine/GameEngine.js'
 
 import './App.css'
 
+const INITIAL_DIARY_ENTRIES = {
+  docs: [],
+  transcripts: [],
+  creatures: [],
+  places: [
+    {
+      id: 'cinerea',
+      title: 'Cinéria',
+      meta: 'Local',
+      content: 'Cinéria é um lugar difícil de entrar, parece desolado.',
+    },
+    {
+      id: 'energia-cinerea',
+      title: 'A energia do lugar',
+      meta: 'Observação',
+      content: 'Essa energia está quase tão forte quanto a energia vital dos demônios.',
+    },
+  ],
+  notes: [
+    {
+      id: 'adormecido',
+      title: 'O adormecido',
+      meta: 'Nota',
+      content: 'Ele ainda está adormecido... Preciso acordá-lo.',
+    },
+    {
+      id: 'nevoa',
+      title: 'A névoa',
+      meta: 'Nota',
+      content: 'Essa névoa é diferente, parece que ofusca a passagem da noite para o dia.',
+    },
+    {
+      id: 'demonios',
+      title: 'Silêncio',
+      meta: 'Nota',
+      content: 'Os demônios não podem me escutar aqui.',
+    },
+  ],
+}
 
 function App() {
 
@@ -34,13 +74,8 @@ function App() {
   const [showHadesTitle, setShowHadesTitle] = useState(false)
   const [introSceneActive, setIntroSceneActive] = useState(false)
 
-  const [diaryEntries, setDiaryEntries] = useState({
-    docs: [],
-    transcripts: [],
-    creatures: [],
-    places: [],
-    notes: []
-  })
+  const [diaryEntries, setDiaryEntries] = useState(INITIAL_DIARY_ENTRIES)
+  const [isDiaryUpdated, setIsDiaryUpdated] = useState(false)
 
   const [crowDialogue, setCrowDialogue] = useState(null)
   const [showCrowPrompt, setShowCrowPrompt] = useState(false)
@@ -49,6 +84,32 @@ function App() {
   const gameApiRef = useRef(null)
   const jogadorRef = useRef(null)
   const skipIntroRef = useRef(null)
+  const diaryEventsRef = useRef(new Set())
+  const diaryNotificationTimerRef = useRef(null)
+
+  const registerDiaryEvent = (eventId, entry) => {
+    if (diaryEventsRef.current.has(eventId)) return
+
+    diaryEventsRef.current.add(eventId)
+    setDiaryEntries(currentEntries => ({
+      ...currentEntries,
+      [entry.category]: [...currentEntries[entry.category], entry],
+    }))
+
+    const writingSound = new Audio(diaryWritingSound)
+    writingSound.volume = 0.65
+    writingSound.play().catch(() => {})
+
+    setIsDiaryUpdated(true)
+    clearTimeout(diaryNotificationTimerRef.current)
+    diaryNotificationTimerRef.current = setTimeout(() => {
+      setIsDiaryUpdated(false)
+    }, 3500)
+  }
+
+  useEffect(() => () => {
+    clearTimeout(diaryNotificationTimerRef.current)
+  }, [])
 
 
   // =========================================================
@@ -91,6 +152,13 @@ function App() {
     if (opt === 'Equipar') {
       gameApiRef.current?.crowPickup()
       setHasLantern(true)
+      registerDiaryEvent('CORVO_DESAPARECEU', {
+        id: 'corvo-desapareceu',
+        category: 'notes',
+        title: 'O Corvo',
+        meta: 'Novo registro',
+        content: 'O corvo me esperava na entrada do vilarejo. Ele carregava uma lanterna e parecia saber que eu chegaria.',
+      })
     }
 
     gameApiRef.current?.crowUnlock()
@@ -666,6 +734,12 @@ function App() {
               />
 
               <KeybindGuide />
+
+              {isDiaryUpdated && (
+                <div className="diary-update-notification" role="status">
+                  DIÁRIO ATUALIZADO
+                </div>
+              )}
 
 
               {/* ===================================================
