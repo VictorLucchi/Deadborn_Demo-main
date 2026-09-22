@@ -325,6 +325,16 @@
                  "opacity":1,
                  "properties":[
                         {
+                         "name":"targetMap",
+                         "type":"string",
+                         "value":"stairsUp_musician_house"
+                        }, 
+                        {
+                         "name":"targetSpawn",
+                         "type":"string",
+                         "value":"stairs_up"
+                        }, 
+                        {
                          "name":"transitionId",
                          "type":"string",
                          "value":"musician_stairs_up"

@@ -109,6 +109,34 @@
                  "y":368
                 }, 
                 {
+                 "height":112,
+                 "id":24,
+                 "name":"musician_house_entrance",
+                 "opacity":1,
+                 "properties":[
+                        {
+                         "name":"targetMap",
+                         "type":"string",
+                         "value":"Musician_house"
+                        }, 
+                        {
+                         "name":"targetSpawn",
+                         "type":"string",
+                         "value":"musician_house_entrance"
+                        }, 
+                        {
+                         "name":"transitionId",
+                         "type":"string",
+                         "value":"village_to_musician_house"
+                        }],
+                 "rotation":0,
+                 "type":"transition",
+                 "visible":true,
+                 "width":72,
+                 "x":845,
+                 "y":1246
+                }, 
+                {
                  "height":198,
                  "id":23,
                  "name":"well_entrance",

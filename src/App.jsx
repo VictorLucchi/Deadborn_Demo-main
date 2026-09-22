@@ -1,7 +1,6 @@
-import { useState, useEffect, useRef } from 'react'
+import { lazy, Suspense, useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-import { GameCanvas } from './ui/hud/GameCanvas.jsx'
 import { GameMenu } from './ui/menus/GameMenu.jsx'
 import { Diary } from './ui/diary/Diary.jsx'
 import { MainMenu } from './ui/menus/MainMenu.jsx'
@@ -17,6 +16,8 @@ import diaryWritingSound from './assets/audio/SFX/escrita.mp3'
 import { criarPersonagem } from './engine/GameEngine.js'
 
 import './App.css'
+
+const GameCanvas = lazy(() => import('./ui/hud/GameCanvas.jsx').then(({ GameCanvas }) => ({ default: GameCanvas })))
 
 const INITIAL_DIARY_ENTRIES = {
   docs: [],
@@ -466,7 +467,8 @@ function App() {
               <div className="noise" />
 
 
-              <GameCanvas
+              <Suspense fallback={null}>
+                <GameCanvas
 
                 isPaused={
                   isMenuOpen ||
@@ -637,7 +639,8 @@ function App() {
 
                 onConsoleToggle={setIsConsoleOpen}
 
-              />
+                />
+              </Suspense>
 
 
               {/* ===================================================

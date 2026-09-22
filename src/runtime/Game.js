@@ -178,7 +178,10 @@ export class Game {
                 props[property.name] = property.value;
             }
 
-            if ((props.InteractionType ?? props.interactionType) === 'door') {
+            const type = String((props.InteractionType ?? props.interactionType ?? obj.type ?? '')).toLowerCase();
+            const isTransition = type === 'door' || type === 'transition' || !!props.targetMap;
+
+            if (isTransition) {
                 this._doorInteractions.push({ obj, props });
             }
         }

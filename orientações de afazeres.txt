@@ -291,5 +291,8 @@ Assets:
 
 Itens chaves: balde para pegar agua do poço
                 frasco com feto sujo
-                    fragmentos documento de fundação da cidade de cinerea
+                    fragmentos documento de fundação da cidade de cinerea (4)
+                        chave do porão
+                            fita cassette
+                                
                         

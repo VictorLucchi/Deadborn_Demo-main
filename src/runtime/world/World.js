@@ -12,6 +12,9 @@ import casaTeste1Data      from '../../assets/map/casaTeste1.json';
 import casa01Data          from '../../assets/map/Casa01.json';
 import entradaCidadeData   from '../../assets/map/entrada-cidade-cinerea.json';
 import cinereaWellData     from '../../assets/map/cinerea_well.json';
+import musicianHouseData   from '../../assets/map/Musician_house.json';
+import basementHouseData   from '../../assets/map/basement_musician_house.json';
+import stairsHouseData     from '../../assets/map/stairsUp_musician_house.json';
 
 // ============================================================
 // TILESETS
@@ -56,6 +59,12 @@ import muretasUrl       from '../../assets/map/muretas.png';
 
 import assetsGeraisUrl  from '../../assets/map/assets gerais.png';
 import pocoUrl          from '../../assets/map/poço.png';
+import doorsUrl         from '../../assets/map/doors.png';
+import fornitureUrl     from '../../assets/map/forniture.png';
+import pianoUrl         from '../../assets/map/piano.png';
+import mesaUrl          from '../../assets/map/mesa.png';
+import cervoUrl         from '../../assets/map/cervo.png';
+import paginasUrl       from '../../assets/map/paginas.png';
 
 // ============================================================
 // SPRITES
@@ -158,6 +167,12 @@ async function getSharedImages() {
 
         assetsGerais,
         poco,
+        doors,
+        forniture,
+        piano,
+        mesa,
+        cervo,
+        paginas,
 
         // -------------------------
         // Sprites
@@ -211,6 +226,12 @@ async function getSharedImages() {
 
         loadImage(assetsGeraisUrl),
         loadImage(pocoUrl),
+        loadImage(doorsUrl),
+        loadImage(fornitureUrl),
+        loadImage(pianoUrl),
+        loadImage(mesaUrl),
+        loadImage(cervoUrl),
+        loadImage(paginasUrl),
 
         // ====================================================
         // Sprites
@@ -257,6 +278,12 @@ async function getSharedImages() {
         // Poço
         assetsGerais,
         poco,
+        doors,
+        forniture,
+        piano,
+        mesa,
+        cervo,
+        paginas,
 
         // Sprites
         idle,
@@ -596,6 +623,69 @@ const MAP_CONFIGS = {
                 scale: 1.7
             },
 
+        ],
+    },
+
+    // ========================================================
+    // CASA DO MÚSICO
+    // ========================================================
+
+    Musician_house: {
+
+        data: musicianHouseData,
+
+        tilesets: (imgs) => [
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.piano, columns: 13 },
+            { image: imgs.mesa, columns: 4 },
+            { image: imgs.cervo, columns: 5 },
+            { image: imgs.paginas, columns: 48 },
+            { image: imgs.detailsGround, columns: 48 },
+            { image: imgs.doors, columns: 48 },
+            { image: imgs.forniture, columns: 22 },
+        ],
+    },
+
+    // ========================================================
+    // PORÃO DA CASA DO MÚSICO
+    // ========================================================
+
+    basement_musician_house: {
+
+        data: basementHouseData,
+
+        tilesets: (imgs) => [
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.doors, columns: 48 },
+            { image: imgs.forniture, columns: 22 },
+        ],
+    },
+
+    // ========================================================
+    // SEGUNDO ANDAR DA CASA DO MÚSICO
+    // ========================================================
+
+    stairsUp_musician_house: {
+
+        data: stairsHouseData,
+
+        tilesets: (imgs) => [
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.doors, columns: 48 },
+            { image: imgs.forniture, columns: 22 },
         ],
     },
 
