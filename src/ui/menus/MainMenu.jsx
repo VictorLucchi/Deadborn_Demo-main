@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import './MainMenu.css'
 import deadbornLogo from '../../assets/images/deadborn-logo-oficial.png'
 
@@ -6,12 +6,12 @@ export function MainMenu({ onNewGame, onContinue }) {
 
     const [selectedOption, setSelectedOption] = useState(0)
 
-    const options = [
+    const options = useMemo(() => [
         { label: 'Novo Jogo', action: onNewGame },
         { label: 'Continuar', action: onContinue },
         { label: 'Opções',    action: () => console.log('Opções') },
         { label: 'Sair',      action: () => console.log('Sair') }
-    ]
+    ], [onNewGame, onContinue])
 
     useEffect(() => {
 
@@ -46,7 +46,7 @@ export function MainMenu({ onNewGame, onContinue }) {
             window.removeEventListener('keydown', handleKeyDown)
         }
 
-    }, [selectedOption])
+    }, [options, selectedOption])
 
     return (
         <div id="main-menu">

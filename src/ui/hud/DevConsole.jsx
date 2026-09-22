@@ -21,7 +21,7 @@ export function DevConsole({ onCommand, onToggle }) {
 
         window.addEventListener('keydown', handleKeyDown);
         return () => window.removeEventListener('keydown', handleKeyDown);
-    }, []);
+    }, [onToggle]);
 
     useEffect(() => {
         if (isOpen && inputRef.current) {
@@ -79,7 +79,7 @@ export function DevConsole({ onCommand, onToggle }) {
                 />
             </form>
             <div style={{ fontSize: '10px', color: '#666', marginTop: '5px', fontFamily: 'monospace' }}>
-                /spawn [name] | /kill [all] [name] | /give [item]
+                /spawn [hunter|walker] | /kill [all] [hunter|walker] | /give [item]
             </div>
             {feedback && (
                 <div style={{ fontSize: '10px', color: '#aaa', marginTop: '4px', fontFamily: 'monospace' }}>

@@ -2,16 +2,17 @@ import { lazy, Suspense, useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 import { GameMenu } from './ui/menus/GameMenu.jsx'
+import { GameOver } from './ui/menus/GameOver.jsx'
 import { Diary } from './ui/diary/Diary.jsx'
 import { MainMenu } from './ui/menus/MainMenu.jsx'
 import { CombatScreen } from './ui/combat/CombatScreen.jsx'
 import { Inventory } from './ui/inventory/Inventory.jsx'
 import { QuickSlotHUD } from './ui/hud/QuickSlotHUD.jsx'
+import { MissionHUD } from './ui/hud/MissionHUD.jsx'
 import { KeybindGuide } from './ui/menus/KeybindGuide.jsx'
 import { IntroSubtitles } from './ui/intro/IntroSubtitles.jsx'
 import { IntroScene } from './ui/intro/IntroScene.jsx'
 import { CrowDialogueBox } from './ui/dialogue/CrowDialogueBox.jsx'
-import diaryWritingSound from './assets/audio/SFX/escrita.mp3'
 
 import { criarPersonagem } from './engine/GameEngine.js'
 
@@ -59,12 +60,19 @@ const INITIAL_DIARY_ENTRIES = {
   ],
 }
 
+const INITIAL_MAIN_MISSION = {
+  id: 'siga-a-luz',
+  title: 'Siga a luz',
+}
+
 function App() {
 
   const [page, setPage] = useState('home')
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isDiaryOpen, setIsDiaryOpen] = useState(false)
   const [combatEnemy, setCombatEnemy] = useState(null)
+  const [isGameOver, setIsGameOver] = useState(false)
+  const [deathCount, setDeathCount] = useState(0)
   const [isInventoryOpen, setIsInventoryOpen] = useState(false)
   const [quickSlots, setQuickSlots] = useState([null, null, null, null])
   const [isConsoleOpen, setIsConsoleOpen] = useState(false)
@@ -81,6 +89,7 @@ function App() {
   const [crowDialogue, setCrowDialogue] = useState(null)
   const [showCrowPrompt, setShowCrowPrompt] = useState(false)
   const [hasLantern, setHasLantern] = useState(false)
+  const [jogador, setJogador] = useState(null)
 
   const gameApiRef = useRef(null)
   const jogadorRef = useRef(null)
@@ -97,9 +106,7 @@ function App() {
       [entry.category]: [...currentEntries[entry.category], entry],
     }))
 
-    const writingSound = new Audio(diaryWritingSound)
-    writingSound.volume = 0.65
-    writingSound.play().catch(() => {})
+    gameApiRef.current?.playDiaryWriting()
 
     setIsDiaryUpdated(true)
     clearTimeout(diaryNotificationTimerRef.current)
@@ -118,7 +125,11 @@ function App() {
   // =========================================================
 
   const startGame = () => {
-    jogadorRef.current = criarPersonagem('Hades', '3', 'male')
+    const novoJogador = criarPersonagem('Hades', '3', 'male')
+    jogadorRef.current = novoJogador
+    setJogador(novoJogador)
+    setDeathCount(0)
+    setIsGameOver(false)
 
     setIntroPhase('closing')
   }
@@ -129,7 +140,11 @@ function App() {
   // =========================================================
 
   const continueGame = () => {
-    jogadorRef.current = criarPersonagem('Hades', '3', 'male')
+    const novoJogador = criarPersonagem('Hades', '3', 'male')
+    jogadorRef.current = novoJogador
+    setJogador(novoJogador)
+    setDeathCount(0)
+    setIsGameOver(false)
 
     setPage('game')
     setIntroPhase('opening')
@@ -182,6 +197,31 @@ function App() {
     }
 
     setCombatEnemy(null)
+  }
+
+  const handlePlayerDefeated = () => {
+    if (combatEnemy) gameApiRef.current?.removeEnemy(combatEnemy)
+    setCombatEnemy(null)
+    setDeathCount(currentCount => currentCount + 1)
+    setIsGameOver(true)
+  }
+
+  const handleGameOverContinue = () => {
+    const novoJogador = criarPersonagem('Hades', '3', 'male')
+    jogadorRef.current = novoJogador
+    setJogador(novoJogador)
+    gameApiRef.current?.setJogador(novoJogador)
+    setIsGameOver(false)
+  }
+
+  const handleGameOverMenu = () => {
+    setIsGameOver(false)
+    setCombatEnemy(null)
+    setIsMenuOpen(false)
+    setPage('home')
+    setIntroPhase('idle')
+    jogadorRef.current = null
+    setJogador(null)
   }
 
 
@@ -475,7 +515,8 @@ function App() {
                   isDiaryOpen ||
                   isInventoryOpen ||
                   !!combatEnemy ||
-                  !!crowDialogue
+                  !!crowDialogue ||
+                  isGameOver
                 }
 
                 hasLantern={hasLantern}
@@ -485,7 +526,7 @@ function App() {
 
                   gameApiRef.current = api
 
-                  api.setJogador(jogadorRef.current)
+                  api.setJogador(jogador)
 
 
                   api.setCrowCallbacks({
@@ -715,7 +756,7 @@ function App() {
 
                   <Inventory
 
-                    jogador={jogadorRef.current}
+                    jogador={jogador}
 
                     quickSlots={quickSlots}
 
@@ -735,6 +776,8 @@ function App() {
               <QuickSlotHUD
                 quickSlots={quickSlots}
               />
+
+              <MissionHUD mission={INITIAL_MAIN_MISSION} />
 
               <KeybindGuide />
 
@@ -768,18 +811,28 @@ function App() {
                   COMBATE
               =================================================== */}
 
-              {combatEnemy && (
+              {combatEnemy && !isGameOver && (
 
                 <CombatScreen
 
-                  jogador={jogadorRef.current}
+                  jogador={jogador}
 
-                  enemyType="hunter"
+                  enemyType={combatEnemy.combatType || 'hunter'}
+
+                  onPlayerDefeated={handlePlayerDefeated}
 
                   onClose={handleCombatClose}
 
                 />
 
+              )}
+
+              {isGameOver && (
+                <GameOver
+                  deaths={deathCount}
+                  onContinue={handleGameOverContinue}
+                  onMenu={handleGameOverMenu}
+                />
               )}
 
             </div>

@@ -31,7 +31,6 @@ import arcadia2Url    from '../../assets/map/arcadia2.png';
 import solo3Url       from '../../assets/map/solo3.jpeg';
 import casaTesteUrl   from '../../assets/map/casa Teste.png';
 import woodFloorUrl   from '../../assets/map/woodfloor.jpg';
-
 // -----------------------------
 // Tilesets exclusivos do vilarejo
 // -----------------------------
@@ -98,6 +97,9 @@ import runHunterUrl
 // ============================================================
 // CARREGAMENTO DE IMAGENS
 // ============================================================
+import idleWalkerUrl      from '../../assets/sprites/BroodhostWalker/Idle.png';
+import walkLeftWalkerUrl  from '../../assets/sprites/BroodhostWalker/walking-left.png';
+import walkRightWalkerUrl from '../../assets/sprites/BroodhostWalker/walking-right.png';
 
 function loadImage(src) {
     return new Promise((resolve, reject) => {
@@ -126,7 +128,6 @@ function loadImage(src) {
 let _sharedImages = null;
 
 async function getSharedImages() {
-
     if (_sharedImages) {
         return _sharedImages;
     }
@@ -293,9 +294,11 @@ async function getSharedImages() {
         walkRightHunter,
         walkLeftHunter,
         runHunter,
+        idleWalker,
+        walkLeftWalker,
+        walkRightWalker,
         corvImg,
     };
-
     return _sharedImages;
 }
 

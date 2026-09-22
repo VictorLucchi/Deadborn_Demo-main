@@ -8,8 +8,13 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
     const isPausedRef  = useRef(isPaused);
     const onCombatRef  = useRef(onCombatTrigger);
 
-    isPausedRef.current  = isPaused;
-    onCombatRef.current  = onCombatTrigger;
+    useEffect(() => {
+        isPausedRef.current = isPaused;
+    }, [isPaused]);
+
+    useEffect(() => {
+        onCombatRef.current = onCombatTrigger;
+    }, [onCombatTrigger]);
 
     useEffect(() => {
         if (readyRef.current) gameRef.current.pause(isPaused);
@@ -35,6 +40,7 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
     const executeCommand   = (cmd) => { gameRef.current?.executeCommand(cmd); gameRef.current?.input.clearKeys(); };
     const playMusic        = ()    => gameRef.current?.playMusic();
     const playIntro        = (cb)  => gameRef.current?.playIntro(cb);
+    const playDiaryWriting = ()    => gameRef.current?.playDiaryWriting();
     const skipIntro        = ()    => gameRef.current?.skipIntro();
     const removeEnemy      = (e)   => gameRef.current?.em.removeEnemy(e);
     const setJogador       = (j)   => gameRef.current?.setJogador(j);
@@ -44,5 +50,5 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
     const crowUnlock       = ()    => gameRef.current?.crowUnlockDialogue();
     const getCrowState     = ()    => gameRef.current?.crowDialogue ?? null;
 
-    return { canvasRef, executeCommand, playMusic, playIntro, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock, getCrowState };
+    return { canvasRef, executeCommand, playMusic, playIntro, playDiaryWriting, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock, getCrowState };
 }

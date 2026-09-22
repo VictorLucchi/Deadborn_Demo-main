@@ -394,9 +394,6 @@ export function Inventory({
                 const item =
                     contextItem.item;
 
-                const equipado =
-                    contextItem.equipado;
-
                 // --------------------------------------------
                 // JOGAR FORA
                 // --------------------------------------------

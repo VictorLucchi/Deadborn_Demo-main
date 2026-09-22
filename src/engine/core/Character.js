@@ -12,10 +12,10 @@ export class Character {
         this.nome = nome;
         this.genero = genero;
 
-        this.vidaMax = vigor * 5 + 30;
+        this.vidaMax = vidaMax ?? vigor * 5 + 30;
         this.vida = this.vidaMax;
 
-        this.manaMax = controle * 2 + 15;
+        this.manaMax = manaMax ?? controle * 2 + 15;
         this.mana = this.manaMax;
 
         this.forca = forca;
@@ -465,9 +465,6 @@ export class Character {
             item.posicaoInventario;
 
         item.posicaoInventario = null;
-
-        const posicaoValida =
-            this.encontrarPosicaoLivre(item);
 
         if (
             novaPosicao === null ||

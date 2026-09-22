@@ -3,6 +3,6 @@ export class Ability {
         this.nome = nome;
         this.custoMana = custoMana;
     }
-    podeUsar(usuario) { return usuario.mana >= this.custoMana; }
-    executar(usuario, alvo) { throw new Error("Metodo executar() deve ser implementado."); }
+    podeUsar(_usuario) { return _usuario.mana >= this.custoMana; }
+    executar(_usuario, _alvo) { throw new Error("Metodo executar() deve ser implementado."); }
 }
