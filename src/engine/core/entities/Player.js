@@ -2,7 +2,7 @@ import { Character } from '../Character.js';
 
 export class Player extends Character {
     constructor(nome, vidaMax, forca, agilidade, vigor, controle, genero = 'male', habilidadesIniciais = []) {
-        super(nome, 0, 0, forca, agilidade, vigor, controle, genero);
+        super(nome, vidaMax || undefined, null, forca, agilidade, vigor, controle, genero);
         this.xp = 0;
         this.nivel = 1;
         this.pontosDisponiveis = 0;

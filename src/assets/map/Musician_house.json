@@ -274,9 +274,19 @@
                          "name":"spawnId",
                          "type":"string",
                          "value":"musician_house_entrance"
+                     },
+                     {
+                      "name":"targetMap",
+                      "type":"string",
+                      "value":"entrada-cidade-cinerea"
+                     },
+                     {
+                      "name":"targetSpawn",
+                      "type":"string",
+                         "value":"porta_sala"
                         }],
                  "rotation":0,
-                 "type":"spawn",
+                 "type":"transition",
                  "visible":true,
                  "width":0,
                  "x":477.333,

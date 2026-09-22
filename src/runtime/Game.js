@@ -135,7 +135,11 @@ export class Game {
                         crow: this.crow?.visible ? this.crow : null,
                         doorPrompt: this._doorPrompt,
                         fadeAlpha:  this._fadeAlpha,
-                        indoors:    this.currentMapName !== 'casaTeste1',
+                        indoors: [
+                            'Musician_house',
+                            'basement_musician_house',
+                            'stairsUp_musician_house',
+                        ].includes(this.currentMapName),
                     }
                 );
             } catch (err) {
@@ -183,7 +187,8 @@ export class Game {
             }
 
             const type = String((props.InteractionType ?? props.interactionType ?? obj.type ?? '')).toLowerCase();
-            const isTransition = type === 'door' || type === 'transition' || !!props.targetMap;
+            const hasTargetMap = typeof props.targetMap === 'string' && props.targetMap.trim().length > 0;
+            const isTransition = hasTargetMap && (type === 'door' || type === 'transition' || !!props.targetMap);
 
             if (isTransition) {
                 this._doorInteractions.push({ obj, props });
@@ -197,6 +202,12 @@ export class Game {
         this._fadeCallback = async () => {
             const targetMap   = props.targetMap;
             const targetSpawn = props.targetSpawn;
+
+            if (!targetMap) {
+                this._fadeDir = 0;
+                this._fadeAlpha = 0;
+                return;
+            }
 
             const { map, camera } = await loadMap(targetMap, this.canvas.width, this.canvas.height);
 

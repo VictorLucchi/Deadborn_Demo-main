@@ -8,8 +8,6 @@ import { GameMap } from '../map/Map.js';
 // MAPAS
 // ============================================================
 
-import casaTeste1Data      from '../../assets/map/casaTeste1.json';
-import casa01Data          from '../../assets/map/Casa01.json';
 import entradaCidadeData   from '../../assets/map/entrada-cidade-cinerea.json';
 import cinereaWellData     from '../../assets/map/cinerea_well.json';
 import musicianHouseData   from '../../assets/map/Musician_house.json';
@@ -188,6 +186,10 @@ async function getSharedImages() {
         walkLeftHunter,
         runHunter,
 
+        idleWalker,
+        walkLeftWalker,
+        walkRightWalker,
+
         corvImg
 
     ] = await Promise.all([
@@ -246,6 +248,10 @@ async function getSharedImages() {
         loadImage(walkRightHunterUrl),
         loadImage(walkLeftHunterUrl),
         loadImage(runHunterUrl),
+
+        loadImage(idleWalkerUrl),
+        loadImage(walkLeftWalkerUrl),
+        loadImage(walkRightWalkerUrl),
 
         loadImage(corvoUrl),
     ]);
@@ -308,87 +314,6 @@ async function getSharedImages() {
 // ============================================================
 
 const MAP_CONFIGS = {
-
-    // ========================================================
-    // CASA TESTE 1
-    // ========================================================
-
-    casaTeste1: {
-
-        data: casaTeste1Data,
-
-        tilesets: (imgs) => [
-
-            // solo.tsx
-            {
-                image: imgs.floor1,
-                columns: 16
-            },
-
-            // casa1.tsx
-            {
-                image: imgs.arcadia1,
-                columns: 48
-            },
-
-            // Solo2.tsx
-            {
-                image: imgs.solo2,
-                columns: 39
-            },
-
-            // arcadia2.tsx
-            {
-                image: imgs.arcadia2,
-                columns: 48
-            },
-
-            // solo3.tsx
-            {
-                image: imgs.solo3,
-                columns: 39
-            },
-
-            // Casa teste.tsx
-            {
-                image: imgs.casaTeste,
-                columns: 48,
-                scale: 1.7
-            },
-
-        ],
-    },
-
-
-    // ========================================================
-    // MAPA TESTE / CASA 01
-    // ========================================================
-
-    mapa_teste: {
-
-        data: casa01Data,
-
-        tilesets: (imgs) => [
-
-            {
-                image: imgs.woodFloor,
-                columns: 24
-            },
-
-            {
-                image: imgs.casaTeste,
-                columns: 48,
-                scale: 1.7
-            },
-
-            {
-                image: imgs.arcadia1,
-                columns: 48
-            },
-
-        ],
-    },
-
 
     // ========================================================
     // ENTRADA DA CIDADE DE CINÉREA
@@ -731,7 +656,8 @@ export async function loadMap(
         map.width,
         map.height,
         canvasWidth,
-        canvasHeight
+        canvasHeight,
+        mapName === 'cinerea_well' ? 2 : 1
     );
 
     return {

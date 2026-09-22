@@ -60,6 +60,10 @@ export class Renderer {
             this.canvas.height
         );
 
+        const zoom = camera.zoom ?? 1;
+        ctx.save();
+        ctx.scale(zoom, zoom);
+
 
         // ===============================
         // MAPA
@@ -179,6 +183,8 @@ export class Renderer {
                 crowState.doorPrompt
             );
         }
+
+        ctx.restore();
 
 
         // ===============================

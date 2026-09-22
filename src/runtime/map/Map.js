@@ -210,14 +210,19 @@ export class GameMap {
     }
 
     getSpawn(name) {
-    const layer = this.layers.find(l =>
-        l.type === 'objectgroup' &&
-        l.name.toLowerCase() === 'spawns'
-    );
+    const expectedName = String(name ?? '').toLowerCase();
+    const objects = this.layers
+        .filter(layer => layer.type === 'objectgroup')
+        .flatMap(layer => layer.objects ?? []);
 
-    const obj = layer?.objects.find(
-        o => o.name.toLowerCase() === name.toLowerCase()
-    );
+    const obj = objects.find(object => {
+        const objectName = String(object.name ?? '').toLowerCase();
+        const spawnId = object.properties?.find(
+            property => property.name.toLowerCase() === 'spawnid'
+        )?.value;
+
+        return objectName === expectedName || String(spawnId ?? '').toLowerCase() === expectedName;
+    });
 
     if (!obj) return null;
 
@@ -229,5 +234,5 @@ export class GameMap {
         class: obj.class,
         properties: obj.properties ?? []
     };
-}
+    }
 }
