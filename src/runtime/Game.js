@@ -48,7 +48,7 @@ export class Game {
         this.renderer = null;
         this.sprites  = {};
 
-        this.currentMapName = 'casaTeste1';
+        this.currentMapName = 'entrada-cidade-cinerea';
 
         // fade
         this._fadeAlpha    = 0;
@@ -67,7 +67,7 @@ export class Game {
 
         const imgs = await getSharedImages();
 
-        const { map, camera } = await loadMap('casaTeste1', this.canvas.width, this.canvas.height);
+        const { map, camera } = await loadMap('entrada-cidade-cinerea', this.canvas.width, this.canvas.height);
         this.map    = map;
         this.camera = camera;
         this._cacheDoorInteractions();

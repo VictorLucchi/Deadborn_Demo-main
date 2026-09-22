@@ -42,16 +42,20 @@ export class Player {
         let dx = 0, dy = 0;
         const running = keys['Shift'];
         const speed = running ? RUN_SPEED : WALK_SPEED;
+        const up = keys['w'] || keys['ArrowUp'];
+        const down = keys['s'] || keys['ArrowDown'];
+        const left = keys['a'] || keys['ArrowLeft'];
+        const right = keys['d'] || keys['ArrowRight'];
 
-        if (keys['w']) dy = -speed;
-        if (keys['s']) dy =  speed;
-        if (keys['a']) { dx = -speed; this.direction = 'left'; }
-        if (keys['d']) { dx =  speed; this.direction = 'right'; }
-        if (keys['w'] && !keys['s'] && dx === 0) this.direction = 'up';
-        if (keys['s'] && !keys['w'] && dx === 0) this.direction = 'down';
+        if (up) dy = -speed;
+        if (down) dy = speed;
+        if (left) { dx = -speed; this.direction = 'left'; }
+        if (right) { dx = speed; this.direction = 'right'; }
+        if (up && !down && dx === 0) this.direction = 'up';
+        if (down && !up && dx === 0) this.direction = 'down';
         // teclas opostas se cancelam
-        if (keys['a'] && keys['d']) dx = 0;
-        if (keys['w'] && keys['s']) dy = 0;
+        if (left && right) dx = 0;
+        if (up && down) dy = 0;
 
         this.moving  = dx !== 0 || dy !== 0;
         this.running = running && this.moving;

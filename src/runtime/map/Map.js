@@ -192,28 +192,42 @@ export class GameMap {
         return layer?.objects ?? [];
     }
 
-    getSpawn(name) {
-        const layer = this.layers.find(l =>
-            l.type === 'objectgroup' &&
-            l.name.toLowerCase() === 'spawns'
-        );
-        const obj = layer?.objects.find(o => o.name.toLowerCase() === name.toLowerCase());
-        if (!obj) return null;
-        return { x: obj.x + (obj.width ?? 0) / 2, y: obj.y + (obj.height ?? 0) / 2 };
-    }
+    checkCollision(x, y, width, height) {
+        if (!this.collisionData.length) return false;
 
-    checkCollision(x, y, w, h) {
-        const left   = Math.floor(x / TILE_SIZE);
-        const right  = Math.floor((x + w - 1) / TILE_SIZE);
-        const top    = Math.floor(y / TILE_SIZE);
-        const bottom = Math.floor((y + h - 1) / TILE_SIZE);
+        const startCol = Math.max(0, Math.floor(x / TILE_SIZE));
+        const endCol = Math.min(this.mapW - 1, Math.floor((x + width - 1) / TILE_SIZE));
+        const startRow = Math.max(0, Math.floor(y / TILE_SIZE));
+        const endRow = Math.min(this.mapH - 1, Math.floor((y + height - 1) / TILE_SIZE));
 
-        for (let row = top; row <= bottom; row++) {
-            for (let col = left; col <= right; col++) {
-                if (row < 0 || col < 0 || row >= this.mapH || col >= this.mapW) return true;
+        for (let row = startRow; row <= endRow; row++) {
+            for (let col = startCol; col <= endCol; col++) {
                 if (this.collisionData[row * this.mapW + col]) return true;
             }
         }
+
         return false;
     }
+
+    getSpawn(name) {
+    const layer = this.layers.find(l =>
+        l.type === 'objectgroup' &&
+        l.name.toLowerCase() === 'spawns'
+    );
+
+    const obj = layer?.objects.find(
+        o => o.name.toLowerCase() === name.toLowerCase()
+    );
+
+    if (!obj) return null;
+
+    return {
+        x: obj.x + (obj.width ?? 0) / 2,
+        y: obj.y + (obj.height ?? 0) / 2,
+        name: obj.name,
+        type: obj.type,
+        class: obj.class,
+        properties: obj.properties ?? []
+    };
+}
 }
