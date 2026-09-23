@@ -1,6 +1,8 @@
 import { useEffect, useRef } from 'react';
 import { Game } from './Game.js';
 
+const activeGames = new WeakMap();
+
 export function useGameCanvas(isPaused, onCombatTrigger) {
     const canvasRef    = useRef(null);
     const gameRef      = useRef(null);
@@ -22,7 +24,12 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
 
     useEffect(() => {
         let cancelled = false;
-        const game = new Game(canvasRef.current, (enemy) => onCombatRef.current?.(enemy));
+        const canvas = canvasRef.current;
+        const previousGame = activeGames.get(canvas);
+        previousGame?.stop();
+
+        const game = new Game(canvas, (enemy) => onCombatRef.current?.(enemy));
+        activeGames.set(canvas, game);
         gameRef.current = game;
         game.start().then(() => {
             if (cancelled) return;
@@ -34,6 +41,9 @@ export function useGameCanvas(isPaused, onCombatTrigger) {
             cancelled = true;
             readyRef.current = false;
             game.stop();
+            if (activeGames.get(canvas) === game) {
+                activeGames.delete(canvas);
+            }
         };
     }, []);
 

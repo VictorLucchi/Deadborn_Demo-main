@@ -61,7 +61,7 @@ export class Player {
         this.running = running && this.moving;
 
         const pw = 24, ph = 8;
-        const scale = 0.25;
+        const scale = this.scale ?? 0.20;
         const feetOffsetY = this.animator.frameH * scale - ph;
 
         if (!checkCollision(this.x + dx - pw / 2, this.y + feetOffsetY, pw, ph)) this.x += dx;
@@ -79,7 +79,7 @@ export class Player {
 
     get sortY() { return this.y + this.animator.frameH * 0.25; }
 
-    draw(ctx, camera, scale = 0.25) {
+    draw(ctx, camera, scale = this.scale ?? 0.20) {
         const w = this.animator.frameW * scale;
         const screenX = this.x - camera.x - w / 2;
         const screenY = this.y - camera.y;

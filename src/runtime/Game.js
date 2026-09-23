@@ -33,6 +33,8 @@ export class Game {
         this.ctx     = canvas.getContext('2d');
         this.rafId   = null;
         this.paused  = false;
+        this._startPromise = null;
+        this._stopped = false;
         this.jogadorEngine = null;
 
         this.input   = new InputManager();
@@ -61,13 +63,23 @@ export class Game {
         this._doorInteractions = [];
     }
 
-    async start() {
+    start() {
+        if (this._startPromise) return this._startPromise;
+
+        this._startPromise = this._initialize();
+        return this._startPromise;
+    }
+
+    async _initialize() {
         this._setupResize();
         this.input.init(this.canvas, { current: null, set: (cam) => { this.camera = cam; } });
 
         const imgs = await getSharedImages();
+        if (this._stopped) return;
 
         const { map, camera } = await loadMap('entrada-cidade-cinerea', this.canvas.width, this.canvas.height);
+        if (this._stopped) return;
+
         this.map    = map;
         this.camera = camera;
         this._cacheDoorInteractions();
@@ -93,6 +105,7 @@ export class Game {
         };
 
         this._initWorld();
+        if (this._stopped) return;
         this._startLoop();
     }
 
@@ -107,8 +120,12 @@ export class Game {
     }
 
     _startLoop() {
+        if (this._stopped || this.rafId !== null) return;
+
         let lastTime = 0;
         const loop = (timestamp) => {
+            if (this._stopped) return;
+
             try {
                 const delta = Math.min(timestamp - lastTime, 100);
                 lastTime = timestamp;
@@ -145,6 +162,7 @@ export class Game {
             } catch (err) {
                 console.error('[Game loop error]', err);
             }
+            if (this._stopped) return;
             this.rafId = requestAnimationFrame(loop);
         };
         this.rafId = requestAnimationFrame(loop);
@@ -288,7 +306,9 @@ export class Game {
     }
 
     stop() {
+        this._stopped = true;
         cancelAnimationFrame(this.rafId);
+        this.rafId = null;
         this.audio.stop();
         this.input.destroy(this.canvas);
         this.ui.destroy();

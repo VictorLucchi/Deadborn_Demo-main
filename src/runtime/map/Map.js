@@ -2,14 +2,21 @@ const TILE_SIZE = 32;
 
 export class GameMap {
     constructor(mapData, tilesetImages) {
+        if (tilesetImages.length !== mapData.tilesets.length) {
+            console.warn(
+                `[Map] Quantidade de imagens de tileset (${tilesetImages.length}) ` +
+                `diferente da quantidade de tilesets do mapa (${mapData.tilesets.length}).`
+            );
+        }
+
         this.tilesets = mapData.tilesets.map((ts, i) => ({
             firstgid: ts.firstgid,
             lastgid: i + 1 < mapData.tilesets.length
                 ? mapData.tilesets[i + 1].firstgid - 1
                 : Infinity,
-            image:   tilesetImages[i].image,
-            columns: tilesetImages[i].columns,
-            scale:   tilesetImages[i].scale ?? 1,
+            image:   tilesetImages[i]?.image,
+            columns: tilesetImages[i]?.columns,
+            scale:   tilesetImages[i]?.scale ?? 1,
         }));
 
         this.layers = mapData.layers;
@@ -117,6 +124,7 @@ export class GameMap {
     drawBelow(ctx, camera) {
         this.drawLayer(ctx, camera, 'ground');
         this.drawLayer(ctx, camera, 'ground_details');
+        this.drawLayer(ctx, camera, 'walls_back');
         this.drawLayer(ctx, camera, 'objects_back');
     }
 

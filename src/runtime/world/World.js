@@ -29,6 +29,14 @@ import arcadia2Url    from '../../assets/map/arcadia2.png';
 import solo3Url       from '../../assets/map/solo3.jpeg';
 import casaTesteUrl   from '../../assets/map/casa Teste.png';
 import woodFloorUrl   from '../../assets/map/woodfloor.jpg';
+import darkwoodplaceUrl from '../../assets/map/darkwoodplace.jpg';
+import conjuntoAleatorioUrl from '../../assets/map/conjunto aleatorio.jpg';
+import floorRandomUrl  from '../../assets/map/floor_ramdom.jpg';
+import forniture2Url   from '../../assets/map/forniture2.png';
+import forniture3Url   from '../../assets/map/forniture3.png';
+import fetoNoPoteUrl   from '../../assets/map/feto no pote.png';
+import mesaImportanteUrl from '../../assets/map/mesaimportante.png';
+import assetsPinterestUrl from '../../assets/map/assets_pinterest.jpg';
 // -----------------------------
 // Tilesets exclusivos do vilarejo
 // -----------------------------
@@ -142,6 +150,14 @@ async function getSharedImages() {
         solo3,
         casaTeste,
         woodFloor,
+        darkwoodplace,
+        conjuntoAleatorio,
+        floorRandom,
+        forniture2,
+        forniture3,
+        fetoNoPote,
+        mesaImportante,
+        assetsPinterest,
 
         // -------------------------
         // Tiles do vilarejo
@@ -205,6 +221,14 @@ async function getSharedImages() {
         loadImage(solo3Url),
         loadImage(casaTesteUrl),
         loadImage(woodFloorUrl),
+        loadImage(darkwoodplaceUrl),
+        loadImage(conjuntoAleatorioUrl),
+        loadImage(floorRandomUrl),
+        loadImage(forniture2Url),
+        loadImage(forniture3Url),
+        loadImage(fetoNoPoteUrl),
+        loadImage(mesaImportanteUrl),
+        loadImage(assetsPinterestUrl),
 
         // ====================================================
         // Vilarejo
@@ -267,6 +291,14 @@ async function getSharedImages() {
         solo3,
         casaTeste,
         woodFloor,
+        darkwoodplace,
+        conjuntoAleatorio,
+        floorRandom,
+        forniture2,
+        forniture3,
+        fetoNoPote,
+        mesaImportante,
+        assetsPinterest,
 
         // Vilarejo
         solo,
@@ -564,9 +596,9 @@ const MAP_CONFIGS = {
 
         tilesets: (imgs) => [
             { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.darkwoodplace, columns: 16 },
+            { image: imgs.conjuntoAleatorio, columns: 12 },
+            { image: imgs.floorRandom, columns: 8 },
             { image: imgs.piano, columns: 13 },
             { image: imgs.mesa, columns: 4 },
             { image: imgs.cervo, columns: 5 },
@@ -586,14 +618,12 @@ const MAP_CONFIGS = {
         data: basementHouseData,
 
         tilesets: (imgs) => [
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.doors, columns: 48 },
+            { image: imgs.conjuntoAleatorio, columns: 12 },
+            { image: imgs.forniture3, columns: 41 },
             { image: imgs.forniture, columns: 22 },
+            { image: imgs.mesa, columns: 4 },
+            { image: imgs.fetoNoPote, columns: 23 },
+            { image: imgs.casaTeste, columns: 48, scale: 1.7 },
         ],
     },
 
@@ -607,13 +637,15 @@ const MAP_CONFIGS = {
 
         tilesets: (imgs) => [
             { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
-            { image: imgs.woodFloor, columns: 24 },
+            { image: imgs.floorRandom, columns: 8 },
+            { image: imgs.floorRandom, columns: 8 },
+            { image: imgs.conjuntoAleatorio, columns: 12 },
+            { image: imgs.assetsPinterest, columns: 14 },
             { image: imgs.doors, columns: 48 },
             { image: imgs.forniture, columns: 22 },
+            { image: imgs.forniture2, columns: 12 },
+            { image: imgs.forniture3, columns: 41 },
+            { image: imgs.mesaImportante, columns: 4 },
         ],
     },
 
@@ -652,13 +684,23 @@ export async function loadMap(
         config.tilesets(imgs)
     );
 
-    const camera = new Camera(
-        map.width,
-        map.height,
-        canvasWidth,
-        canvasHeight,
-        mapName === 'cinerea_well' ? 2 : 1
-    );
+   const zoom = mapName === 'cinerea_well'
+    ? 2
+    : [
+        'Musician_house',
+        'basement_musician_house',
+        'stairsUp_musician_house',
+    ].includes(mapName)
+        ? 1.5
+        : 1.25;
+
+const camera = new Camera(
+    map.width,
+    map.height,
+    canvasWidth,
+    canvasHeight,
+    zoom
+);
 
     return {
         map,
