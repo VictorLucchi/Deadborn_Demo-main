@@ -45,6 +45,7 @@ export class Character {
         // =========================
 
         this.armaEquipada = null;
+        this.utilidadeEquipada = null;
 
         this.armaduraEquipada = {
             cabeca: null,
@@ -279,6 +280,24 @@ export class Character {
         }
 
         // -----------------------------------------
+// UTILIDADE
+// -----------------------------------------
+
+if (slot === 'utilidade') {
+    if (this.utilidadeEquipada) {
+        this.adicionarItem(this.utilidadeEquipada);
+    }
+
+    this.removerItem(item);
+
+    item.posicaoInventario = null;
+
+    this.utilidadeEquipada = item;
+
+    return true;
+}
+
+        // -----------------------------------------
         // ARMADURA
         // -----------------------------------------
 
@@ -336,6 +355,26 @@ export class Character {
         }
 
         // -----------------------------------------
+// UTILIDADE
+// -----------------------------------------
+
+if (slot === 'utilidade') {
+    if (!this.utilidadeEquipada) {
+        return false;
+    }
+
+    const equipamento = this.utilidadeEquipada;
+
+    equipamento.posicaoInventario = null;
+
+    this.utilidadeEquipada = null;
+
+    this.adicionarItem(equipamento);
+
+    return true;
+}
+
+        // -----------------------------------------
         // ARMADURA
         // -----------------------------------------
 
@@ -369,6 +408,10 @@ export class Character {
             ? this.armaEquipada.danoAtaque
             : 0;
     }
+
+    getVisionRadius() {
+    return this.utilidadeEquipada?.visionRadius ?? 0;
+}
 
     getBonusDefesa() {
         return Object.values(this.armaduraEquipada)

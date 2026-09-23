@@ -7,22 +7,8 @@ import { loadMap, getSharedImages } from './world/World.js';
 import { Player }        from './entities/Player.js';
 import { Crow }          from './entities/Crow.js';
 import { CrowDialogue }  from './crow/CrowDialogue.js';
-import { Lantern }       from '../engine/items/weapons/Lantern.js';
-import { HealthPotion }  from '../engine/items/consumables/HealthPotion.js';
-import { ManaPotion }    from '../engine/items/consumables/ManaPotion.js';
-import { AbyssalBlood }  from '../engine/items/drops/AbyssalBlood.js';
-import { MutatedCore }   from '../engine/items/drops/MutatedCore.js';
-import { IronSword }     from '../engine/items/weapons/IronSword.js';
-import { SteelSword }    from '../engine/items/weapons/SteelSword.js';
+import { createItem }    from '../engine/items/ItemRegistry.js';
 
-const ITEM_REGISTRY = {
-    'health potion': () => new HealthPotion(),
-    'mana potion':   () => new ManaPotion(),
-    'abyssal blood': () => new AbyssalBlood(),
-    'mutated core':  () => new MutatedCore(),
-    'iron sword':    () => new IronSword(),
-    'steel sword':   () => new SteelSword(),
-};
 
 const DOOR_INTERACT_DIST = 80;
 const FADE_DURATION = 400; // ms
@@ -92,6 +78,9 @@ export class Game {
             playerSpawn ? playerSpawn.x : map.width / 2,
             playerSpawn ? playerSpawn.y : map.height / 2
         );
+
+        this.player.scale = this._getPlayerScale();
+
         this.crow = new Crow(
             imgs.corvImg,
             crowSpawn ? crowSpawn.x : map.width / 2 - 200,
@@ -213,6 +202,16 @@ export class Game {
             }
         }
     }
+    
+    _getPlayerScale() {
+    return [
+        'Musician_house',
+        'basement_musician_house',
+        'stairsUp_musician_house',
+    ].includes(this.currentMapName)
+        ? 0.17
+        : 0.20;
+}
 
     _triggerDoorTransition(props) {
         if (this._fadeDir !== 0) return;
@@ -239,6 +238,8 @@ export class Game {
                 this.player.x = spawn.x;
                 this.player.y = spawn.y;
             }
+
+            this.player.scale = this._getPlayerScale();
 
             this.input._cameraGetter = () => this.camera;
             this.em.init(this.player, [], this.crow, this.crowDialogue);
@@ -287,14 +288,19 @@ export class Game {
     }
 
     crowPickupLantern() {
-        this.crowDialogue?.pickupLantern();
-        if (this.crow) this.crow.visible = false;
-        if (this.jogadorEngine) {
-            const lantern = new Lantern();
-            this.jogadorEngine.adicionarItem?.(lantern);
-            this.jogadorEngine.armaEquipada = lantern;
-        }
+    this.crowDialogue?.pickupLantern();
+
+    if (this.crow) {
+        this.crow.visible = false;
     }
+
+    if (this.jogadorEngine) {
+        const lantern = createItem('lantern');
+
+        this.jogadorEngine.adicionarItem(lantern);
+        this.jogadorEngine.equiparEquipamento(lantern);
+    }
+}
 
     crowUnlockDialogue() {
         this.crowDialogue?.setDialogueLock(false);
@@ -332,31 +338,47 @@ export class Game {
     }
 
     executeCommand(cmd) {
-        const args   = cmd.trim().split(' ');
-        const action = args[0].toLowerCase();
+    const args   = cmd.trim().split(' ');
+    const action = args[0].toLowerCase();
 
-        if (action === '/spawn' && args[1]?.toLowerCase() === 'hunter') {
-            this.em.spawnHunter(this.sprites);
-        } else if (action === '/spawn' && args[1]?.toLowerCase() === 'walker') {
-            this.em.spawnBroodhostWalker(this.sprites);
-        } else if (action === '/kill' && args[1]?.toLowerCase() === 'all' && args[2]?.toLowerCase() === 'hunter') {
-            this.em.killHunters(true);
-        } else if (action === '/kill' && args[1]?.toLowerCase() === 'hunter') {
-            this.em.killHunters(false);
-        } else if (action === '/kill' && args[1]?.toLowerCase() === 'all' && args[2]?.toLowerCase() === 'walker') {
-            this.em.killBroodhostWalkers(true);
-        } else if (action === '/kill' && args[1]?.toLowerCase() === 'walker') {
-            this.em.killBroodhostWalkers(false);
-        } else if (action === '/give') {
-            const nomeBruto = args.slice(1).join(' ').toLowerCase()
-                .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-            const factory = ITEM_REGISTRY[nomeBruto];
-            if (!factory) return `Item "${args.slice(1).join(' ')}" não encontrado.`;
-            if (!this.jogadorEngine) return 'Nenhum jogador ativo.';
-            this.jogadorEngine.adicionarItem(factory());
-            return `${factory().nome} adicionado ao inventário.`;
+    if (action === '/spawn' && args[1]?.toLowerCase() === 'hunter') {
+        this.em.spawnHunter(this.sprites);
+
+    } else if (action === '/spawn' && args[1]?.toLowerCase() === 'walker') {
+        this.em.spawnBroodhostWalker(this.sprites);
+
+    } else if (action === '/kill' && args[1]?.toLowerCase() === 'all' && args[2]?.toLowerCase() === 'hunter') {
+        this.em.killHunters(true);
+
+    } else if (action === '/kill' && args[1]?.toLowerCase() === 'hunter') {
+        this.em.killHunters(false);
+
+    } else if (action === '/kill' && args[1]?.toLowerCase() === 'all' && args[2]?.toLowerCase() === 'walker') {
+        this.em.killBroodhostWalkers(true);
+
+    } else if (action === '/kill' && args[1]?.toLowerCase() === 'walker') {
+        this.em.killBroodhostWalkers(false);
+
+    } else if (action === '/give') {
+        const nomeBruto = args.slice(1).join(' ').toLowerCase()
+            .normalize('NFD')
+            .replace(/[\u0300-\u036f]/g, '');
+
+        if (!this.jogadorEngine) {
+            return 'Nenhum jogador ativo.';
+        }
+
+        try {
+            const item = createItem(nomeBruto);
+
+            this.jogadorEngine.adicionarItem(item);
+
+            return `${item.nome} adicionado ao inventário.`;
+        } catch {
+            return `Item "${args.slice(1).join(' ')}" não encontrado.`;
         }
     }
+}
 
     _setupResize() {
         this._resizeHandler = () => {

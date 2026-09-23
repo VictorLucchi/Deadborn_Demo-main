@@ -691,7 +691,7 @@ export async function loadMap(
         'basement_musician_house',
         'stairsUp_musician_house',
     ].includes(mapName)
-        ? 1.5
+        ? 2.0
         : 1.25;
 
 const camera = new Camera(

@@ -34,6 +34,40 @@ const ARMOR_SLOTS = [
     }
 ];
 
+// Ordem usada pelo teclado para navegar pelos equipamentos.
+const EQUIPMENT_NAV = [
+    {
+        id: 'cabeca',
+        label: 'Cabeça',
+        type: 'armor'
+    },
+    {
+        id: 'peito',
+        label: 'Peito',
+        type: 'armor'
+    },
+    {
+        id: 'luvas',
+        label: 'Luvas',
+        type: 'armor'
+    },
+    {
+        id: 'pernas',
+        label: 'Pernas',
+        type: 'armor'
+    },
+    {
+        id: 'arma',
+        label: 'Arma',
+        type: 'weapon'
+    },
+    {
+        id: 'utilidade',
+        label: 'Utilidade',
+        type: 'utility'
+    }
+];
+
 // ============================================================
 // AÇÕES
 // ============================================================
@@ -333,6 +367,39 @@ export function Inventory({
     const armorEquipped =
         jogador?.armaduraEquipada ?? {};
 
+    /*
+     * Retorna o item atualmente equipado
+     * em determinado índice da navegação.
+     */
+    const getEquipmentAt = useCallback(
+        index => {
+            const slot =
+                EQUIPMENT_NAV[index];
+
+            if (!slot || !jogador) {
+                return null;
+            }
+
+            if (slot.type === 'armor') {
+                return armorEquipped[slot.id] ?? null;
+            }
+
+            if (slot.type === 'weapon') {
+                return jogador.armaEquipada ?? null;
+            }
+
+            if (slot.type === 'utility') {
+                return jogador.utilidadeEquipada ?? null;
+            }
+
+            return null;
+        },
+        [
+            jogador,
+            armorEquipped
+        ]
+    );
+
     // ========================================================
     // ABRIR MENU
     // ========================================================
@@ -423,6 +490,13 @@ export function Inventory({
                 else if (
                     action.id === 'desequipar'
                 ) {
+                    /*
+                     * Arma possui um slot específico.
+                     *
+                     * Os demais equipamentos usam
+                     * diretamente o slot armazenado
+                     * no próprio item.
+                     */
                     if (
                         item ===
                         jogador.armaEquipada
@@ -434,9 +508,11 @@ export function Inventory({
                         const slot =
                             item.slot;
 
-                        jogador.desequiparEquipamento(
-                            slot
-                        );
+                        if (slot) {
+                            jogador.desequiparEquipamento(
+                                slot
+                            );
+                        }
                     }
                 }
 
@@ -508,9 +584,9 @@ export function Inventory({
     useEffect(() => {
         const handle = e => {
 
-            // ------------------------------------------------
+            // =================================================
             // MENU DE CONTEXTO
-            // ------------------------------------------------
+            // =================================================
 
             if (contextItem) {
                 const actions =
@@ -518,6 +594,10 @@ export function Inventory({
                         contextItem.item,
                         contextItem.equipado
                     );
+
+                if (!actions.length) {
+                    return;
+                }
 
                 if (
                     e.key === 'ArrowUp'
@@ -533,6 +613,8 @@ export function Inventory({
                             ) %
                             actions.length
                     );
+
+                    return;
                 }
 
                 if (
@@ -548,6 +630,8 @@ export function Inventory({
                             ) %
                             actions.length
                     );
+
+                    return;
                 }
 
                 if (
@@ -560,6 +644,8 @@ export function Inventory({
                             contextAction
                         ]
                     );
+
+                    return;
                 }
 
                 if (
@@ -568,14 +654,16 @@ export function Inventory({
                     e.preventDefault();
 
                     closeContext();
+
+                    return;
                 }
 
                 return;
             }
 
-            // ------------------------------------------------
+            // =================================================
             // MOVER ITEM
-            // ------------------------------------------------
+            // =================================================
 
             if (movingItem) {
 
@@ -608,16 +696,15 @@ export function Inventory({
                 }
             }
 
-            // ------------------------------------------------
+            // =================================================
             // GRADE
-            // ------------------------------------------------
+            // =================================================
 
             if (
                 focusZone === 'grid'
             ) {
                 if (
-                    e.key ===
-                    'ArrowRight'
+                    e.key === 'ArrowRight'
                 ) {
                     e.preventDefault();
 
@@ -628,11 +715,12 @@ export function Inventory({
                                 TOTAL_SLOTS - 1
                             )
                     );
+
+                    return;
                 }
 
                 if (
-                    e.key ===
-                    'ArrowLeft'
+                    e.key === 'ArrowLeft'
                 ) {
                     e.preventDefault();
 
@@ -643,11 +731,12 @@ export function Inventory({
                                 0
                             )
                     );
+
+                    return;
                 }
 
                 if (
-                    e.key ===
-                    'ArrowDown'
+                    e.key === 'ArrowDown'
                 ) {
                     e.preventDefault();
 
@@ -658,11 +747,12 @@ export function Inventory({
                                 TOTAL_SLOTS - 1
                             )
                     );
+
+                    return;
                 }
 
                 if (
-                    e.key ===
-                    'ArrowUp'
+                    e.key === 'ArrowUp'
                 ) {
                     e.preventDefault();
 
@@ -673,6 +763,8 @@ export function Inventory({
                                 0
                             )
                     );
+
+                    return;
                 }
 
                 if (
@@ -685,6 +777,8 @@ export function Inventory({
                     );
 
                     setCursorIdx(0);
+
+                    return;
                 }
 
                 if (
@@ -709,12 +803,14 @@ export function Inventory({
                             el
                         );
                     }
+
+                    return;
                 }
             }
 
-            // ------------------------------------------------
+            // =================================================
             // SAQUE RÁPIDO
-            // ------------------------------------------------
+            // =================================================
 
             if (
                 focusZone === 'quick'
@@ -731,6 +827,8 @@ export function Inventory({
                                 0
                             )
                     );
+
+                    return;
                 }
 
                 if (
@@ -745,6 +843,8 @@ export function Inventory({
                                 3
                             )
                     );
+
+                    return;
                 }
 
                 if (
@@ -753,10 +853,12 @@ export function Inventory({
                     e.preventDefault();
 
                     setFocusZone(
-                        'grid'
+                        'equipment'
                     );
 
                     setCursorIdx(0);
+
+                    return;
                 }
 
                 if (
@@ -780,8 +882,129 @@ export function Inventory({
                             el
                         );
                     }
+
+                    return;
                 }
             }
+
+            // =================================================
+            // EQUIPAMENTOS
+            // =================================================
+
+            if (
+                focusZone === 'equipment'
+            ) {
+                const max =
+                    EQUIPMENT_NAV.length - 1;
+
+                if (
+                    e.key === 'ArrowRight'
+                ) {
+                    e.preventDefault();
+
+                    setCursorIdx(
+                        i =>
+                            Math.min(
+                                i + 1,
+                                max
+                            )
+                    );
+
+                    return;
+                }
+
+                if (
+                    e.key === 'ArrowLeft'
+                ) {
+                    e.preventDefault();
+
+                    setCursorIdx(
+                        i =>
+                            Math.max(
+                                i - 1,
+                                0
+                            )
+                    );
+
+                    return;
+                }
+
+                if (
+                    e.key === 'ArrowDown'
+                ) {
+                    e.preventDefault();
+
+                    setCursorIdx(
+                        i =>
+                            Math.min(
+                                i + 1,
+                                max
+                            )
+                    );
+
+                    return;
+                }
+
+                if (
+                    e.key === 'ArrowUp'
+                ) {
+                    e.preventDefault();
+
+                    setCursorIdx(
+                        i =>
+                            Math.max(
+                                i - 1,
+                                0
+                            )
+                    );
+
+                    return;
+                }
+
+                if (
+                    e.key === 'Tab'
+                ) {
+                    e.preventDefault();
+
+                    setFocusZone(
+                        'grid'
+                    );
+
+                    setCursorIdx(0);
+
+                    return;
+                }
+
+                if (
+                    e.key === 'Enter'
+                ) {
+                    e.preventDefault();
+
+                    const item =
+                        getEquipmentAt(
+                            cursorIdx
+                        );
+
+                    const el =
+                        document.querySelector(
+                            `[data-equipment="${cursorIdx}"]`
+                        );
+
+                    if (item) {
+                        openContext(
+                            item,
+                            el,
+                            true
+                        );
+                    }
+
+                    return;
+                }
+            }
+
+            // =================================================
+            // FECHAR
+            // =================================================
 
             if (
                 e.key === 'Escape'
@@ -814,7 +1037,8 @@ export function Inventory({
         closeContext,
         onClose,
         movingItem,
-        jogador
+        jogador,
+        getEquipmentAt
     ]);
 
     // ========================================================
@@ -1107,7 +1331,7 @@ export function Inventory({
                             />
 
                             {ARMOR_SLOTS.map(
-                                slot => {
+                                (slot, index) => {
 
                                     const item =
                                         armorEquipped[
@@ -1115,6 +1339,11 @@ export function Inventory({
                                         ];
 
                                     const focused =
+                                        focusZone ===
+                                            'equipment' &&
+                                        cursorIdx === index;
+
+                                    const contextFocused =
                                         item ===
                                         contextItem?.item;
 
@@ -1123,7 +1352,14 @@ export function Inventory({
                                             key={
                                                 slot.id
                                             }
-                                            className="inv-armor-slot"
+                                            data-equipment={
+                                                index
+                                            }
+                                            className={`inv-armor-slot ${
+                                                focused
+                                                    ? 'focused'
+                                                    : ''
+                                            }`}
                                             style={{
                                                 top:
                                                     slot.top,
@@ -1134,6 +1370,14 @@ export function Inventory({
                                                 slot.label
                                             }
                                             onClick={e => {
+                                                setFocusZone(
+                                                    'equipment'
+                                                );
+
+                                                setCursorIdx(
+                                                    index
+                                                );
+
                                                 if (!item)
                                                     return;
 
@@ -1151,7 +1395,8 @@ export function Inventory({
                                                         ? 'filled'
                                                         : ''
                                                 } ${
-                                                    focused
+                                                    focused ||
+                                                    contextFocused
                                                         ? 'cursor'
                                                         : ''
                                                 }`}
@@ -1197,70 +1442,177 @@ export function Inventory({
                             ARMA
                         ==================================== */}
 
-                        {jogador?.armaEquipada && (
-                            <div
-                                className="inv-equipped-weapon"
-                                onClick={e =>
+                        <div
+                            data-equipment="4"
+                            className={`inv-equipped-weapon ${
+                                focusZone ===
+                                    'equipment' &&
+                                cursorIdx === 4
+                                    ? 'focused'
+                                    : ''
+                            }`}
+                            onClick={e => {
+                                setFocusZone(
+                                    'equipment'
+                                );
+
+                                setCursorIdx(4);
+
+                                if (
+                                    jogador?.armaEquipada
+                                ) {
                                     openContext(
                                         jogador.armaEquipada,
                                         e.currentTarget,
                                         true
-                                    )
+                                    );
                                 }
+                            }}
+                        >
+
+                            <span
+                                className="inv-section-label"
+                                style={{
+                                    marginBottom: 4
+                                }}
+                            >
+                                ARMA
+                            </span>
+
+                            <div
+                                className={`inv-diamond-frame ${
+                                    jogador?.armaEquipada
+                                        ? 'filled'
+                                        : ''
+                                }`}
+                                style={{
+                                    width: 40,
+                                    height: 40
+                                }}
                             >
 
-                                <span
-                                    className="inv-section-label"
-                                    style={{
-                                        marginBottom: 4
-                                    }}
-                                >
-                                    ARMA
-                                </span>
-
-                                <div
-                                    className="inv-diamond-frame filled"
-                                    style={{
-                                        width: 40,
-                                        height: 40
-                                    }}
-                                >
-
-                                    {jogador.armaEquipada.iconUrl ||
-                                    jogador.armaEquipada.icon ? (
-                                        <img
-                                            src={
-                                                jogador
-                                                    .armaEquipada
-                                                    .iconUrl ??
-                                                jogador
-                                                    .armaEquipada
-                                                    .icon
-                                            }
-                                            alt={
-                                                jogador
-                                                    .armaEquipada
-                                                    .nome
-                                            }
-                                        />
-                                    ) : (
-                                        <span className="inv-slot-empty">
-                                            ⚔
-                                        </span>
-                                    )}
-
-                                </div>
-
-                                <span className="inv-slot-label">
-                                    {
-                                        jogador
-                                            .armaEquipada
-                                            .nome
-                                    }
-                                </span>
+                                {jogador?.armaEquipada?.iconUrl ||
+                                jogador?.armaEquipada?.icon ? (
+                                    <img
+                                        src={
+                                            jogador
+                                                .armaEquipada
+                                                .iconUrl ??
+                                            jogador
+                                                .armaEquipada
+                                                .icon
+                                        }
+                                        alt={
+                                            jogador
+                                                .armaEquipada
+                                                .nome
+                                        }
+                                    />
+                                ) : (
+                                    <span className="inv-slot-empty">
+                                        ⚔
+                                    </span>
+                                )}
 
                             </div>
-                        )}
+
+                            <span className="inv-slot-label">
+                                {
+                                    jogador?.armaEquipada
+                                        ?.nome ??
+                                    '— VAZIO —'
+                                }
+                            </span>
+
+                        </div>
+
+                        {/* ====================================
+                            UTILIDADE
+                        ==================================== */}
+
+                        <div
+                            data-equipment="5"
+                            className={`inv-equipped-weapon ${
+                                focusZone ===
+                                    'equipment' &&
+                                cursorIdx === 5
+                                    ? 'focused'
+                                    : ''
+                            }`}
+                            onClick={e => {
+                                setFocusZone(
+                                    'equipment'
+                                );
+
+                                setCursorIdx(5);
+
+                                if (
+                                    jogador?.utilidadeEquipada
+                                ) {
+                                    openContext(
+                                        jogador.utilidadeEquipada,
+                                        e.currentTarget,
+                                        true
+                                    );
+                                }
+                            }}
+                        >
+
+                            <span
+                                className="inv-section-label"
+                                style={{
+                                    marginBottom: 4
+                                }}
+                            >
+                                UTILIDADE
+                            </span>
+
+                            <div
+                                className={`inv-diamond-frame ${
+                                    jogador?.utilidadeEquipada
+                                        ? 'filled'
+                                        : ''
+                                }`}
+                                style={{
+                                    width: 40,
+                                    height: 40
+                                }}
+                            >
+
+                                {jogador?.utilidadeEquipada?.iconUrl ||
+                                jogador?.utilidadeEquipada?.icon ? (
+                                    <img
+                                        src={
+                                            jogador
+                                                .utilidadeEquipada
+                                                .iconUrl ??
+                                            jogador
+                                                .utilidadeEquipada
+                                                .icon
+                                        }
+                                        alt={
+                                            jogador
+                                                .utilidadeEquipada
+                                                .nome
+                                        }
+                                    />
+                                ) : (
+                                    <span className="inv-slot-empty">
+                                        ✦
+                                    </span>
+                                )}
+
+                            </div>
+
+                            <span className="inv-slot-label">
+                                {
+                                    jogador?.utilidadeEquipada
+                                        ?.nome ??
+                                    '— VAZIO —'
+                                }
+                            </span>
+
+                        </div>
 
                     </div>
 

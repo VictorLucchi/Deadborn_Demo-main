@@ -10,15 +10,15 @@ export class Camera {
     }
 
     follow(target) {
-        this.x = target.x - this.viewW / 2;
-        this.y = target.y - this.viewH / 2;
+    this.x = target.x - this.viewW / 2;
+    this.y = target.y - this.viewH / 2;
 
-        // limita nos bordos do mapa
-        const maxX = this.mapW - this.viewW;
-        const maxY = this.mapH - this.viewH;
-        this.x = maxX < 0 ? maxX / 2 : Math.max(0, Math.min(this.x, maxX));
-        this.y = maxY < 0 ? maxY / 2 : Math.max(0, Math.min(this.y, maxY));
-    }
+    const maxX = this.mapW - this.viewW;
+    const maxY = this.mapH - this.viewH;
+
+    this.x = maxX < 0 ? 0 : Math.max(0, Math.min(this.x, maxX));
+    this.y = maxY < 0 ? 0 : Math.max(0, Math.min(this.y, maxY));
+}
 
     resize(viewW, viewH) {
         this.viewW = viewW / this.zoom;

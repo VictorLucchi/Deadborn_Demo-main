@@ -10,14 +10,51 @@ export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle
         setIsConsoleOpen(val);
         onConsoleToggle?.(val);
     };
-    const { canvasRef, executeCommand, playMusic, playIntro, playDiaryWriting, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock } = useGameCanvas(
+
+    const {
+        canvasRef,
+        executeCommand,
+        playMusic,
+        playIntro,
+        playDiaryWriting,
+        skipIntro,
+        removeEnemy,
+        setJogador,
+        setCrowCallbacks,
+        crowInteract,
+        crowPickup,
+        crowUnlock
+    } = useGameCanvas(
         isPaused || isConsoleOpen,
         onCombatTrigger
     );
 
     useEffect(() => {
-        onReady?.({ playMusic, playIntro, playDiaryWriting, skipIntro, removeEnemy, setJogador, setCrowCallbacks, crowInteract, crowPickup, crowUnlock });
-    }, [crowInteract, crowPickup, crowUnlock, onReady, playDiaryWriting, playIntro, playMusic, removeEnemy, setCrowCallbacks, setJogador, skipIntro]);
+        onReady?.({
+            playMusic,
+            playIntro,
+            playDiaryWriting,
+            skipIntro,
+            removeEnemy,
+            setJogador,
+            setCrowCallbacks,
+            crowInteract,
+            crowPickup,
+            crowUnlock
+        });
+    }, [
+        crowInteract,
+        crowPickup,
+        crowUnlock,
+        onReady,
+        playDiaryWriting,
+        playIntro,
+        playMusic,
+        removeEnemy,
+        setCrowCallbacks,
+        setJogador,
+        skipIntro
+    ]);
 
     return (
         <>
@@ -32,38 +69,110 @@ export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle
                     imageRendering: 'pixelated',
                 }}
             />
+
             <div id="game-hud" className="hud">
+
                 <div className="hud-avatar">
                     <div className="hud-avatar-frame">
-                        <img id="hud-avatar-image" src={null} alt="" />
+                        <img
+                            id="hud-avatar-image"
+                            src={null}
+                            alt=""
+                        />
                     </div>
+
                     <div className="hud-rune hud-rune-top"></div>
                     <div className="hud-rune hud-rune-bottom"></div>
                 </div>
+
                 <div className="hud-info">
+
                     <div className="hud-name">
-                        <span id="hud-name">HADES</span>
+                        <span id="hud-name">
+                            HADES
+                        </span>
                     </div>
+
                     <div className="hud-stat hud-health">
                         <div className="hud-stat-line">
-                            <div id="hud-health-fill" className="hud-stat-fill"></div>
+                            <div
+                                id="hud-health-fill"
+                                className="hud-stat-fill"
+                            ></div>
                         </div>
-                        <span id="hud-health-text" className="hud-stat-text">VIDA 110/110</span>
+
+                        <span
+                            id="hud-health-text"
+                            className="hud-stat-text"
+                        >
+                            VIDA 110/110
+                        </span>
                     </div>
+
                     <div className="hud-stat hud-mana">
                         <div className="hud-stat-line">
-                            <div id="hud-mana-fill" className="hud-stat-fill"></div>
+                            <div
+                                id="hud-mana-fill"
+                                className="hud-stat-fill"
+                            ></div>
                         </div>
-                        <span id="hud-mana-text" className="hud-stat-text">MANA 43/43</span>
+
+                        <span
+                            id="hud-mana-text"
+                            className="hud-stat-text"
+                        >
+                            MANA 43/43
+                        </span>
                     </div>
+
                 </div>
+
+                {/* ==========================================
+                    EQUIPAMENTOS
+                ========================================== */}
+
                 <div className="hud-equipment">
-                    <div className="hud-equipment-frame">
-                        <span id="hud-weapon-icon">⚔</span>
+
+                    {/* ARMA */}
+
+                    <div className="hud-equipment-slot">
+
+                        <div className="hud-equipment-frame">
+                            <span id="hud-weapon-icon">
+                                ⚔
+                            </span>
+                        </div>
+
+                        <span className="hud-equipment-label">
+                            ARMA
+                        </span>
+
                     </div>
+
+                    {/* UTILIDADE */}
+
+                    <div className="hud-equipment-slot">
+
+                        <div className="hud-equipment-frame">
+                            <span id="hud-utility-icon">
+                                ✦
+                            </span>
+                        </div>
+
+                        <span className="hud-equipment-label">
+                            UTIL
+                        </span>
+
+                    </div>
+
                 </div>
+
             </div>
-            <DevConsole onCommand={executeCommand} onToggle={handleConsoleToggle} />
+
+            <DevConsole
+                onCommand={executeCommand}
+                onToggle={handleConsoleToggle}
+            />
         </>
     );
 }

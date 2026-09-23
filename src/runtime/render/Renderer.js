@@ -113,11 +113,14 @@ export class Renderer {
 
         if (!crowState?.indoors) {
 
+            const visionRadius = jogador ?.getVisionRadius?.() ?? 0;
+
             this._drawFog(
                 ctx,
                 player,
                 camera,
-                crowState
+                crowState,
+                visionRadius
             );
 
 
@@ -319,7 +322,8 @@ export class Renderer {
         ctx,
         player,
         camera,
-        crowState
+        crowState,
+        visionRadius
     ) {
 
         const W =
@@ -393,18 +397,18 @@ export class Renderer {
             'destination-out';
 
 
-        if (crowState?.hasLantern) {
+        if (visionRadius > 0) {
 
             const hole =
-                fc.createRadialGradient(
-                    px,
-                    py,
-                    0,
+    fc.createRadialGradient(
+        px,
+        py,
+        0,
 
-                    px,
-                    py,
-                    200
-                );
+        px,
+        py,
+        visionRadius
+    );
 
 
             hole.addColorStop(
@@ -606,9 +610,7 @@ export class Renderer {
         // TINT AZUL DO PLAYER
         // ===============================
 
-        if (
-            crowState?.hasLantern
-        ) {
+        if (visionRadius > 0) {
 
             const tint =
                 ctx.createRadialGradient(
@@ -618,7 +620,7 @@ export class Renderer {
 
                     px,
                     py,
-                    200
+                    visionRadius
                 );
 
 

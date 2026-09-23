@@ -1,4 +1,4 @@
-import { Equipment } from './Equipment.js';
+import { Equipment } from '../Equipment.js';
 
 export class Hood extends Equipment {
     constructor() {

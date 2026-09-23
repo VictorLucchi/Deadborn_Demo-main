@@ -7,6 +7,9 @@ export class Player {
     constructor(sprites, x, y) {
         this.x = x;
         this.y = y;
+
+        this.scale = 0.20;
+
         this.direction = 'right';
         this.moving = false;
         this.running = false;
@@ -77,7 +80,7 @@ export class Player {
         this.animator.update(delta);
     }
 
-    get sortY() { return this.y + this.animator.frameH * 0.25; }
+    get sortY() { return this.y + this.animator.frameH * (this.scale ?? 0.20) * 0.25; }
 
     draw(ctx, camera, scale = this.scale ?? 0.20) {
         const w = this.animator.frameW * scale;

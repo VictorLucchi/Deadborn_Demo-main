@@ -357,99 +357,109 @@
 
 
 /* =========================================================
-   EQUIPAMENTO
+   EQUIPAMENTOS
    ========================================================= */
 
 .hud-equipment {
-
     position: absolute;
-
     left: 28px;
     top: 108px;
-
-    width: 38px;
-    height: 38px;
-
     display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    pointer-events: none;
+}
 
+.hud-equipment-slot {
+    width: 38px;
+    min-height: 52px;
+    display: flex;
+    flex-direction: column;
     align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    gap: 5px;
 }
 
 
 /* =========================================================
-   MOLDURA DA ARMA
+   MOLDURA DOS EQUIPAMENTOS
    ========================================================= */
 
 .hud-equipment-frame {
-
     position: relative;
-
     width: 30px;
     height: 30px;
-
     display: flex;
-
     align-items: center;
     justify-content: center;
-
-    border: 1px solid
-        rgba(160, 145, 120, 0.7);
-
+    border: 1px solid rgba(160, 145, 120, 0.7);
     transform: rotate(45deg);
-
-    background:
-        rgba(8, 7, 10, 0.8);
-
-    transition: width 0.25s ease, height 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+    background: rgba(8, 7, 10, 0.8);
+    transition:
+        width 0.25s ease,
+        height 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease;
 }
 
 .hud-equipment-frame.filled {
     width: 38px;
     height: 38px;
     border-color: rgba(160, 145, 120, 1);
-    box-shadow: 0 0 8px rgba(160, 145, 120, 0.25);
+    box-shadow:
+        0 0 8px rgba(160, 145, 120, 0.25);
 }
-
-
-/* =========================================================
-   SEGUNDO LOSANGO
-   ========================================================= */
 
 .hud-equipment-frame::before {
-
     content: "";
-
     position: absolute;
-
     inset: 4px;
-
-    border: 1px solid
-        rgba(120, 110, 95, 0.35);
+    border: 1px solid rgba(120, 110, 95, 0.35);
 }
 
+.hud-equipment-frame::after {
+    content: "";
+    position: absolute;
+    inset: -4px;
+    border: 1px solid transparent;
+    background: rgba(210, 190, 140, 0.05);
+    opacity: 0;
+    transition:
+        opacity 0.15s ease,
+        border-color 0.15s ease,
+        box-shadow 0.15s ease;
+    pointer-events: none;
+}
 
-/* =========================================================
-   ÍCONE DA ARMA
-   ========================================================= */
+.hud-equipment-frame.selected::after {
+    opacity: 1;
+    border-color: rgba(210, 190, 140, 0.72);
+    box-shadow:
+        0 0 12px rgba(180, 160, 120, 0.22);
+}
 
-#hud-weapon-icon {
-
-    position: relative;
-
-    z-index: 2;
-
-    color:
-        rgba(190, 180, 155, 0.8);
-
-    font-family:
-        Georgia,
-        serif;
-
-    font-size: 17px;
-
+.hud-equipment-label {
+    font-family: "Courier New", monospace;
+    font-size: 7px;
+    letter-spacing: 1px;
+    color: rgba(170, 155, 125, 0.38);
     line-height: 1;
+}
 
+#hud-weapon-icon,
+#hud-utility-icon {
+    position: relative;
+    z-index: 2;
+    color: rgba(190, 180, 155, 0.8);
+    font-family: Georgia, serif;
+    font-size: 17px;
+    line-height: 1;
+    transform: rotate(-45deg);
+}
+
+#hud-weapon-icon img,
+#hud-utility-icon img {
+    display: block;
     transform: rotate(-45deg);
 }
 
