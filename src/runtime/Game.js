@@ -277,6 +277,7 @@ export class Game {
 
 
         this._initWorld();
+        this._spawnMapEnemies();
 
 
         if (this._stopped) {
@@ -508,6 +509,69 @@ export class Game {
             requestAnimationFrame(
                 loop
             );
+    }
+
+
+    // =============================================================
+    // SPAWN DE INIMIGOS DEFINIDOS NO MAPA
+    // =============================================================
+
+    _spawnMapEnemies() {
+
+        if (!this.map || !this.player) {
+            return;
+        }
+
+        const layers = this.map.layers ?? [];
+
+        for (const layer of layers) {
+
+            if (layer.type !== 'objectgroup') {
+                continue;
+            }
+
+            for (const obj of layer.objects ?? []) {
+
+                if (String(obj.type ?? '').toLowerCase() !== 'spawn') {
+                    continue;
+                }
+
+                const props = {};
+
+                for (const property of obj.properties ?? []) {
+                    props[property.name] = property.value;
+                }
+
+                if (String(props.spawnType ?? '').toLowerCase() !== 'enemy') {
+                    continue;
+                }
+
+                if (String(props.active ?? 'true').toLowerCase() === 'false') {
+                    continue;
+                }
+
+                const enemyType = String(props.enemyType ?? '').toLowerCase();
+
+                const x = obj.x + (obj.width ?? 0) / 2;
+                const y = obj.y + (obj.height ?? 0) / 2;
+
+                if (enemyType === 'walker') {
+                    this.em.spawnBroodhostWalkerAt(
+                        this.sprites,
+                        x,
+                        y
+                    );
+                } else if (enemyType === 'hunter') {
+                    const hunter = this.em.spawnHunter(
+                        this.sprites,
+                        x - this.player.x
+                    );
+                    if (hunter) {
+                        hunter.y = y;
+                    }
+                }
+            }
+        }
     }
 
 
@@ -882,6 +946,8 @@ export class Game {
                 'piano_release'
         ) {
 
+            this.audio.activateInternalTension();
+
             this._emitMissionEvent(
                 'piano_played'
             );
@@ -928,6 +994,8 @@ export class Game {
             this._usedMissionInteractions.add(
                 interactionId
             );
+
+            this.audio.playLuto();
 
 
             this._emitMissionEvent(
@@ -1336,6 +1404,8 @@ export class Game {
                     this.crow,
                     this.crowDialogue
                 );
+
+                this._spawnMapEnemies();
 
 
                 this.camera.follow(
