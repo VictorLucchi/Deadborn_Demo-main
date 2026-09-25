@@ -13,11 +13,12 @@ import { createItem }    from '../engine/items/ItemRegistry.js';
 const DOOR_INTERACT_DIST = 80;
 const INTERACTION_DIST   = 120;
 const FADE_DURATION      = 400; // ms
+export const DEMO_TIME_LIMIT = 5 * 60 * 1000;
 
 
 export class Game {
 
-    constructor(canvas, onCombatTrigger, onMissionEvent) {
+    constructor(canvas, onCombatTrigger, onMissionEvent, onTimeLimitReached) {
 
         this.canvas  = canvas;
         this.ctx     = canvas.getContext('2d');
@@ -27,6 +28,8 @@ export class Game {
 
         this._startPromise = null;
         this._stopped = false;
+        this._gameStartTime = null;
+        this._timeLimitReached = false;
 
         this.jogadorEngine = null;
 
@@ -40,6 +43,9 @@ export class Game {
 
         this.onMissionEvent =
             onMissionEvent || null;
+
+        this.onTimeLimitReached =
+            onTimeLimitReached || null;
 
 
         // =========================================================
@@ -129,6 +135,8 @@ export class Game {
         if (this._startPromise) {
             return this._startPromise;
         }
+
+        this._gameStartTime = performance.now();
 
         this._startPromise =
             this._initialize();
@@ -358,6 +366,14 @@ export class Game {
             (timestamp) => {
 
                 if (this._stopped) {
+                    return;
+                }
+
+                if (
+                    performance.now() - this._gameStartTime >=
+                    DEMO_TIME_LIMIT
+                ) {
+                    this._handleTimeLimit();
                     return;
                 }
 
@@ -1853,7 +1869,27 @@ export class Game {
     // STOP
     // =============================================================
 
+    _handleTimeLimit() {
+
+        if (
+            this._stopped ||
+            this._timeLimitReached
+        ) {
+            return;
+        }
+
+        this._timeLimitReached = true;
+
+        this.stop();
+
+        this.onTimeLimitReached?.();
+    }
+
     stop() {
+
+        if (this._stopped) {
+            return;
+        }
 
         this._stopped =
             true;

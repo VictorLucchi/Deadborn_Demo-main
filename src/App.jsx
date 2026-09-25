@@ -854,6 +854,8 @@ function App() {
 
                   onCombatTrigger={handleCombatTrigger}
 
+                  onTimeLimitReached={handleGameOverMenu}
+
                   onConsoleToggle={setIsConsoleOpen}
 
                   /*

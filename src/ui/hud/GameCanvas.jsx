@@ -8,6 +8,7 @@ export function GameCanvas({
     onReady,
     onCombatTrigger,
     onMissionEvent,
+    onTimeLimitReached,
     onConsoleToggle
 }) {
     const [isConsoleOpen, setIsConsoleOpen] = useState(false);
@@ -34,7 +35,8 @@ export function GameCanvas({
     } = useGameCanvas(
         isPaused || isConsoleOpen,
         onCombatTrigger,
-        onMissionEvent
+        onMissionEvent,
+        onTimeLimitReached
     );
 
     /*

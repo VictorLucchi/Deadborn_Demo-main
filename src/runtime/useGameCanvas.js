@@ -6,7 +6,8 @@ const activeGames = new WeakMap();
 export function useGameCanvas(
     isPaused,
     onCombatTrigger,
-    onMissionEvent
+    onMissionEvent,
+    onTimeLimitReached
 ) {
     const canvasRef = useRef(null);
     const gameRef = useRef(null);
@@ -14,6 +15,7 @@ export function useGameCanvas(
     const isPausedRef = useRef(isPaused);
     const onCombatRef = useRef(onCombatTrigger);
     const onMissionRef = useRef(onMissionEvent);
+    const onTimeLimitRef = useRef(onTimeLimitReached);
 
     useEffect(() => {
         isPausedRef.current = isPaused;
@@ -26,6 +28,10 @@ export function useGameCanvas(
     useEffect(() => {
         onMissionRef.current = onMissionEvent;
     }, [onMissionEvent]);
+
+    useEffect(() => {
+        onTimeLimitRef.current = onTimeLimitReached;
+    }, [onTimeLimitReached]);
 
     useEffect(() => {
         const game = gameRef.current;
@@ -55,6 +61,9 @@ export function useGameCanvas(
             },
             (event) => {
                 onMissionRef.current?.(event);
+            },
+            () => {
+                onTimeLimitRef.current?.();
             }
         );
 
