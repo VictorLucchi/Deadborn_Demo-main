@@ -3,7 +3,13 @@ import { useGameCanvas } from '../../runtime/useGameCanvas.js';
 import { DevConsole } from './DevConsole.jsx';
 import '../../runtime/HUD/HUD.css';
 
-export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle }) {
+export function GameCanvas({
+    isPaused,
+    onReady,
+    onCombatTrigger,
+    onMissionEvent,
+    onConsoleToggle
+}) {
     const [isConsoleOpen, setIsConsoleOpen] = useState(false);
 
     const handleConsoleToggle = (val) => {
@@ -23,11 +29,29 @@ export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle
         setCrowCallbacks,
         crowInteract,
         crowPickup,
-        crowUnlock
+        crowUnlock,
+        getCrowState
     } = useGameCanvas(
         isPaused || isConsoleOpen,
-        onCombatTrigger
+        onCombatTrigger,
+        onMissionEvent
     );
+
+    /*
+     * O useGameCanvas já mantém acesso ao objeto
+     * CrowDialogue através de getCrowState().
+     *
+     * Criamos essas duas funções aqui para que o App
+     * consiga continuar a sequência pós-lanterna sem
+     * precisar alterar o funcionamento do Corvo.
+     */
+    const crowHasPendingDialogue = () => {
+        return getCrowState()?.hasPendingDialogue?.() ?? false;
+    };
+
+    const crowContinueDialogue = () => {
+        return getCrowState()?.continueDialogue?.() ?? false;
+    };
 
     useEffect(() => {
         onReady?.({
@@ -38,14 +62,19 @@ export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle
             removeEnemy,
             setJogador,
             setCrowCallbacks,
+
+            // Corvo
             crowInteract,
             crowPickup,
-            crowUnlock
+            crowUnlock,
+            crowHasPendingDialogue,
+            crowContinueDialogue
         });
     }, [
         crowInteract,
         crowPickup,
         crowUnlock,
+        getCrowState,
         onReady,
         playDiaryWriting,
         playIntro,
@@ -126,10 +155,6 @@ export function GameCanvas({ isPaused, onReady, onCombatTrigger, onConsoleToggle
                     </div>
 
                 </div>
-
-                {/* ==========================================
-                    EQUIPAMENTOS
-                ========================================== */}
 
                 <div className="hud-equipment">
 

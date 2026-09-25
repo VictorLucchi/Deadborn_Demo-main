@@ -37,7 +37,9 @@ export class Renderer {
         // a ordenação de profundidade.
         this._renderables = [];
         this._entityRenderables = new WeakMap();
-        this._sortByY = (a, b) => a.sortY - b.sortY;
+
+        this._sortByY = (a, b) =>
+            a.sortY - b.sortY;
     }
 
 
@@ -60,9 +62,15 @@ export class Renderer {
             this.canvas.height
         );
 
-        const zoom = camera.zoom ?? 1;
+        const zoom =
+            camera.zoom ?? 1;
+
         ctx.save();
-        ctx.scale(zoom, zoom);
+
+        ctx.scale(
+            zoom,
+            zoom
+        );
 
 
         // ===============================
@@ -82,52 +90,102 @@ export class Renderer {
         const objectTiles =
             map.getObjectTiles(camera);
 
+        const basementKeyRenderables =
+            map.getBasementKeyRenderables?.(
+                camera,
+                crowState?.basementKeyVisible
+            ) ?? [];
 
-        const renderables = this._renderables;
+        const renderables =
+            this._renderables;
+
         renderables.length = 0;
 
-        this._addEntityRenderable(renderables, player);
+        this._addEntityRenderable(
+            renderables,
+            player
+        );
 
-        for (const enemy of entityManager.enemies) {
-            this._addEntityRenderable(renderables, enemy);
+        for (
+            const enemy
+            of entityManager.enemies
+        ) {
+
+            this._addEntityRenderable(
+                renderables,
+                enemy
+            );
         }
 
         if (crowState?.crow) {
-            this._addEntityRenderable(renderables, crowState.crow);
+
+            this._addEntityRenderable(
+                renderables,
+                crowState.crow
+            );
         }
 
-        for (const tile of objectTiles) {
-            renderables.push(tile);
+        for (
+            const tile
+            of objectTiles
+        ) {
+
+            renderables.push(
+                tile
+            );
         }
 
-        renderables.sort(this._sortByY);
+        for (
+            const key
+            of basementKeyRenderables
+        ) {
 
-        for (const renderable of renderables) {
-            renderable.draw(ctx, camera);
+            renderables.push(
+                key
+            );
+        }
+
+        renderables.sort(
+            this._sortByY
+        );
+
+        for (
+            const renderable
+            of renderables
+        ) {
+
+            renderable.draw(
+                ctx,
+                camera
+            );
         }
 
 
         // ===============================
-        // NEBLINA
+        // NEBLINA / ESCURIDÃO
         // ===============================
 
+        const visionRadius =
+            jogador?.getVisionRadius?.() ?? 0;
+
+
+        // A mesma iluminação é utilizada
+        // dentro e fora da casa.
+        this._drawFog(
+            ctx,
+            player,
+            camera,
+            crowState,
+            visionRadius,
+            crowState?.indoors
+        );
+
+
+        // Hunters continuam sendo efeitos
+        // exclusivos do ambiente externo.
         if (!crowState?.indoors) {
 
-            const visionRadius = jogador ?.getVisionRadius?.() ?? 0;
-
-            this._drawFog(
-                ctx,
-                player,
-                camera,
-                crowState,
-                visionRadius
-            );
-
-
-            // ===============================
             // LUZ DOS HUNTERS
-            // ===============================
-
             this._drawHunterFogLights(
                 ctx,
                 entityManager,
@@ -135,11 +193,7 @@ export class Renderer {
                 camera
             );
 
-
-            // ===============================
             // SILHUETAS DOS HUNTERS
-            // ===============================
-
             this._drawHunterFogGhosts(
                 ctx,
                 entityManager,
@@ -153,7 +207,12 @@ export class Renderer {
         // CHUVA
         // ===============================
 
-        this._drawRain(ctx);
+        if (!crowState?.indoors) {
+
+            this._drawRain(
+                ctx
+            );
+        }
 
 
         // ===============================
@@ -187,6 +246,7 @@ export class Renderer {
             );
         }
 
+
         ctx.restore();
 
 
@@ -194,14 +254,17 @@ export class Renderer {
         // FADE
         // ===============================
 
-        if (crowState?.fadeAlpha > 0) {
+        if (
+            crowState?.fadeAlpha > 0
+        ) {
 
             ctx.save();
 
             ctx.globalAlpha =
                 crowState.fadeAlpha;
 
-            ctx.fillStyle = '#000';
+            ctx.fillStyle =
+                '#000';
 
             ctx.fillRect(
                 0,
@@ -214,22 +277,49 @@ export class Renderer {
         }
     }
 
-    _addEntityRenderable(renderables, entity) {
-        let renderable = this._entityRenderables.get(entity);
+
+    _addEntityRenderable(
+        renderables,
+        entity
+    ) {
+
+        let renderable =
+            this._entityRenderables.get(
+                entity
+            );
 
         if (!renderable) {
+
             renderable = {
+
                 entity,
+
                 sortY: 0,
-                draw(ctx, camera) {
-                    this.entity.draw(ctx, camera);
+
+                draw(
+                    ctx,
+                    camera
+                ) {
+
+                    this.entity.draw(
+                        ctx,
+                        camera
+                    );
                 },
             };
-            this._entityRenderables.set(entity, renderable);
+
+            this._entityRenderables.set(
+                entity,
+                renderable
+            );
         }
 
-        renderable.sortY = entity.sortY;
-        renderables.push(renderable);
+        renderable.sortY =
+            entity.sortY;
+
+        renderables.push(
+            renderable
+        );
     }
 
 
@@ -247,6 +337,7 @@ export class Renderer {
         if (
             !entityManager?.enemies
         ) {
+
             return;
         }
 
@@ -261,6 +352,7 @@ export class Renderer {
                     typeof enemy.drawFogLight !==
                     'function'
                 ) {
+
                     return;
                 }
 
@@ -289,6 +381,7 @@ export class Renderer {
         if (
             !entityManager?.enemies
         ) {
+
             return;
         }
 
@@ -300,6 +393,7 @@ export class Renderer {
                     typeof enemy.drawFogGhost !==
                     'function'
                 ) {
+
                     return;
                 }
 
@@ -315,7 +409,7 @@ export class Renderer {
 
 
     // =========================================================
-    // FOG
+    // FOG / ESCURIDÃO + LUZ DA LAMPARINA
     // =========================================================
 
     _drawFog(
@@ -323,7 +417,8 @@ export class Renderer {
         player,
         camera,
         crowState,
-        visionRadius
+        visionRadius,
+        indoors = false
     ) {
 
         const W =
@@ -333,16 +428,70 @@ export class Renderer {
             this.canvas.height;
 
 
-        // Sincroniza tamanho
-        // do offscreen
+        // =====================================================
+        // RESPIRAÇÃO DA LAMPARINA
+        // =====================================================
+
+        const flameTime =
+            performance.now() * 0.001;
+
+        const flameBreath =
+            Math.sin(
+                flameTime * 2.1
+            ) * 0.035 +
+
+            Math.sin(
+                flameTime * 3.7
+            ) * 0.020 +
+
+            Math.sin(
+                flameTime * 6.3
+            ) * 0.010;
+
+
+        // =====================================================
+        // ESCALA DA LAMPARINA POR AMBIENTE
+        // =====================================================
+
+        // Dentro da casa a escala do cenário é menor,
+        // então a mesma lamparina ilumina menos espaço.
+
+        const lanternScale =
+            indoors
+                ? 0.55
+                : 1.0;
+
+
+        // Intensidade visual do brilho azul.
+
+        const lanternIntensity =
+            indoors
+                ? 0.80
+                : 1.0;
+
+
+        // Raio final da iluminação.
+
+        const lanternRadius =
+            visionRadius *
+            lanternScale *
+            (1 + flameBreath);
+
+
+        // =====================================================
+        // SINCRONIZA TAMANHO DO OFFSCREEN
+        // =====================================================
 
         if (
             this._fogCanvas.width !== W ||
             this._fogCanvas.height !== H
         ) {
 
-            this._fogCanvas.width = W;
-            this._fogCanvas.height = H;
+            this._fogCanvas.width =
+                W;
+
+            this._fogCanvas.height =
+                H;
         }
 
 
@@ -358,12 +507,14 @@ export class Renderer {
         );
 
 
-        // ===============================
-        // NEBLINA TOTAL
-        // ===============================
+        // =====================================================
+        // NEBLINA / ESCURIDÃO TOTAL
+        // =====================================================
 
         fc.fillStyle =
-            'rgba(8, 8, 14, 0.97)';
+            indoors
+                ? 'rgba(2, 3, 8, 0.90)'
+                : 'rgba(8, 8, 14, 0.97)';
 
         fc.fillRect(
             0,
@@ -373,9 +524,9 @@ export class Renderer {
         );
 
 
-        // ===============================
+        // =====================================================
         // POSIÇÃO DO PLAYER
-        // ===============================
+        // =====================================================
 
         const px =
             player.x -
@@ -389,26 +540,28 @@ export class Renderer {
             0.5;
 
 
-        // ===============================
-        // FOV DO PLAYER
-        // ===============================
+        // =====================================================
+        // FOV DO PLAYER / LAMPARINA
+        // =====================================================
 
         fc.globalCompositeOperation =
             'destination-out';
 
 
-        if (visionRadius > 0) {
+        if (
+            visionRadius > 0
+        ) {
 
             const hole =
-    fc.createRadialGradient(
-        px,
-        py,
-        0,
+                fc.createRadialGradient(
+                    px,
+                    py,
+                    0,
 
-        px,
-        py,
-        visionRadius
-    );
+                    px,
+                    py,
+                    lanternRadius
+                );
 
 
             hole.addColorStop(
@@ -509,9 +662,9 @@ export class Renderer {
         }
 
 
-        // ===============================
+        // =====================================================
         // FOV DO CORVO
-        // ===============================
+        // =====================================================
 
         if (
             crowState?.crow &&
@@ -595,9 +748,9 @@ export class Renderer {
             'source-over';
 
 
-        // ===============================
-        // COMPOSIÇÃO DA NEBLINA
-        // ===============================
+        // =====================================================
+        // COMPOSIÇÃO DA NEBLINA / ESCURIDÃO
+        // =====================================================
 
         ctx.drawImage(
             this._fogCanvas,
@@ -606,11 +759,13 @@ export class Renderer {
         );
 
 
-        // ===============================
-        // TINT AZUL DO PLAYER
-        // ===============================
+        // =====================================================
+        // TINT AZUL DO PLAYER / LAMPARINA
+        // =====================================================
 
-        if (visionRadius > 0) {
+        if (
+            visionRadius > 0
+        ) {
 
             const tint =
                 ctx.createRadialGradient(
@@ -620,28 +775,48 @@ export class Renderer {
 
                     px,
                     py,
-                    visionRadius
+                    lanternRadius
                 );
 
 
             tint.addColorStop(
                 0,
-                'rgba(60, 110, 240, 0.22)'
+                `rgba(
+                    60,
+                    110,
+                    240,
+                    ${0.22 * lanternIntensity}
+                )`
             );
 
             tint.addColorStop(
                 0.2,
-                'rgba(50, 95, 220, 0.16)'
+                `rgba(
+                    50,
+                    95,
+                    220,
+                    ${0.16 * lanternIntensity}
+                )`
             );
 
             tint.addColorStop(
                 0.45,
-                'rgba(40, 80, 200, 0.10)'
+                `rgba(
+                    40,
+                    80,
+                    200,
+                    ${0.10 * lanternIntensity}
+                )`
             );
 
             tint.addColorStop(
                 0.7,
-                'rgba(25, 55, 160, 0.05)'
+                `rgba(
+                    25,
+                    55,
+                    160,
+                    ${0.05 * lanternIntensity}
+                )`
             );
 
             tint.addColorStop(
@@ -662,9 +837,9 @@ export class Renderer {
         }
 
 
-        // ===============================
+        // =====================================================
         // TINT AZUL DO CORVO
-        // ===============================
+        // =====================================================
 
         if (
             crowState?.crow &&
@@ -875,27 +1050,30 @@ export class Renderer {
 
         ctx.beginPath();
 
-        for (const drop of this.rain) {
+        for (
+            const drop
+            of this.rain
+        ) {
 
-                drop.y +=
-                    drop.speed;
+            drop.y +=
+                drop.speed;
 
-                drop.x +=
-                    drop.wind;
+            drop.x +=
+                drop.wind;
 
 
-                if (
-                    drop.y >
-                    this.canvas.height
-                ) {
+            if (
+                drop.y >
+                this.canvas.height
+            ) {
 
-                    drop.y =
-                        -drop.len;
+                drop.y =
+                    -drop.len;
 
-                    drop.x =
-                        Math.random() *
-                        this.canvas.width;
-                }
+                drop.x =
+                    Math.random() *
+                    this.canvas.width;
+            }
 
 
             ctx.moveTo(

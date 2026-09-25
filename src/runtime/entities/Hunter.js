@@ -41,6 +41,7 @@ export class Hunter {
 
         this.x = x;
         this.y = y;
+        this.scale = 0.20;
 
         // ===============================
         // ESTADO
@@ -902,10 +903,10 @@ export class Hunter {
     // ===============================
 
     draw(
-        ctx,
-        camera,
-        scale = 0.3
-    ) {
+    ctx,
+    camera,
+    scale = this.scale ?? 0.20
+) {
 
         const w =
             this.animator.frameW *
@@ -1076,11 +1077,11 @@ export class Hunter {
     // ===============================
 
     drawFogGhost(
-        ctx,
-        camera,
-        player,
-        scale = 0.3
-    ) {
+    ctx,
+    camera,
+    player,
+    scale = this.scale ?? 0.20
+) {
 
         const dx =
             player.x - this.x;

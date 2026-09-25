@@ -10,6 +10,7 @@ import { IronSword } from './weapons/IronSword.js';
 import { SteelSword } from './weapons/SteelSword.js';
 
 import { Lantern } from './utilities/Lantern.js';
+import { BasementKey } from './utilities/BasementKey.js';
 
 import { Coat } from './armor/Coat.js';
 import { Hood } from './armor/Hood.js';
@@ -31,6 +32,7 @@ const ITEM_REGISTRY = {
 
     // Utilidades
     'lantern': () => new Lantern(),
+    'basement_key': () => new BasementKey(),
 
     // Armaduras
     'coat': () => new Coat(),
@@ -45,7 +47,8 @@ export function createItem(itemId) {
         .trim()
         .toLowerCase();
 
-    const factory = ITEM_REGISTRY[normalizedId];
+    const factory =
+        ITEM_REGISTRY[normalizedId];
 
     if (!factory) {
         throw new Error(

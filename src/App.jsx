@@ -65,6 +65,11 @@ const INITIAL_MAIN_MISSION = {
   title: 'Siga a luz',
 }
 
+const INITIAL_SECONDARY_MISSION = {
+  id: 'encontre-ferus',
+  title: 'Encontre Ferus',
+}
+
 function App() {
 
   const [page, setPage] = useState('home')
@@ -91,16 +96,112 @@ function App() {
   const [hasLantern, setHasLantern] = useState(false)
   const [jogador, setJogador] = useState(null)
 
+  // =========================================================
+  // MISSÕES
+  // =========================================================
+
+  const [mainMission, setMainMission] = useState(INITIAL_MAIN_MISSION)
+  const [secondaryMission, setSecondaryMission] = useState(INITIAL_SECONDARY_MISSION)
+
   const gameApiRef = useRef(null)
   const jogadorRef = useRef(null)
   const skipIntroRef = useRef(null)
   const diaryEventsRef = useRef(new Set())
   const diaryNotificationTimerRef = useRef(null)
 
+  // =========================================================
+  // EVENTOS DE MISSÃO
+  // =========================================================
+
+  const handleMissionEvent = (event) => {
+    console.log('[MISSIONS] Evento recebido:', event)
+
+    switch (event?.id) {
+
+      case 'entered_musician_house':
+
+        setMainMission(current =>
+          current.id === 'encontre-a-casa-do-musico'
+            ? {
+                id: 'toque-o-piano',
+                title: 'Toque o piano',
+              }
+            : current
+        )
+
+        break
+
+
+      case 'piano_played':
+
+        setMainMission(current =>
+          current.id === 'toque-o-piano'
+            ? {
+                id: 'procure-outro-instrumento',
+                title: 'Procure outro instrumento para tocar',
+              }
+            : current
+        )
+
+        break
+
+
+      case 'entered_musician_second_floor':
+
+        setMainMission(current =>
+          current.id === 'procure-outro-instrumento'
+            ? {
+                id: 'toque-as-partituras',
+                title: 'Toque as partituras no chão',
+              }
+            : current
+        )
+
+        break
+
+
+      case 'musician_piano_puzzle_complete':
+
+        setMainMission(current =>
+          current.id === 'toque-as-partituras'
+            ? {
+                id: 'encontre-a-chave-do-porao',
+                title: 'Encontre a chave do porão',
+              }
+            : current
+        )
+
+        break
+
+
+      case 'basement_key_collected':
+
+        setMainMission(current =>
+          current.id === 'encontre-a-chave-do-porao'
+            ? {
+                id: 'abra-o-porao',
+                title: 'Abra a porta do porão',
+              }
+            : current
+        )
+
+        break
+
+
+      default:
+        break
+    }
+  }
+
+  // =========================================================
+  // DIÁRIO
+  // =========================================================
+
   const registerDiaryEvent = (eventId, entry) => {
     if (diaryEventsRef.current.has(eventId)) return
 
     diaryEventsRef.current.add(eventId)
+
     setDiaryEntries(currentEntries => ({
       ...currentEntries,
       [entry.category]: [...currentEntries[entry.category], entry],
@@ -109,7 +210,9 @@ function App() {
     gameApiRef.current?.playDiaryWriting()
 
     setIsDiaryUpdated(true)
+
     clearTimeout(diaryNotificationTimerRef.current)
+
     diaryNotificationTimerRef.current = setTimeout(() => {
       setIsDiaryUpdated(false)
     }, 3500)
@@ -125,11 +228,19 @@ function App() {
   // =========================================================
 
   const startGame = () => {
+
     const novoJogador = criarPersonagem('Hades', '3', 'male')
+
     jogadorRef.current = novoJogador
+
     setJogador(novoJogador)
+
     setDeathCount(0)
+
     setIsGameOver(false)
+
+    setMainMission(INITIAL_MAIN_MISSION)
+    setSecondaryMission(INITIAL_SECONDARY_MISSION)
 
     setIntroPhase('closing')
   }
@@ -140,13 +251,22 @@ function App() {
   // =========================================================
 
   const continueGame = () => {
+
     const novoJogador = criarPersonagem('Hades', '3', 'male')
+
     jogadorRef.current = novoJogador
+
     setJogador(novoJogador)
+
     setDeathCount(0)
+
     setIsGameOver(false)
 
+    setMainMission(INITIAL_MAIN_MISSION)
+    setSecondaryMission(INITIAL_SECONDARY_MISSION)
+
     setPage('game')
+
     setIntroPhase('opening')
   }
 
@@ -156,26 +276,60 @@ function App() {
   // =========================================================
 
   const handleCrowDialogueClose = () => {
+
+    // Se existe outro diálogo na fila, continua a sequência.
+    if (gameApiRef.current?.crowHasPendingDialogue?.()) {
+
+      gameApiRef.current?.crowContinueDialogue()
+
+      return
+    }
+
+    // A sequência terminou.
     setCrowDialogue(null)
+
     gameApiRef.current?.crowUnlock()
   }
 
 
   const handleCrowOption = (opt) => {
 
-    setCrowDialogue(null)
-
     if (opt === 'Equipar') {
+
+      // Pega e equipa a lanterna.
+      // O CrowDialogue inicia a fila pós-lanterna.
       gameApiRef.current?.crowPickup()
+
       setHasLantern(true)
+
+      // Atualiza a missão principal.
+      setMainMission({
+        id: 'encontre-a-casa-do-musico',
+        title: 'Encontre a casa do músico',
+      })
+
+      // Registra o encontro no diário.
       registerDiaryEvent('CORVO_DESAPARECEU', {
         id: 'corvo-desapareceu',
         category: 'notes',
         title: 'O Corvo',
         meta: 'Novo registro',
-        content: 'O corvo me esperava na entrada do vilarejo. Ele carregava uma lanterna e parecia saber que eu chegaria.',
+        content:
+          'O corvo me esperava na entrada do vilarejo. Ele carregava uma lanterna e parecia saber que eu chegaria.',
       })
+
+      // Continua imediatamente a sequência pós-lanterna.
+      if (gameApiRef.current?.crowHasPendingDialogue?.()) {
+
+        gameApiRef.current?.crowContinueDialogue()
+
+        return
+      }
     }
+
+    // Caso não exista outra etapa,
+    // encerra normalmente.
+    setCrowDialogue(null)
 
     gameApiRef.current?.crowUnlock()
   }
@@ -199,28 +353,49 @@ function App() {
     setCombatEnemy(null)
   }
 
+
   const handlePlayerDefeated = () => {
-    if (combatEnemy) gameApiRef.current?.removeEnemy(combatEnemy)
+
+    if (combatEnemy) {
+      gameApiRef.current?.removeEnemy(combatEnemy)
+    }
+
     setCombatEnemy(null)
+
     setDeathCount(currentCount => currentCount + 1)
+
     setIsGameOver(true)
   }
 
+
   const handleGameOverContinue = () => {
+
     const novoJogador = criarPersonagem('Hades', '3', 'male')
+
     jogadorRef.current = novoJogador
+
     setJogador(novoJogador)
+
     gameApiRef.current?.setJogador(novoJogador)
+
     setIsGameOver(false)
   }
 
+
   const handleGameOverMenu = () => {
+
     setIsGameOver(false)
+
     setCombatEnemy(null)
+
     setIsMenuOpen(false)
+
     setPage('home')
+
     setIntroPhase('idle')
+
     jogadorRef.current = null
+
     setJogador(null)
   }
 
@@ -257,7 +432,6 @@ function App() {
 
       if (page !== 'game') return
       if (isConsoleOpen) return
-
 
       if (e.key === 'Escape') {
 
@@ -422,6 +596,7 @@ function App() {
             if (introPhase === 'closing') {
 
               setIntroPhase('intro')
+
               setPage('game')
             }
 
@@ -508,179 +683,188 @@ function App() {
 
 
               <Suspense fallback={null}>
+
                 <GameCanvas
 
-                isPaused={
-                  isMenuOpen ||
-                  isDiaryOpen ||
-                  isInventoryOpen ||
-                  !!combatEnemy ||
-                  !!crowDialogue ||
-                  isGameOver
-                }
-
-                hasLantern={hasLantern}
-
-
-                onReady={(api) => {
-
-                  gameApiRef.current = api
-
-                  api.setJogador(jogador)
-
-
-                  api.setCrowCallbacks({
-
-                    onDialogue: (data) =>
-                      setCrowDialogue(data),
-
-                    onPrompt: (v) =>
-                      setShowCrowPrompt(v)
-
-                  })
-
-
-                  // =================================================
-                  // CONTINUAR — NÃO EXECUTA A INTRO
-                  // =================================================
-
-                  if (introPhase === 'opening') {
-
-                    api.playMusic()
-
-                    return
+                  isPaused={
+                    isMenuOpen ||
+                    isDiaryOpen ||
+                    isInventoryOpen ||
+                    !!combatEnemy ||
+                    !!crowDialogue ||
+                    isGameOver
                   }
 
-
-                  // =================================================
-                  // AQUI A INTRO VISUAL COMEÇA
-                  // =================================================
-
-                  setIntroSceneActive(true)
+                  hasLantern={hasLantern}
 
 
-                  // =================================================
-                  // FINAL DA INTRO
-                  // =================================================
+                  onReady={(api) => {
 
-                  const onComplete = () => {
+                    gameApiRef.current = api
 
-                    skipIntroRef.current = null
-
-                    setSubtitlePhase(null)
-
-                    setIntroSceneActive(false)
-
-                    setShowHadesTitle(false)
-
-                    setIntroPhase('opening')
+                    api.setJogador(jogador)
 
 
-                    setTimeout(async () => {
+                    api.setCrowCallbacks({
 
-                      const game =
-                        document.getElementById('game')
+                      onDialogue: (data) =>
+                        setCrowDialogue(data),
+
+                      onPrompt: (v) =>
+                        setShowCrowPrompt(v)
+
+                    })
 
 
-                      if (
-                        game &&
-                        !document.fullscreenElement
-                      ) {
+                    // =================================================
+                    // CONTINUAR — NÃO EXECUTA A INTRO
+                    // =================================================
 
-                        try {
-
-                          await game.requestFullscreen()
-
-                        }
-
-                        catch (e) {
-
-                          console.error(e)
-
-                        }
-                      }
-
+                    if (introPhase === 'opening') {
 
                       api.playMusic()
 
-                    }, 0)
-                  }
+                      return
+                    }
 
 
-                  // =================================================
-                  // PULAR INTRO
-                  // =================================================
+                    // =================================================
+                    // AQUI A INTRO VISUAL COMEÇA
+                    // =================================================
 
-                  skipIntroRef.current = () => {
-
-                    api.skipIntro()
-
-                    setIntroSceneActive(false)
-
-                    setShowHadesTitle(false)
-
-                    onComplete()
-                  }
+                    setIntroSceneActive(true)
 
 
-                  // =================================================
-                  // EXECUTA A INTRO
-                  // =================================================
+                    // =================================================
+                    // FINAL DA INTRO
+                    // =================================================
 
-                  api.playIntro({
+                    const onComplete = () => {
 
-                    // -----------------------------------------------
-                    // HADES
-                    // -----------------------------------------------
+                      skipIntroRef.current = null
 
-                    onHadesStart: () => {
+                      setSubtitlePhase(null)
 
-                      setSubtitlePhase('hades')
+                      setIntroSceneActive(false)
 
-                    },
+                      setShowHadesTitle(false)
 
-
-                    // -----------------------------------------------
-                    // AYA
-                    // -----------------------------------------------
-
-                    onAyaStart: () => {
-
-                      setSubtitlePhase('aya')
+                      setIntroPhase('opening')
 
 
-                      setTimeout(() => {
+                      setTimeout(async () => {
 
-                        setShowHadesTitle(true)
-
-                      }, 9000)
-
-
-                      setTimeout(() => {
-
-                        setShowHadesTitle(false)
-
-                      }, 13000)
-
-                    },
+                        const game =
+                          document.getElementById('game')
 
 
-                    // -----------------------------------------------
-                    // FINAL
-                    // -----------------------------------------------
+                        if (
+                          game &&
+                          !document.fullscreenElement
+                        ) {
 
-                    onComplete
+                          try {
 
-                  })
+                            await game.requestFullscreen()
 
-                }}
+                          }
+
+                          catch (e) {
+
+                            console.error(e)
+
+                          }
+                        }
 
 
-                onCombatTrigger={handleCombatTrigger}
+                        api.playMusic()
 
-                onConsoleToggle={setIsConsoleOpen}
+                      }, 0)
+                    }
+
+
+                    // =================================================
+                    // PULAR INTRO
+                    // =================================================
+
+                    skipIntroRef.current = () => {
+
+                      api.skipIntro()
+
+                      setIntroSceneActive(false)
+
+                      setShowHadesTitle(false)
+
+                      onComplete()
+                    }
+
+
+                    // =================================================
+                    // EXECUTA A INTRO
+                    // =================================================
+
+                    api.playIntro({
+
+                      // -----------------------------------------------
+                      // HADES
+                      // -----------------------------------------------
+
+                      onHadesStart: () => {
+
+                        setSubtitlePhase('hades')
+
+                      },
+
+
+                      // -----------------------------------------------
+                      // AYA
+                      // -----------------------------------------------
+
+                      onAyaStart: () => {
+
+                        setSubtitlePhase('aya')
+
+
+                        setTimeout(() => {
+
+                          setShowHadesTitle(true)
+
+                        }, 9000)
+
+
+                        setTimeout(() => {
+
+                          setShowHadesTitle(false)
+
+                        }, 13000)
+
+                      },
+
+
+                      // -----------------------------------------------
+                      // FINAL
+                      // -----------------------------------------------
+
+                      onComplete
+
+                    })
+
+                  }}
+
+
+                  onCombatTrigger={handleCombatTrigger}
+
+                  onConsoleToggle={setIsConsoleOpen}
+
+                  /*
+                   * IMPORTANTE:
+                   * O GameCanvas precisa repassar este callback
+                   * para o Game/useGameCanvas.
+                   */
+                  onMissionEvent={handleMissionEvent}
 
                 />
+
               </Suspense>
 
 
@@ -777,14 +961,29 @@ function App() {
                 quickSlots={quickSlots}
               />
 
-              <MissionHUD mission={INITIAL_MAIN_MISSION} />
+
+              {/* ===================================================
+                  MISSÕES
+              =================================================== */}
+
+              <MissionHUD
+                mission={mainMission}
+                secondaryMission={secondaryMission}
+              />
+
 
               <KeybindGuide />
 
+
               {isDiaryUpdated && (
-                <div className="diary-update-notification" role="status">
+
+                <div
+                  className="diary-update-notification"
+                  role="status"
+                >
                   DIÁRIO ATUALIZADO
                 </div>
+
               )}
 
 
@@ -817,7 +1016,9 @@ function App() {
 
                   jogador={jogador}
 
-                  enemyType={combatEnemy.combatType || 'hunter'}
+                  enemyType={
+                    combatEnemy.combatType || 'hunter'
+                  }
 
                   onPlayerDefeated={handlePlayerDefeated}
 
@@ -827,12 +1028,19 @@ function App() {
 
               )}
 
+
               {isGameOver && (
+
                 <GameOver
+
                   deaths={deathCount}
+
                   onContinue={handleGameOverContinue}
+
                   onMenu={handleGameOverMenu}
+
                 />
+
               )}
 
             </div>
@@ -846,10 +1054,6 @@ function App() {
 
       {/* =========================================================
           INTRO VISUAL
-
-          IMPORTANTE:
-          Agora ela é ativada no INÍCIO da intro,
-          e não em onHadesStart.
       ========================================================= */}
 
       <AnimatePresence>

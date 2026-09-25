@@ -24,36 +24,47 @@ export class EntityManager {
         });
     }
 
-    spawnHunter(sprites, offsetX = 100) {
-        const hunter = new Hunter(
-            {
-                idle:      sprites.idle,
-                walkRight: sprites.walkRight,
-                walkLeft:  sprites.walkLeft,
-                run:       sprites.run,
-            },
-            this.player.x + offsetX,
-            this.player.y
-        );
-        hunter.onCombatTrigger = this.onCombatTrigger;
-        this.enemies.push(hunter);
-    }
+    spawnHunter(sprites, offsetX = 100, scale = 0.20) {
+    const hunter = new Hunter(
+        {
+            idle:      sprites.idle,
+            walkRight: sprites.walkRight,
+            walkLeft:  sprites.walkLeft,
+            run:       sprites.run,
+        },
+        this.player.x + offsetX,
+        this.player.y
+    );
 
-    spawnBroodhostWalker(sprites, offsetX = 100, offsetY = 0) {
-        const groupIndex = this.enemies.filter(enemy => enemy instanceof BroodhostWalker).length;
-        const walker = new BroodhostWalker(
-            {
-                idle: sprites.idleWalker,
-                walkLeft: sprites.walkLeftWalker,
-                walkRight: sprites.walkRightWalker,
-            },
-            this.player.x + offsetX,
-            this.player.y + offsetY,
-            groupIndex
-        );
-        walker.onCombatTrigger = this.onCombatTrigger;
-        this.enemies.push(walker);
-    }
+    hunter.scale = scale;
+
+    hunter.onCombatTrigger = this.onCombatTrigger;
+    this.enemies.push(hunter);
+
+    return hunter;
+}
+
+   spawnBroodhostWalkerAt(sprites, x, y) {
+    const groupIndex = this.enemies.filter(
+        enemy => enemy instanceof BroodhostWalker
+    ).length;
+
+    const walker = new BroodhostWalker(
+        {
+            idle: sprites.idleWalker,
+            walkLeft: sprites.walkLeftWalker,
+            walkRight: sprites.walkRightWalker,
+        },
+        x,
+        y,
+        groupIndex
+    );
+
+    walker.onCombatTrigger = this.onCombatTrigger;
+    this.enemies.push(walker);
+
+    return walker;
+}
 
     killHunters(all = false, range = 200) {
         this.enemies = this.enemies.filter(enemy => {

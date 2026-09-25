@@ -12,6 +12,7 @@ export class BroodhostWalker {
     constructor(sprites, x, y, groupIndex = 0) {
         this.x = x;
         this.y = y;
+        this.scale = 0.20;
         this.groupIndex = groupIndex;
         this.currentAnim = 'idle';
         this.alerted = false;
@@ -22,15 +23,33 @@ export class BroodhostWalker {
         this.patrolTimer = 0;
 
         this.animators = {
-            idle: new SpriteAnimator(sprites.idle, 287, 492, 6),
-            walkRight: new SpriteAnimator(sprites.walkRight, 396, 368, 8),
-            walkLeft: new SpriteAnimator(sprites.walkLeft, 396, 368, 8),
-        };
+    idle: new SpriteAnimator(
+        sprites.idle,
+        287,  // largura de cada frame: 1722 / 6
+        492,  // altura
+        6     // total de frames
+    ),
 
-        this.animators.idle.addAnimation('idle', 0, 6);
-        this.animators.walkRight.addAnimation('walkRight', 0, 8);
-        this.animators.walkLeft.addAnimation('walkLeft', 0, 8);
-        this.animators.idle.play('idle');
+    walkRight: new SpriteAnimator(
+        sprites.walkRight,
+        264,  // largura de cada frame: 3168 / 12
+        368,  // altura
+        12    // total de frames
+    ),
+
+    walkLeft: new SpriteAnimator(
+        sprites.walkLeft,
+        264,  // largura de cada frame: 3168 / 12
+        368,  // altura
+        12    // total de frames
+    )
+};
+
+this.animators.idle.addAnimation('idle', 0, 6);
+this.animators.walkRight.addAnimation('walkRight', 0, 12);
+this.animators.walkLeft.addAnimation('walkLeft', 0, 12);
+
+this.animators.idle.play('idle');
     }
 
     get animator() {
@@ -118,8 +137,28 @@ export class BroodhostWalker {
         return this.y;
     }
 
-    draw(ctx, camera, scale = 0.3) {
-        const width = this.animator.frameW * scale;
-        this.animator.draw(ctx, this.x - camera.x - width / 2, this.y - camera.y, scale);
-    }
+   draw(ctx, camera) {
+    const isIdle = this.currentAnim === 'idle';
+
+    const scale = this.scale ?? 0.20;
+
+    const frameW = this.animator.frameW;
+
+    // Referência inferior do personagem
+    const footAnchor = isIdle ? 471 : 219;
+
+    // Centraliza horizontalmente e alinha os pés
+    const drawX =
+        this.x - camera.x - (frameW * scale) / 2;
+
+    const drawY =
+        this.y - camera.y - footAnchor * scale;
+
+    this.animator.draw(
+        ctx,
+        drawX,
+        drawY,
+        scale
+    );
+}
 }
